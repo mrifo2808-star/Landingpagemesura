@@ -296,6 +296,58 @@
   .problem-card p { margin-top: 10px; font-size: 14.5px; font-weight: 650; line-height: 1.55; }
   .problem-sources { margin-top: 18px; font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.6; max-width: 90ch; }
 
+  /* ---------- Calculadora de carga financiera ---------- */
+  .calc { padding: 64px 0; }
+  .calc-grid { display: grid; gap: 28px; grid-template-columns: 1fr; align-items: start; }
+  @media (min-width: 880px) { .calc-grid { grid-template-columns: .9fr 1.1fr; } }
+  .calc-head h2 { font-size: clamp(26px, 4.5vw, 38px); }
+  .calc-head p { margin-top: 14px; font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 46ch; }
+  .calc-privacy { margin-top: 14px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+  .calc-card { background: var(--white); border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--shadow); padding: 26px 24px; }
+  .calc-field { display: block; margin-top: 14px; }
+  .calc-field:first-child { margin-top: 0; }
+  .calc-field > span { display: block; margin-bottom: 6px; font-family: var(--mono); font-size: 10px; font-weight: 800; letter-spacing: .08em; color: var(--muted); }
+  .calc-input-wrap { display: flex; align-items: center; border: 2px solid var(--ink); background: var(--paper); }
+  .calc-input-wrap b { padding: 0 0 0 12px; font-size: 15px; }
+  .calc-input-wrap input { flex: 1; min-width: 0; padding: 13px 12px 13px 6px; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 16px; font-weight: 800; font-family: inherit; }
+  .calc-button { display: block; width: 100%; margin-top: 18px; padding: 14px; border: 3px solid var(--ink); background: var(--acid); color: var(--accent-ink); font-size: 14px; font-weight: 900; box-shadow: 4px 4px 0 var(--shadow); }
+  .calc-button:active { transform: translate(4px, 4px); box-shadow: none; }
+  .calc-result { margin-top: 22px; padding-top: 20px; border-top: 2px solid var(--ink); }
+  .calc-result[hidden] { display: none; }
+  .calc-result-number { font-size: clamp(38px, 7vw, 52px); font-weight: 950; letter-spacing: -.04em; line-height: 1; }
+  .calc-result-number.warn { color: var(--orange); }
+  .calc-result-number.high { color: var(--red); }
+  .calc-result-label { margin-top: 4px; font-family: var(--mono); font-size: 10px; font-weight: 800; letter-spacing: .08em; color: var(--muted); }
+  .calc-bar { position: relative; height: 20px; margin-top: 18px; background: var(--paper); border: 2px solid var(--ink); }
+  .calc-bar-fill { height: 100%; background: var(--blue); border-right: 2px solid var(--ink); transition: width .4s ease; min-width: 3px; }
+  .calc-bar-fill.warn { background: var(--orange); }
+  .calc-bar-fill.high { background: var(--red); }
+  .calc-bar-marker { position: absolute; top: -7px; bottom: -7px; width: 3px; background: var(--ink); }
+  .calc-bar-marker span { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 3px; font-family: var(--mono); font-size: 8.5px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+  .calc-message { margin-top: 26px; font-size: 14px; line-height: 1.6; }
+  .calc-cta { margin-top: 16px; }
+  .calc-disclaimer { margin-top: 16px; font-family: var(--mono); font-size: 9.5px; color: var(--muted); line-height: 1.6; }
+
+  /* ---------- Plan gratis / Pro ---------- */
+  .pricing { padding: 64px 0; }
+  .pricing-head h2 { font-size: clamp(26px, 4.5vw, 38px); }
+  .pricing-head p { margin-top: 12px; color: var(--muted); font-size: 15px; max-width: 60ch; line-height: 1.6; }
+  .pricing-grid { margin-top: 32px; display: grid; gap: 18px; grid-template-columns: 1fr; }
+  @media (min-width: 780px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+  .plan-card { background: var(--white); border: 3px solid var(--ink); box-shadow: 7px 7px 0 var(--shadow); padding: 26px 24px; position: relative; }
+  .plan-card.featured { background: var(--acid); color: var(--accent-ink); }
+  .plan-tag { display: inline-block; padding: 5px 10px; border: 2px solid var(--ink); font-family: var(--mono); font-size: 9.5px; font-weight: 800; letter-spacing: .08em; }
+  .plan-card.featured .plan-tag { background: #111111; color: #dfff42; border-color: #111111; }
+  .plan-card h3 { margin-top: 14px; font-size: 22px; }
+  .plan-price { margin-top: 6px; font-size: 15px; font-weight: 800; color: var(--muted); }
+  .plan-card.featured .plan-price { color: #111111; opacity: .75; }
+  .plan-list { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .plan-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; }
+  .plan-list li::before { content: "✓"; flex: 0 0 auto; width: 18px; height: 18px; display: grid; place-items: center; border: 2px solid var(--ink); font-size: 10px; font-weight: 900; margin-top: 1px; }
+  .plan-card.featured .plan-list li::before { background: #111111; color: #dfff42; border-color: #111111; }
+  .plan-note { margin-top: 18px; padding-top: 14px; border-top: 2px solid var(--ink); font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+  .plan-card.featured .plan-note { color: #111111; opacity: .78; border-color: #111111; }
+
   /* ---------- Features ---------- */
   .features { padding: 64px 0; }
   .features-head { max-width: 60ch; }
@@ -410,8 +462,9 @@
     </a>
     <nav class="nav-links" aria-label="Secciones">
       <a href="#problema">Por qué</a>
+      <a href="#calculadora">Calculadora</a>
       <a href="#features">Funciones</a>
-      <a href="#tus-datos">Tus datos</a>
+      <a href="#plan">Plan</a>
       <a href="#faq">Preguntas</a>
     </nav>
     <a class="nav-cta" href="#unete">Solicitar invitación</a>
@@ -622,6 +675,45 @@
     </div>
   </section>
 
+  <!-- CALCULADORA DE CARGA FINANCIERA -->
+  <section class="calc" id="calculadora" aria-label="Calculadora de carga financiera">
+    <div class="wrap calc-grid">
+      <div class="calc-head">
+        <span class="eyebrow">Mídelo ahora</span>
+        <h2>¿Cuál es tu carga financiera?</h2>
+        <p>
+          La carga financiera es el porcentaje de tu ingreso mensual que se va
+          en pagar deudas: créditos, tarjetas, avances. En Chile el promedio es
+          <b>11,9%</b> (CMF, 2025). Calcula el tuyo en diez segundos y compárate
+          con el país.
+        </p>
+        <p class="calc-privacy">■ El cálculo ocurre en tu navegador. No enviamos ni guardamos estos datos.</p>
+      </div>
+      <div class="calc-card">
+        <label class="calc-field" for="calc-income">
+          <span>TU INGRESO LÍQUIDO MENSUAL</span>
+          <span class="calc-input-wrap"><b>$</b><input id="calc-income" type="text" inputmode="numeric" placeholder="800.000" autocomplete="off"></span>
+        </label>
+        <label class="calc-field" for="calc-debt">
+          <span>LO QUE PAGAS EN DEUDAS AL MES (CUOTAS, TARJETAS, CRÉDITOS)</span>
+          <span class="calc-input-wrap"><b>$</b><input id="calc-debt" type="text" inputmode="numeric" placeholder="95.000" autocomplete="off"></span>
+        </label>
+        <button type="button" class="calc-button" id="calc-run">Calcular mi carga financiera</button>
+        <div class="calc-result" id="calc-result" hidden>
+          <div class="calc-result-number" id="calc-number">—</div>
+          <div class="calc-result-label">DE TU INGRESO MENSUAL SE VA EN DEUDAS</div>
+          <div class="calc-bar" aria-hidden="true">
+            <div class="calc-bar-fill" id="calc-fill" style="width:0%"></div>
+            <div class="calc-bar-marker" id="calc-marker"><span>promedio nacional 11,9%</span></div>
+          </div>
+          <p class="calc-message" id="calc-message"></p>
+          <div class="calc-cta"><a class="btn btn-primary" href="#unete">Quiero ordenar mis finanzas →</a></div>
+          <p class="calc-disclaimer">Cálculo referencial con fines informativos, basado en el indicador de carga financiera del Informe de Endeudamiento CMF (jun-2025). No constituye asesoría financiera.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FEATURES -->
   <section class="features" id="features" aria-label="Funciones">
     <div class="wrap">
@@ -731,6 +823,44 @@
     </div>
   </section>
 
+  <!-- PLAN -->
+  <section class="pricing" id="plan" aria-label="Plan y modelo">
+    <div class="wrap">
+      <div class="pricing-head">
+        <span class="eyebrow">El modelo</span>
+        <h2>Gratis hoy. Y lo que hoy es gratis, seguirá gratis para quienes ya estén dentro.</h2>
+        <p>Mesura no se financia con publicidad ni con tus datos — en ningún plan. El modelo es simple: el control completo de tus finanzas es y seguirá siendo gratuito; más adelante habrá un plan opcional con capas nuevas de valor para quien quiera más.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="plan-card featured">
+          <span class="plan-tag">DISPONIBLE HOY</span>
+          <h3>Mesura</h3>
+          <p class="plan-price">Gratis — sin tarjeta, sin período de prueba</p>
+          <ul class="plan-list">
+            <li>Registro ilimitado de gastos e ingresos por categoría</li>
+            <li>Presupuesto mensual y por categoría, con ritmo de gasto</li>
+            <li>Deudas y gastos compartidos con liquidación</li>
+            <li>Metas de ahorro con aportes y progreso</li>
+            <li>Calendario, resumen semanal por correo y respaldo exportable</li>
+          </ul>
+          <p class="plan-note">Acceso por invitación. Quienes entren ahora conservan estas funciones sin costo, siempre.</p>
+        </div>
+        <div class="plan-card">
+          <span class="plan-tag">EN DESARROLLO</span>
+          <h3>Mesura Pro</h3>
+          <p class="plan-price">Precio de lanzamiento se anunciará primero a la lista de espera</p>
+          <ul class="plan-list">
+            <li><b>Hogar compartido:</b> presupuesto y gastos entre dos o más cuentas</li>
+            <li><b>Proyección de fin de mes</b> y alertas antes de sobrepasarte</li>
+            <li><b>Radiografía financiera mensual:</b> tu mes comparado con referencias nacionales (CMF, CPP UC)</li>
+            <li><b>Metas avanzadas</b> con hitos y sugerencias de aporte</li>
+          </ul>
+          <p class="plan-note">Opcional, pensado para hogares y para quien quiera pasar del registro al análisis. Nada de lo gratuito se recorta para venderlo de vuelta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FAQ -->
   <section class="faq" id="faq" aria-label="Preguntas frecuentes">
     <div class="wrap">
@@ -741,7 +871,7 @@
       <div class="faq-list">
         <details class="faq-item">
           <summary>¿Es gratis de verdad? ¿Cuál es el modelo?<span class="faq-chevron" aria-hidden="true">›</span></summary>
-          <div>Sí, es gratis. Mesura opera sobre infraestructura de costo mínimo y no tiene plan pagado escondido, publicidad ni venta de datos. Su modelo es crecer con calma, por invitación, manteniendo el servicio estable para quienes ya lo usan.</div>
+          <div>Sí. Todo lo que Mesura ofrece hoy es gratuito y seguirá siéndolo para quienes ya tengan cuenta. El modelo a futuro es un plan Pro opcional con funciones nuevas (hogar compartido, proyecciones, radiografía mensual) — nunca publicidad ni venta de datos, y nunca recortar lo gratuito para venderlo de vuelta.</div>
         </details>
         <details class="faq-item">
           <summary>¿En qué se diferencia de otras apps de finanzas?<span class="faq-chevron" aria-hidden="true">›</span></summary>
@@ -969,6 +1099,81 @@
   });
 
   render();
+
+  /* ---------- Calculadora de carga financiera ----------
+     100% en el navegador — nada se envía ni se guarda (promesa explícita en
+     la sección). Referencia: carga financiera promedio nacional 11,9% del
+     ingreso mensual, Informe de Endeudamiento CMF jun-2025. */
+  var CMF_AVG = 11.9;
+  var BAR_MAX = 40; // escala visual de la barra: 0–40%
+
+  function parseCLP(value) {
+    var digits = String(value || "").replace(/[^\d]/g, "");
+    return digits ? parseInt(digits, 10) : 0;
+  }
+
+  function formatInputCLP(input) {
+    var n = parseCLP(input.value);
+    input.value = n ? numFmt.format(n) : "";
+  }
+
+  var incomeInput = document.getElementById("calc-income");
+  var debtInput = document.getElementById("calc-debt");
+  if (incomeInput) {
+    [incomeInput, debtInput].forEach(function (input) {
+      input.addEventListener("input", function () { formatInputCLP(input); });
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); runCalc(); }
+      });
+    });
+
+    document.getElementById("calc-run").addEventListener("click", runCalc);
+  }
+
+  function runCalc() {
+    var income = parseCLP(incomeInput.value);
+    var debt = parseCLP(debtInput.value);
+    var result = document.getElementById("calc-result");
+    var numberEl = document.getElementById("calc-number");
+    var fill = document.getElementById("calc-fill");
+    var marker = document.getElementById("calc-marker");
+    var message = document.getElementById("calc-message");
+
+    if (income <= 0) {
+      result.hidden = false;
+      numberEl.textContent = "—";
+      numberEl.className = "calc-result-number";
+      fill.style.width = "0%";
+      message.textContent = "Ingresa tu ingreso líquido mensual para calcular.";
+      return;
+    }
+
+    // Se compara con el valor YA redondeado a un decimal — el mismo que ve la
+    // persona — para que nunca se muestre "11,9%" junto a "estás por debajo
+    // del promedio de 11,9%".
+    var pct = Math.round((debt / income) * 1000) / 10;
+    var pctLabel = pct.toFixed(1).replace(".", ",") + "%";
+    var level = pct < CMF_AVG ? "" : pct <= 25 ? "warn" : "high";
+
+    numberEl.textContent = pctLabel;
+    numberEl.className = "calc-result-number " + level;
+    fill.className = "calc-bar-fill " + level;
+    fill.style.width = Math.min(100, (pct / BAR_MAX) * 100) + "%";
+    marker.style.left = (CMF_AVG / BAR_MAX) * 100 + "%";
+
+    if (debt <= 0) {
+      message.textContent = "Tu carga financiera es 0%: hoy no destinas ingreso a deudas. Es el mejor momento para construir el hábito de presupuesto y ahorro — antes de necesitarlo.";
+    } else if (pct === CMF_AVG) {
+      message.textContent = "Tu carga financiera (" + pctLabel + ") está exactamente en línea con el promedio nacional. Saber en qué se va el resto de tu ingreso es lo que marca la diferencia.";
+    } else if (pct < CMF_AVG) {
+      message.textContent = "Tu carga financiera (" + pctLabel + ") está por debajo del promedio nacional de " + String(CMF_AVG).replace(".", ",") + "%. Buen punto de partida: con un presupuesto claro puedes convertir ese margen en ahorro con meta.";
+    } else if (pct <= 25) {
+      message.textContent = "Tu carga financiera (" + pctLabel + ") está por sobre el promedio nacional de " + String(CMF_AVG).replace(".", ",") + "%. Saber exactamente en qué se va el resto de tu ingreso es el primer paso para recuperar margen.";
+    } else {
+      message.textContent = "Tu carga financiera (" + pctLabel + ") es considerablemente mayor al promedio nacional de " + String(CMF_AVG).replace(".", ",") + "%. Un registro claro de gastos y deudas ayuda a ver el mapa completo y priorizar qué pagar primero.";
+    }
+    result.hidden = false;
+  }
 })();
 </script>
 
