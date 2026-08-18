@@ -23,8 +23,11 @@ Cosas que trae y no son obvias a primera vista:
   "Mesura Dark Soft" real de la app (los mismos tokens de `app/globals.css`).
 - Ticker de movimientos, FAQ con `<details>` nativos (mismo patrón de acordeón que
   usa la app en Perfil) y sección "Tus datos" — todo lo que afirma esa sección
-  (respaldo .xlsx, Drive propio, exportar/eliminar, IA opt-in apagada por defecto)
-  es funcionalidad real ya implementada en la app.
+  (respaldo .xlsx, hoja de Google compartida con el usuario, exportar/eliminar,
+  IA opt-in apagada por defecto) es funcionalidad real ya implementada en la app.
+  Nota de precisión: la hoja de Sheets vive en el Drive del operador de Mesura
+  (patrón del Apps Script) y se comparte al usuario como lector — por eso la
+  landing dice "compartida solo contigo", no "en tu propio Drive".
 
 ## Archivos
 
