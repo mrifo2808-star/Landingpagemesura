@@ -132,12 +132,6 @@
   }
   .hero p.lead { margin-top: 18px; font-size: 17px; color: var(--muted); max-width: 46ch; line-height: 1.6; }
   .hero-ctas { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-  .invite-note { margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .invite-note b { color: var(--ink); }
-
-  .hero-stats { margin-top: 34px; display: flex; gap: 28px; flex-wrap: wrap; }
-  .hero-stat strong { display: block; font-size: 24px; font-weight: 950; }
-  .hero-stat span { display: block; margin-top: 2px; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .04em; }
 
   /* ---------- Teléfono demo ---------- */
   .phone-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
@@ -274,17 +268,6 @@
   @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ---------- Ticker ---------- */
-  .ticker { border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); background: var(--white); overflow: hidden; }
-  .ticker-track { display: flex; gap: 0; width: max-content; animation: ticker 36s linear infinite; }
-  .ticker-track:hover { animation-play-state: paused; }
-  .ticker-group { display: flex; align-items: center; gap: 34px; padding: 11px 17px; white-space: nowrap; }
-  .ticker-item { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--muted); }
-  .ticker-item b { color: var(--ink); font-weight: 800; }
-  .ticker-item .neg { color: var(--orange); }
-  .ticker-item .pos { color: var(--blue); }
-  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
   /* ---------- Problema ---------- */
   .problem { padding: 64px 0; }
   .problem-head { max-width: 60ch; }
@@ -362,36 +345,7 @@
   .feature-icon { width: 42px; height: 42px; display: grid; place-items: center; border: 2px solid var(--ink); color: #fff; font-size: 18px; font-weight: 900; }
   .feature-card h3 { font-size: 17px; }
   .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
-
-  /* ---------- Tus datos ---------- */
-  .data-section { padding: 64px 0; }
-  .data-box {
-    background: var(--acid); color: var(--accent-ink); border: 3px solid var(--ink);
-    box-shadow: 9px 9px 0 var(--shadow); padding: 40px 28px;
-  }
-  .data-box .eyebrow { color: var(--accent-ink); opacity: .65; }
-  .data-box h2 { font-size: clamp(26px, 4.5vw, 38px); color: var(--accent-ink); max-width: 24ch; }
-  .data-grid { margin-top: 30px; display: grid; gap: 14px; grid-template-columns: 1fr; }
-  @media (min-width: 760px) { .data-grid { grid-template-columns: repeat(2, 1fr); } }
-  .data-item { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: rgba(255,255,255,.42); border: 2px solid var(--ink); }
-  @media (prefers-color-scheme: dark) { .data-item { background: rgba(255,255,255,.28); } }
-  .data-check { flex: 0 0 auto; width: 26px; height: 26px; display: grid; place-items: center; background: #111111; color: #dfff42; border: 2px solid #111111; font-size: 13px; font-weight: 900; }
-  .data-item strong { display: block; font-size: 14.5px; font-weight: 900; letter-spacing: -.01em; }
-  .data-item p { margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: #111111; opacity: .78; }
-
-  /* ---------- Cómo funciona ---------- */
-  .how { padding: 64px 0; }
-  .how-head h2 { font-size: clamp(26px, 4.5vw, 38px); max-width: 40ch; }
-  .how-steps { margin-top: 40px; display: grid; gap: 24px; grid-template-columns: 1fr; }
-  @media (min-width: 820px) { .how-steps { grid-template-columns: repeat(3, 1fr); } }
-  .how-step { position: relative; padding: 24px 20px 20px; background: var(--white); border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--shadow); }
-  .how-step .step-no {
-    position: absolute; top: -18px; left: 20px; width: 36px; height: 36px; border-radius: 50%;
-    background: var(--acid); color: var(--accent-ink); border: 3px solid var(--ink); display: grid; place-items: center;
-    font-weight: 950; font-size: 15px;
-  }
-  .how-step h3 { margin-top: 12px; font-size: 17px; }
-  .how-step p { margin-top: 8px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+  .features-more { margin-top: 20px; font-size: 13.5px; color: var(--muted); line-height: 1.6; max-width: 80ch; }
 
   /* ---------- FAQ (mismo patrón <details> que usa la app en Perfil) ---------- */
   .faq { padding: 64px 0; }
@@ -445,7 +399,6 @@
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .ticker-track { animation: none; }
     .demo-panel, .demo-toast { animation: none; }
     .phone-fab.pulse { animation: none; }
     .phone-track div { transition: none; }
@@ -480,30 +433,13 @@
         <span class="eyebrow">Finanzas personales</span>
         <h1>El orden de tu dinero, <span class="hl">sin ruido</span> ni planillas.</h1>
         <p class="lead">
-          Mesura registra tus gastos e ingresos en segundos y te muestra al
-          instante cuánto queda del mes, en qué se destinó y qué compromisos
-          tienes pendientes. Sin hojas de cálculo, sin publicidad y sin letra
-          chica. El teléfono de al lado es una demostración funcional: pruébalo.
+          Registra un gasto en segundos y ve al instante cuánto queda del mes
+          y en qué se destinó. Gratis hoy, sin publicidad y sin letra chica —
+          el teléfono de al lado es una demostración funcional: pruébalo.
         </p>
         <div class="hero-ctas">
           <a class="btn btn-primary" href="#unete">Solicitar invitación →</a>
           <a class="btn btn-ghost" href="#features">Ver funciones</a>
-        </div>
-        <p class="invite-note"><b>Acceso por invitación</b> · deja tu correo y te contactamos cuando se abra un cupo</p>
-
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <strong>&lt; 5 seg</strong>
-            <span>POR MOVIMIENTO REGISTRADO</span>
-          </div>
-          <div class="hero-stat">
-            <strong>$0</strong>
-            <span>GRATIS HOY, SIN TARJETA</span>
-          </div>
-          <div class="hero-stat">
-            <strong>100%</strong>
-            <span>DE TUS DATOS EXPORTABLES</span>
-          </div>
         </div>
       </div>
 
@@ -620,36 +556,6 @@
     </div>
   </section>
 
-  <!-- TICKER -->
-  <div class="ticker" aria-hidden="true">
-    <div class="ticker-track">
-      <div class="ticker-group">
-        <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
-        <span class="ticker-item"><b>transporte</b> <span class="neg">−$15.000</span></span>
-        <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
-        <span class="ticker-item"><b>café</b> <span class="neg">−$2.800</span></span>
-        <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
-        <span class="ticker-item"><b>gasto compartido: cena</b> <span class="neg">−$18.500</span></span>
-        <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
-        <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
-        <span class="ticker-item"><b>ingreso freelance</b> <span class="pos">+$120.000</span></span>
-        <span class="ticker-item"><b>suscripción streaming</b> <span class="neg">−$7.990</span></span>
-      </div>
-      <div class="ticker-group">
-        <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
-        <span class="ticker-item"><b>transporte</b> <span class="neg">−$15.000</span></span>
-        <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
-        <span class="ticker-item"><b>café</b> <span class="neg">−$2.800</span></span>
-        <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
-        <span class="ticker-item"><b>gasto compartido: cena</b> <span class="neg">−$18.500</span></span>
-        <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
-        <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
-        <span class="ticker-item"><b>ingreso freelance</b> <span class="pos">+$120.000</span></span>
-        <span class="ticker-item"><b>suscripción streaming</b> <span class="neg">−$7.990</span></span>
-      </div>
-    </div>
-  </div>
-
   <!-- PROBLEMA -->
   <section class="problem" id="problema" aria-label="El problema">
     <div class="wrap">
@@ -742,84 +648,8 @@
           <h3>Deudas y gastos compartidos</h3>
           <p>Divide una cuenta entre varias personas y lleva el saldo por contraparte, con abonos parciales y liquidación. Queda registrado quién debe qué, y cuánto.</p>
         </div>
-        <div class="feature-card">
-          <span class="feature-icon" style="background:#6747ff">▦</span>
-          <h3>Calendario y resumen semanal</h3>
-          <p>Tus movimientos día por día en un calendario, y cada lunes un resumen por correo. Con análisis de IA únicamente si tú lo activas.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon" style="background:#f59e0b">✦</span>
-          <h3>Favoritos y pagos recurrentes</h3>
-          <p>Tus gastos habituales quedan a un toque, y los pagos del mes — arriendo, cuentas, suscripciones — se anuncian a tiempo para registrarlos sin esfuerzo.</p>
-        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- TUS DATOS -->
-  <section class="data-section" id="tus-datos" aria-label="Tus datos">
-    <div class="wrap">
-      <div class="data-box">
-        <span class="eyebrow">Sin letra chica</span>
-        <h2>Tu plata es tuya. Tus datos también.</h2>
-        <div class="data-grid">
-          <div class="data-item">
-            <span class="data-check" aria-hidden="true">✓</span>
-            <div>
-              <strong>Respaldo en Excel, siempre</strong>
-              <p>Descarga todos tus movimientos en un .xlsx cuando quieras. Si un día te vas, te vas con todo.</p>
-            </div>
-          </div>
-          <div class="data-item">
-            <span class="data-check" aria-hidden="true">✓</span>
-            <div>
-              <strong>Copia también en Google Sheets</strong>
-              <p>Cada cuenta tiene su propia hoja de cálculo, siempre al día y compartida solo contigo — la abres desde la app cuando quieras.</p>
-            </div>
-          </div>
-          <div class="data-item">
-            <span class="data-check" aria-hidden="true">✓</span>
-            <div>
-              <strong>Exporta o elimina todo</strong>
-              <p>Exportación completa de tus datos y eliminación de cuenta definitiva, desde tu perfil, sin pedir permiso ni escribir a soporte.</p>
-            </div>
-          </div>
-          <div class="data-item">
-            <span class="data-check" aria-hidden="true">✓</span>
-            <div>
-              <strong>IA apagada por defecto</strong>
-              <p>El análisis con IA del resumen semanal es opcional y parte desactivado. Nada tuyo pasa por un modelo sin que tú lo enciendas.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMO FUNCIONA -->
-  <section class="how" id="como-funciona" aria-label="Cómo funciona">
-    <div class="wrap">
-      <div class="how-head">
-        <span class="eyebrow">Simple de verdad</span>
-        <h2>De cero a tu primer resumen en tres pasos</h2>
-      </div>
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="step-no" aria-hidden="true">1</div>
-          <h3>Crea tu cuenta</h3>
-          <p>Con tu invitación, solo necesitas correo y contraseña. Sin tarjeta y sin período de prueba que se convierta en cobro.</p>
-        </div>
-        <div class="how-step">
-          <div class="step-no" aria-hidden="true">2</div>
-          <h3>Registra tus movimientos</h3>
-          <p>Gastos e ingresos a medida que ocurren, desde el celular o el computador. Menos de cinco segundos cada uno.</p>
-        </div>
-        <div class="how-step">
-          <div class="step-no" aria-hidden="true">3</div>
-          <h3>Toma decisiones con claridad</h3>
-          <p>Presupuesto, categorías, deudas y metas siempre al día — y cada lunes, el resumen de tu semana en el correo.</p>
-        </div>
-      </div>
+      <p class="features-more">Y además: calendario de movimientos, resumen semanal por correo (con análisis de IA solo si lo activas), favoritos, pagos recurrentes y respaldo exportable en Excel.</p>
     </div>
   </section>
 
@@ -882,8 +712,8 @@
           <div>Para crecer con calma. Cada cuenta nueva usa base de datos y respaldo reales, y preferimos que la app siga rápida y estable para quienes ya la usan antes que abrir la puerta de golpe. Deja tu correo abajo y te avisamos cuando haya cupo.</div>
         </details>
         <details class="faq-item">
-          <summary>¿Pueden ver mis movimientos?<span class="faq-chevron" aria-hidden="true">›</span></summary>
-          <div>Cada cuenta ve únicamente sus propios datos. Las contraseñas se guardan con hash (nunca en texto plano), las sesiones expiran, y puedes exportar o eliminar todo lo tuyo desde tu perfil cuando quieras.</div>
+          <summary>¿Qué pasa con mis datos?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Cada cuenta ve únicamente sus propios datos y las contraseñas se guardan con hash, nunca en texto plano. Puedes descargar tu respaldo en Excel cuando quieras, exportar todo o eliminar tu cuenta definitivamente desde tu perfil — sin escribir a soporte. El análisis con IA del resumen semanal es opcional y viene desactivado por defecto.</div>
         </details>
         <details class="faq-item">
           <summary>¿Sirve en iPhone y Android?<span class="faq-chevron" aria-hidden="true">›</span></summary>
@@ -898,7 +728,7 @@
     <div class="wrap">
       <div class="cta-box">
         <h2>Solicita tu invitación</h2>
-        <p>Mesura crece por invitación para mantener el servicio rápido y estable. Deja tu correo y te contactaremos apenas se abra un cupo — sin costo y sin compromiso.</p>
+        <p>Mesura crece por invitación para mantener el servicio rápido y estable. Deja tu correo y te contactaremos apenas se abra un cupo — crear la cuenta después toma un minuto: correo y contraseña, sin tarjeta.</p>
         <form class="cta-form" id="waitlist-form">
           <label for="waitlist-email" style="position:absolute;left:-9999px;">Correo electrónico</label>
           <input id="waitlist-email" type="email" name="email" placeholder="tu@correo.com" required>
