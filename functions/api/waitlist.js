@@ -11,7 +11,7 @@
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost({ request, env, waitUntil }) {
   let body;
   try {
     body = await request.json();
@@ -35,10 +35,28 @@ export async function onRequestPost({ request, env }) {
   }
 
   // Clave por correo: reinscribirse es idempotente, no duplica entradas.
-  await env.WAITLIST.put(
-    "email:" + email,
-    JSON.stringify({ at: new Date().toISOString() })
-  );
+  const key = "email:" + email;
+  const alreadyRegistered = await env.WAITLIST.get(key);
+  await env.WAITLIST.put(key, JSON.stringify({ at: new Date().toISOString() }));
+
+  // Notificación al dueño vía el Apps Script de lista de espera
+  // (google-apps-script/MesuraWaitlist.gs). Solo para correos NUEVOS — una
+  // reinscripción no genera otro aviso. Corre en waitUntil y con su propio
+  // try/catch: si el aviso falla, la inscripción igual queda guardada.
+  if (!alreadyRegistered && env.NOTIFY_WEBHOOK_URL && env.NOTIFY_SECRET) {
+    waitUntil(
+      fetch(env.NOTIFY_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "waitlist_request",
+          secret: env.NOTIFY_SECRET,
+          email,
+        }),
+      }).catch(() => {})
+    );
+  }
+
   return json({ ok: true });
 }
 

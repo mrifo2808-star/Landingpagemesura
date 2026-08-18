@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mesura — Finanzas personales sin ruido</title>
-<meta name="description" content="Registra un gasto en dos toques y ve al instante cuánto te queda del mes. Presupuestos, deudas compartidas y metas de ahorro — sin planillas, sin venta de datos.">
+<meta name="description" content="Mesura ordena tus finanzas personales: registro de gastos en segundos, presupuesto con ritmo de gasto, deudas compartidas y metas de ahorro. Gratis, sin publicidad y con tus datos siempre exportables.">
 <meta property="og:title" content="Mesura — Finanzas personales sin ruido">
-<meta property="og:description" content="Registra un gasto en dos toques y ve al instante cuánto te queda del mes. Sin planillas, sin venta de datos.">
+<meta property="og:description" content="Registro de gastos en segundos, presupuesto con ritmo de gasto, deudas compartidas y metas de ahorro. Gratis, sin publicidad y con tus datos siempre exportables.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#dfff42" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#17140f" media="(prefers-color-scheme: dark)">
@@ -292,8 +292,9 @@
   .problem-grid { margin-top: 34px; display: grid; gap: 16px; grid-template-columns: 1fr; }
   @media (min-width: 760px) { .problem-grid { grid-template-columns: repeat(3, 1fr); } }
   .problem-card { background: var(--white); border: 2px solid var(--ink); padding: 22px 20px; box-shadow: 5px 5px 0 var(--shadow); }
-  .problem-card .num { font-family: var(--mono); font-size: 11px; font-weight: 800; color: var(--red); }
-  .problem-card p { margin-top: 10px; font-size: 15px; font-weight: 650; line-height: 1.5; }
+  .problem-card .num { font-family: var(--mono); font-size: 26px; font-weight: 800; color: var(--red); letter-spacing: -.02em; }
+  .problem-card p { margin-top: 10px; font-size: 14.5px; font-weight: 650; line-height: 1.55; }
+  .problem-sources { margin-top: 18px; font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.6; max-width: 90ch; }
 
   /* ---------- Features ---------- */
   .features { padding: 64px 0; }
@@ -413,7 +414,7 @@
       <a href="#tus-datos">Tus datos</a>
       <a href="#faq">Preguntas</a>
     </nav>
-    <a class="nav-cta" href="https://mesura.mrifo2808.workers.dev/signup">Empieza gratis</a>
+    <a class="nav-cta" href="#unete">Solicitar invitación</a>
   </div>
 </header>
 
@@ -424,37 +425,38 @@
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Finanzas personales</span>
-        <h1>Tu plata, <span class="hl">sin ruido</span> ni planillas.</h1>
+        <h1>El orden de tu dinero, <span class="hl">sin ruido</span> ni planillas.</h1>
         <p class="lead">
-          Registra un gasto en dos toques y ve al instante cuánto te queda del
-          mes, en qué se te fue y quién te debe. Sin Excel, sin letra chica —
-          y el teléfono de al lado no es una foto: pruébalo.
+          Mesura registra tus gastos e ingresos en segundos y te muestra al
+          instante cuánto queda del mes, en qué se destinó y qué compromisos
+          tienes pendientes. Sin hojas de cálculo, sin publicidad y sin letra
+          chica. El teléfono de al lado es una demostración funcional: pruébalo.
         </p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="https://mesura.mrifo2808.workers.dev/signup">Empieza gratis →</a>
+          <a class="btn btn-primary" href="#unete">Solicitar invitación →</a>
           <a class="btn btn-ghost" href="#features">Ver funciones</a>
         </div>
-        <p class="invite-note"><b>Acceso por invitación</b> · cupos limitados mientras Mesura crece</p>
+        <p class="invite-note"><b>Acceso por invitación</b> · deja tu correo y te contactamos cuando se abra un cupo</p>
 
         <div class="hero-stats">
           <div class="hero-stat">
             <strong>&lt; 5 seg</strong>
-            <span>POR MOVIMIENTO</span>
+            <span>POR MOVIMIENTO REGISTRADO</span>
           </div>
           <div class="hero-stat">
             <strong>$0</strong>
-            <span>SIN TARJETA NI PLANES</span>
+            <span>SIN PUBLICIDAD NI PLANES PAGADOS</span>
           </div>
           <div class="hero-stat">
-            <strong>1 correo</strong>
-            <span>RESUMEN SEMANAL, SI QUIERES</span>
+            <strong>100%</strong>
+            <span>DE TUS DATOS EXPORTABLES</span>
           </div>
         </div>
       </div>
 
       <div class="phone-stage">
         <div class="phone-wrap">
-        <span class="phone-sticker" aria-hidden="true">DEMO REAL — TÓCAME</span>
+        <span class="phone-sticker" aria-hidden="true">DEMO FUNCIONAL — PRUÉBALA</span>
         <div class="phone" id="demo-phone">
           <div class="phone-hero">
             <div class="phone-topbar">
@@ -570,27 +572,27 @@
     <div class="ticker-track">
       <div class="ticker-group">
         <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
-        <span class="ticker-item"><b>bencina</b> <span class="neg">−$15.000</span></span>
+        <span class="ticker-item"><b>transporte</b> <span class="neg">−$15.000</span></span>
         <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
-        <span class="ticker-item"><b>café con la Vale</b> <span class="neg">−$4.800</span></span>
+        <span class="ticker-item"><b>café</b> <span class="neg">−$2.800</span></span>
         <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
-        <span class="ticker-item"><b>le pagué a Nico su mitad</b> <span class="neg">−$18.500</span></span>
+        <span class="ticker-item"><b>gasto compartido: cena</b> <span class="neg">−$18.500</span></span>
         <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
         <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
-        <span class="ticker-item"><b>freelance</b> <span class="pos">+$120.000</span></span>
-        <span class="ticker-item"><b>completos x2</b> <span class="neg">−$7.000</span></span>
+        <span class="ticker-item"><b>ingreso freelance</b> <span class="pos">+$120.000</span></span>
+        <span class="ticker-item"><b>suscripción streaming</b> <span class="neg">−$7.990</span></span>
       </div>
       <div class="ticker-group">
         <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
-        <span class="ticker-item"><b>bencina</b> <span class="neg">−$15.000</span></span>
+        <span class="ticker-item"><b>transporte</b> <span class="neg">−$15.000</span></span>
         <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
-        <span class="ticker-item"><b>café con la Vale</b> <span class="neg">−$4.800</span></span>
+        <span class="ticker-item"><b>café</b> <span class="neg">−$2.800</span></span>
         <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
-        <span class="ticker-item"><b>le pagué a Nico su mitad</b> <span class="neg">−$18.500</span></span>
+        <span class="ticker-item"><b>gasto compartido: cena</b> <span class="neg">−$18.500</span></span>
         <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
         <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
-        <span class="ticker-item"><b>freelance</b> <span class="pos">+$120.000</span></span>
-        <span class="ticker-item"><b>completos x2</b> <span class="neg">−$7.000</span></span>
+        <span class="ticker-item"><b>ingreso freelance</b> <span class="pos">+$120.000</span></span>
+        <span class="ticker-item"><b>suscripción streaming</b> <span class="neg">−$7.990</span></span>
       </div>
     </div>
   </div>
@@ -599,23 +601,24 @@
   <section class="problem" id="problema" aria-label="El problema">
     <div class="wrap">
       <div class="problem-head">
-        <span class="eyebrow">El problema real</span>
-        <h2>¿Sabes en qué se va tu plata?</h2>
+        <span class="eyebrow">El problema, en cifras</span>
+        <h2>¿Sabes exactamente en qué se va tu dinero cada mes? La mayoría en Chile, no.</h2>
       </div>
       <div class="problem-grid">
         <div class="problem-card">
-          <span class="num">01</span>
-          <p>Llega el 25 y la plata no alcanzó — de nuevo. Y no hay forma de reconstruir en qué se fue.</p>
+          <span class="num">48%</span>
+          <p>Menos de la mitad de los hogares en Chile lleva un registro sistemático de sus gastos. Sin registro, el presupuesto es solo una estimación.</p>
         </div>
         <div class="problem-card">
-          <span class="num">02</span>
-          <p>La planilla de Excel duró dos semanas. Nadie abre una planilla desde el celular en la fila del súper.</p>
+          <span class="num">57%</span>
+          <p>Más de la mitad de las personas gastó el mes pasado más de lo que recibió — y el desbalance se descubre tarde, cuando ya ocurrió.</p>
         </div>
         <div class="problem-card">
-          <span class="num">03</span>
-          <p>"Yo pagué la última vez" — las deudas entre amigos se pierden en el chat y nunca queda claro quién debe qué.</p>
+          <span class="num">89%</span>
+          <p>Nueve de cada diez personas no ahorran mensualmente para metas de largo plazo. No por falta de voluntad: por falta de un sistema simple que lo haga visible.</p>
         </div>
       </div>
+      <p class="problem-sources">Fuentes: Radiografía de la educación e inclusión financiera en Chile (CPP UC, 2025) · Estudio de estrés financiero, campaña Chile al Día (2025) · Informe de Endeudamiento CMF (2025).</p>
     </div>
   </section>
 
@@ -623,39 +626,39 @@
   <section class="features" id="features" aria-label="Funciones">
     <div class="wrap">
       <div class="features-head">
-        <span class="eyebrow">Todo en un solo lugar</span>
-        <h2>Lo que necesitas, nada de lo que sobra</h2>
+        <span class="eyebrow">Qué resuelve</span>
+        <h2>Diseñada para los hábitos que, según los datos, más cuesta sostener</h2>
       </div>
       <div class="features-grid">
         <div class="feature-card">
           <span class="feature-icon" style="background:#ff5c00">▤</span>
-          <h3>Gastos e ingresos por categoría</h3>
-          <p>Cada movimiento con su categoría — y las categorías son tuyas: renómbralas, cámbiales el color y el ícono, crea las que te falten.</p>
+          <h3>Registro sin fricción</h3>
+          <p>Un movimiento toma segundos: monto, categoría, listo. Las categorías son tuyas — renómbralas, cambia color e ícono, crea las que falten. El hábito se sostiene porque no estorba.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon" style="background:#0057ff">◎</span>
           <h3>Presupuesto con ritmo de gasto</h3>
-          <p>Define cuánto gastar al mes, en total o por categoría, y Mesura te dice si vas sobre o bajo tu ritmo esperado — antes de que sea tarde.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon" style="background:#e63322">⇄</span>
-          <h3>Deudas compartidas</h3>
-          <p>Divide una cuenta entre varios y lleva el saldo por persona, con abonos parciales y liquidación. Se acabó el "después te pago".</p>
+          <p>Define cuánto gastar al mes, en total o por categoría. Mesura compara tu gasto real con el esperado a la fecha y te avisa si vas por sobre el ritmo — antes de fin de mes, no después.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon" style="background:#22c55e">◈</span>
-          <h3>Metas de ahorro</h3>
-          <p>Fija un objetivo, registra aportes cuando puedas y mira la barra avanzar. El ahorro vive aparte del gasto del mes — sin mezclar números.</p>
+          <h3>Metas de ahorro medibles</h3>
+          <p>Define un objetivo, registra aportes cuando puedas y observa el progreso. El ahorro vive separado del gasto mensual, sin mezclar cifras.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#e63322">⇄</span>
+          <h3>Deudas y gastos compartidos</h3>
+          <p>Divide una cuenta entre varias personas y lleva el saldo por contraparte, con abonos parciales y liquidación. Queda registrado quién debe qué, y cuánto.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon" style="background:#6747ff">▦</span>
           <h3>Calendario y resumen semanal</h3>
-          <p>Tus movimientos día por día en un calendario, y cada lunes un resumen por correo. Con análisis de IA solo si tú lo activas.</p>
+          <p>Tus movimientos día por día en un calendario, y cada lunes un resumen por correo. Con análisis de IA únicamente si tú lo activas.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon" style="background:#f59e0b">✦</span>
           <h3>Favoritos y pagos recurrentes</h3>
-          <p>El café de siempre, en un toque. El arriendo y las cuentas del mes, avisados a tiempo para registrarlos sin pensar.</p>
+          <p>Tus gastos habituales quedan a un toque, y los pagos del mes — arriendo, cuentas, suscripciones — se anuncian a tiempo para registrarlos sin esfuerzo.</p>
         </div>
       </div>
     </div>
@@ -711,18 +714,18 @@
       <div class="how-steps">
         <div class="how-step">
           <div class="step-no" aria-hidden="true">1</div>
-          <h3>Regístrate</h3>
-          <p>Correo y contraseña, nada más. Sin tarjeta, sin período de prueba que se convierte en cobro.</p>
+          <h3>Crea tu cuenta</h3>
+          <p>Con tu invitación, solo necesitas correo y contraseña. Sin tarjeta y sin período de prueba que se convierta en cobro.</p>
         </div>
         <div class="how-step">
           <div class="step-no" aria-hidden="true">2</div>
-          <h3>Agrega tus movimientos</h3>
+          <h3>Registra tus movimientos</h3>
           <p>Gastos e ingresos a medida que ocurren, desde el celular o el computador. Menos de cinco segundos cada uno.</p>
         </div>
         <div class="how-step">
           <div class="step-no" aria-hidden="true">3</div>
-          <h3>Ve tus finanzas</h3>
-          <p>Presupuesto, categorías, deudas y metas siempre al día — y el lunes, tu resumen de la semana en el correo.</p>
+          <h3>Toma decisiones con claridad</h3>
+          <p>Presupuesto, categorías, deudas y metas siempre al día — y cada lunes, el resumen de tu semana en el correo.</p>
         </div>
       </div>
     </div>
@@ -737,8 +740,12 @@
       </div>
       <div class="faq-list">
         <details class="faq-item">
-          <summary>¿Es gratis de verdad? ¿Cuál es el truco?<span class="faq-chevron" aria-hidden="true">›</span></summary>
-          <div>No hay truco. Mesura nació como proyecto personal y corre sobre infraestructura que cuesta casi nada de mantener. No hay plan pagado escondido, no hay publicidad y no se venden datos — por eso tampoco hay apuro en crecer.</div>
+          <summary>¿Es gratis de verdad? ¿Cuál es el modelo?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Sí, es gratis. Mesura opera sobre infraestructura de costo mínimo y no tiene plan pagado escondido, publicidad ni venta de datos. Su modelo es crecer con calma, por invitación, manteniendo el servicio estable para quienes ya lo usan.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿En qué se diferencia de otras apps de finanzas?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Las apps globales de registro de gastos suelen poner las funciones clave detrás de un plan premium, mostrar publicidad o venir a medias en español; las billeteras digitales locales resuelven pagos, no control, y solo ven lo que pasa por su propia tarjeta. Mesura junta en un solo lugar registro, presupuesto, gastos compartidos y metas — en pesos chilenos, en español y sin publicidad.</div>
         </details>
         <details class="faq-item">
           <summary>¿Por qué necesito una invitación?<span class="faq-chevron" aria-hidden="true">›</span></summary>
@@ -757,17 +764,17 @@
   </section>
 
   <!-- CTA FINAL -->
-  <section class="cta" aria-label="Empieza ahora">
+  <section class="cta" id="unete" aria-label="Solicita tu invitación">
     <div class="wrap">
       <div class="cta-box">
-        <h2>Empieza gratis hoy</h2>
-        <p>Deja tu correo y te avisamos apenas tengamos un cupo disponible para tu invitación a Mesura.</p>
+        <h2>Solicita tu invitación</h2>
+        <p>Mesura crece por invitación para mantener el servicio rápido y estable. Deja tu correo y te contactaremos apenas se abra un cupo — sin costo y sin compromiso.</p>
         <form class="cta-form" id="waitlist-form">
           <label for="waitlist-email" style="position:absolute;left:-9999px;">Correo electrónico</label>
           <input id="waitlist-email" type="email" name="email" placeholder="tu@correo.com" required>
           <!-- Honeypot anti-bots: invisible para personas, los bots lo rellenan. -->
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-          <button type="submit" class="btn btn-primary">Quiero mi acceso</button>
+          <button type="submit" class="btn btn-primary">Solicitar invitación</button>
         </form>
         <p class="cta-success" id="waitlist-success">Listo. Te escribiremos apenas se abra un cupo.</p>
         <p class="cta-error" id="waitlist-error" hidden>No pudimos guardar tu correo. Inténtalo de nuevo en un momento.</p>
@@ -789,7 +796,7 @@
       <a href="https://mesura.mrifo2808.workers.dev/privacidad">Privacidad</a>
       <a href="https://mesura.mrifo2808.workers.dev/login">Iniciar sesión</a>
     </nav>
-    <p class="footer-copy">© 2026 Mesura · Hecha a mano en Chile · Sin inversionistas ni venta de datos.</p>
+    <p class="footer-copy">© 2026 Mesura · Desarrollada en Chile · Sin publicidad ni venta de datos.</p>
   </div>
 </footer>
 

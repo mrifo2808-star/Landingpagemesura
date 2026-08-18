@@ -80,11 +80,48 @@ No llegan a un buzón: quedan guardados en ese KV namespace, uno por correo
 - **Terminal**: `npx wrangler kv key list --namespace-id=<id>` (el id aparece en el
   dashboard junto al namespace).
 
-Si más adelante quieres recibir un aviso por correo con cada inscripción, el camino
-natural es que la Function llame también al Google Apps Script de Mesura (que ya
-sabe enviar correos con `MailApp`) — requiere agregarle una acción nueva al `.gs` y
-configurar `GOOGLE_SCRIPT_URL`/`GOOGLE_SYNC_SECRET` como variables del proyecto de
-Pages. No está implementado aún.
+## Notificación de solicitudes + invitación con un clic
+
+Además de guardarse en KV, cada correo **nuevo** puede disparar un aviso a tu
+Gmail con un botón "Aprobar y enviar invitación": al hacer clic, el solicitante
+recibe automáticamente un correo HTML con el código de invitación y el enlace a
+`/signup`. El flujo completo:
+
+```
+visitante deja su correo → KV (siempre) → Apps Script → aviso a tu Gmail
+                                              ↓ (clic en "Aprobar")
+                              correo HTML de invitación al solicitante
+```
+
+Implementado en `google-apps-script/MesuraWaitlist.gs` (proyecto de Apps Script
+**separado** del Mesura.gs principal, para no tocar sus versiones). La
+aprobación usa enlaces firmados con HMAC que vencen a los 30 días; rechazar es
+simplemente ignorar el aviso. Reinscribirse no genera avisos duplicados.
+
+**Puesta en marcha (una vez, ~5 minutos):**
+
+1. En [script.google.com](https://script.google.com) (con la cuenta
+   mrifo2808@gmail.com): **Nuevo proyecto** → pegar el contenido completo de
+   `google-apps-script/MesuraWaitlist.gs`.
+2. En ⚙ Configuración del proyecto → **Propiedades del script**, crear:
+   - `SECRET`: un secreto largo inventado (se repetirá en el paso 5).
+   - `NOTIFY_EMAIL`: el correo donde quieres recibir las solicitudes.
+   - `INVITE_CODE`: el código que irá en el correo de invitación (p. ej. el
+     `SIGNUP_CODE` global de Mesura).
+   - `APP_URL`: `https://mesura.mrifo2808.workers.dev`.
+3. Ejecutar una vez `autorizarCorreo()` desde el editor (▶ Run) para conceder
+   el permiso de Gmail — llega un correo de confirmación.
+4. **Implementar → Nueva implementación → Aplicación web** → Ejecutar como
+   **yo**, acceso: **cualquier persona** → copiar la URL `/exec`.
+5. Conectar la landing con el script:
+   ```bash
+   npx wrangler pages secret put NOTIFY_SECRET --project-name=mesura-landing   # el mismo SECRET del paso 2
+   ```
+   y en el dashboard del proyecto de Pages (Settings → Variables) agregar la
+   variable `NOTIFY_WEBHOOK_URL` con la URL `/exec` del paso 4. Redeploy.
+
+Sin estos pasos todo lo demás sigue funcionando: los correos quedan en KV y
+simplemente no llega el aviso.
 
 ## Dominio propio (opcional)
 
