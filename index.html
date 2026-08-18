@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesura — Finanzas personales sin ruido</title>
+<meta name="description" content="Registra un gasto en dos toques y ve al instante cuánto te queda del mes. Presupuestos, deudas compartidas y metas de ahorro — sin planillas, sin venta de datos.">
+<meta property="og:title" content="Mesura — Finanzas personales sin ruido">
+<meta property="og:description" content="Registra un gasto en dos toques y ve al instante cuánto te queda del mes. Sin planillas, sin venta de datos.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#dfff42" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17140f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23dfff42'/%3E%3Ctext x='50' y='68' font-family='Arial,sans-serif' font-weight='900' font-size='58' text-anchor='middle' fill='%23111111'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Tokens copiados del design system real de la app (app/globals.css).
+     El modo oscuro usa la paleta "Mesura Dark Soft" tal cual — la landing y la
+     app deben sentirse como el mismo objeto. */
+  :root {
+    --ink: #111111;
+    --paper: #f4f0e8;
+    --white: #fffdf8;
+    --muted: #6a675f;
+    --acid: #dfff42;
+    --orange: #ff5c00;
+    --blue: #0057ff;
+    --red: #e63322;
+    --green: #22c55e;
+    --page-bg: #ded9cf;
+    --grid-line: rgba(17, 17, 17, .07);
+    --shadow: #111111;
+    /* Texto sobre rellenos de brillo fijo (--acid): nunca cambia entre temas. */
+    --accent-ink: #111111;
+    --chip: #111111;
+    --chip-text: #fffdf8;
+    --sans: "Geist", Arial, Helvetica, sans-serif;
+    --mono: "Geist Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2efe4;
+      --paper: #2b2820;
+      --white: #332f25;
+      --muted: #a39d8c;
+      --blue: #6ea8ff;
+      --red: #ff6b56;
+      --page-bg: #221f19;
+      --grid-line: rgba(242, 239, 228, .05);
+      --shadow: #0d0c09;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      var(--page-bg);
+    background-size: 24px 24px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  img, svg { max-width: 100%; display: block; }
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  .wrap { width: min(100% - 40px, 1180px); margin-inline: auto; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 40;
+    background: var(--page-bg);
+    border-bottom: 3px solid var(--ink);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .brand-mark {
+    width: 34px; height: 34px; display: grid; place-items: center;
+    background: var(--acid); border: 2px solid var(--ink);
+    font-weight: 900; font-size: 17px; color: var(--accent-ink);
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .brand-word { font-size: 20px; font-weight: 950; letter-spacing: -.04em; }
+  .nav-links { display: none; align-items: center; gap: 26px; font-size: 13px; font-weight: 700; }
+  .nav-links a { text-decoration: none; opacity: .8; }
+  .nav-links a:hover { opacity: 1; text-decoration: underline; }
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px; border: 2px solid var(--ink); background: var(--chip); color: var(--chip-text);
+    font-size: 12px; font-weight: 800; text-decoration: none; white-space: nowrap;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .nav-cta:active { transform: translate(3px, 3px); box-shadow: none; }
+  @media (min-width: 860px) { .nav-links { display: flex; } }
+
+  /* ---------- Botones ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 15px 26px; border: 3px solid var(--ink); border-radius: 0;
+    font-size: 14px; font-weight: 900; text-decoration: none; letter-spacing: -.01em;
+    box-shadow: 5px 5px 0 var(--shadow); transition: transform .08s ease;
+  }
+  .btn:active { transform: translate(4px, 4px); box-shadow: none; }
+  .btn-primary { background: var(--acid); color: var(--accent-ink); }
+  .btn-ghost { background: var(--white); color: var(--ink); }
+
+  section { position: relative; }
+  .eyebrow {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 800;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--orange);
+    margin-bottom: 12px;
+  }
+  h1, h2, h3 { letter-spacing: -.03em; font-weight: 900; line-height: 1.05; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 56px 0 64px; }
+  .hero-grid { display: grid; gap: 48px; align-items: center; grid-template-columns: 1fr; }
+  @media (min-width: 940px) { .hero-grid { grid-template-columns: 1.05fr .95fr; gap: 40px; } }
+  .hero h1 { font-size: clamp(34px, 6vw, 58px); }
+  .hero h1 .hl {
+    background: var(--acid); color: var(--accent-ink); padding: 0 8px;
+    box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  }
+  .hero p.lead { margin-top: 18px; font-size: 17px; color: var(--muted); max-width: 46ch; line-height: 1.6; }
+  .hero-ctas { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .invite-note { margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .invite-note b { color: var(--ink); }
+
+  .hero-stats { margin-top: 34px; display: flex; gap: 28px; flex-wrap: wrap; }
+  .hero-stat strong { display: block; font-size: 24px; font-weight: 950; }
+  .hero-stat span { display: block; margin-top: 2px; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .04em; }
+
+  /* ---------- Teléfono demo ---------- */
+  .phone-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  /* El wrapper existe para que el sticker pueda colgar fuera del marco sin que
+     el overflow:hidden del teléfono lo recorte. */
+  .phone-wrap { position: relative; width: min(100%, 330px); }
+  .phone {
+    position: relative;
+    width: 100%;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 26px;
+    box-shadow: 12px 12px 0 var(--shadow);
+    overflow: hidden;
+  }
+  .phone-sticker {
+    position: absolute; top: 14px; right: -10px; z-index: 6;
+    transform: rotate(6deg);
+    padding: 6px 12px; background: var(--orange); color: #fff;
+    border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--shadow);
+    font-family: var(--mono); font-size: 10px; font-weight: 800; letter-spacing: .08em;
+    pointer-events: none;
+  }
+  .phone-caption { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: .04em; text-align: center; }
+  .phone-hero { padding: 18px 18px 16px; background: var(--acid); color: var(--accent-ink); border-bottom: 3px solid var(--ink); }
+  .phone-topbar { display: flex; align-items: center; justify-content: space-between; }
+  .phone-brand { font-size: 15px; font-weight: 950; letter-spacing: -.05em; }
+  .phone button { touch-action: manipulation; }
+  .phone-pill { font-family: var(--mono); font-size: 7px; font-weight: 800; padding: 5px 6px; border: 0; background: var(--chip); color: var(--chip-text); }
+  .phone-greeting { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 0; border: 0; background: none; text-align: left; width: 100%; }
+  .phone-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--orange); border: 2px solid var(--ink); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 12px; }
+  .phone-greeting p { font-size: 11px; font-weight: 850; }
+  .phone-greeting span { display: block; font-family: var(--mono); font-size: 8px; color: #35352f; margin-top: 1px; }
+  .phone-balance { margin: 14px 0 12px; }
+  .phone-balance p { font-size: 9px; font-weight: 750; }
+  .phone-balance h3 { font-size: 34px; font-weight: 950; letter-spacing: -.05em; margin: 2px 0; }
+  .phone-balance h3.negative { color: var(--red); }
+  .phone-balance small { font-family: var(--mono); font-size: 7px; }
+  .phone-quick { display: flex; gap: 6px; }
+  .phone-quick button { flex: 1; display: grid; grid-template-columns: 20px 1fr; align-items: center; gap: 4px; padding: 6px; border: 2px solid var(--ink); background: var(--white); color: var(--ink); box-shadow: 2px 2px 0 var(--shadow); }
+  .phone-quick button:active { transform: translate(2px, 2px); box-shadow: none; }
+  .phone-quick b { width: 20px; height: 20px; display: grid; place-items: center; background: var(--chip); color: var(--chip-text); font-size: 11px; }
+  .phone-quick button:first-child b { background: var(--orange); color: #fff; }
+  .phone-quick span { font-size: 6.5px; font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .phone-body { padding: 14px 16px 84px; background: var(--paper); }
+  .phone-card { background: var(--white); border: 2px solid var(--ink); padding: 11px; box-shadow: 3px 3px 0 var(--shadow); }
+  .phone-card-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .phone-card-head > div > span { font-family: var(--mono); font-size: 6.5px; font-weight: 800; color: var(--orange); }
+  .phone-card-head h4 { font-size: 15px; font-weight: 950; margin-top: 2px; }
+  .phone-card-right { text-align: right; }
+  .phone-card-right span { color: var(--muted); font-size: 6.5px; font-weight: 800; }
+  .phone-card-right strong { display: block; font-size: 10px; }
+  .phone-card-right strong.negative { color: var(--red); }
+  .phone-track { height: 9px; margin-top: 10px; background: var(--paper); border: 2px solid var(--ink); overflow: hidden; }
+  .phone-track div { height: 100%; background: var(--orange); border-right: 2px solid var(--ink); transition: width .35s ease; }
+  .phone-track div.over { background: var(--red); }
+  .phone-track-copy { display: flex; justify-content: space-between; margin-top: 5px; font-family: var(--mono); font-size: 6.5px; color: var(--muted); }
+  .phone-section-title { display: flex; justify-content: space-between; align-items: baseline; margin: 16px 0 8px; }
+  .phone-section-title p { font-family: var(--mono); font-size: 6.5px; font-weight: 800; color: var(--orange); }
+  .phone-section-title h4 { font-size: 13px; font-weight: 900; }
+  .phone-cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .phone-cat { background: var(--white); color: var(--ink); border: 2px solid var(--ink); padding: 6px 5px; box-shadow: 2px 2px 0 var(--shadow); text-align: left; }
+  .phone-cat:active { transform: translate(2px, 2px); box-shadow: none; }
+  .phone-cat-icon { width: 20px; height: 20px; display: grid; place-items: center; color: #fff; font-size: 9px; font-weight: 900; border: 1px solid var(--ink); margin-bottom: 6px; }
+  .phone-cat strong { display: block; font-size: 7.5px; }
+  .phone-cat p { color: var(--muted); font-size: 6px; margin-top: 1px; }
+  .phone-nav {
+    position: absolute; left: 12px; right: 12px; bottom: 12px; height: 52px; z-index: 4;
+    background: var(--white); border: 2px solid var(--ink);
+    display: grid; grid-template-columns: repeat(4, 1fr); align-items: stretch;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .phone-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; border: 0; background: none; font-size: 10px; color: var(--muted); }
+  .phone-nav button.active { color: var(--accent-ink); background: var(--acid); border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); }
+  .phone-nav button span:last-child { font-size: 5.5px; font-weight: 800; }
+  .phone-fab {
+    position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); z-index: 5;
+    width: 42px; height: 42px; border-radius: 0; background: var(--orange); border: 3px solid var(--ink);
+    color: #fff; display: grid; place-items: center; font-size: 20px; box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .phone-fab:active { transform: translate(calc(-50% + 3px), 3px); box-shadow: none; }
+  /* Pulso del FAB: guía la vista hacia el único botón "principal" de la demo.
+     Se apaga la primera vez que se abre el sheet y vuelve si el visitante toca
+     una zona que en la app real navegaría a otra pantalla. */
+  .phone-fab.pulse { animation: fabPulse 1.5s ease-in-out infinite; }
+  @keyframes fabPulse {
+    0%, 100% { box-shadow: 3px 3px 0 var(--shadow); transform: translateX(-50%); }
+    50% { box-shadow: 7px 7px 0 var(--shadow); transform: translate(calc(-50% - 4px), -4px); }
+  }
+
+  /* Sheet de la demo — mismo patrón que .expense-sheet de la app: sube desde
+     abajo dentro del marco del teléfono, con backdrop oscuro. */
+  .demo-layer { position: absolute; inset: 0; z-index: 10; display: flex; align-items: flex-end; }
+  .demo-layer[hidden] { display: none; }
+  .demo-backdrop { position: absolute; inset: 0; width: 100%; border: 0; background: rgba(17,17,17,.67); }
+  .demo-panel {
+    position: relative; z-index: 1; width: 100%; max-height: 92%; overflow-y: auto;
+    padding: 10px 16px 16px; background: var(--paper); border-top: 3px solid var(--ink);
+    animation: sheetUp .25s cubic-bezier(.2,.8,.2,1);
+  }
+  .demo-handle { width: 40px; height: 5px; margin: 0 auto 12px; background: var(--ink); }
+  .demo-sheet-head { display: flex; align-items: center; justify-content: space-between; }
+  .demo-sheet-head p { color: var(--orange); font-family: var(--mono); font-size: 7px; font-weight: 850; letter-spacing: .1em; margin-bottom: 3px; }
+  .demo-sheet-head h4 { font-size: 15px; font-weight: 950; }
+  .demo-close { width: 28px; height: 28px; border: 2px solid var(--ink); background: var(--white); font-size: 14px; font-weight: 900; }
+  .demo-amount { margin-top: 12px; text-align: center; }
+  .demo-amount > span { color: var(--muted); font-size: 8px; font-weight: 800; }
+  .demo-amount-line { display: flex; align-items: center; justify-content: center; gap: 2px; margin-top: 2px; }
+  .demo-amount-line b { font-size: 19px; font-weight: 950; }
+  .demo-amount-line output { font-size: 30px; font-weight: 950; letter-spacing: -.05em; min-width: 60px; }
+  .demo-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 10px; }
+  .demo-keys button { width: 52px; height: 30px; border: 2px solid var(--ink); background: var(--white); font-size: 13px; font-weight: 800; }
+  .demo-keys button:active { background: var(--acid); color: var(--accent-ink); }
+  .demo-cats { margin-top: 12px; }
+  .demo-cats > span { color: var(--muted); font-size: 8px; font-weight: 800; }
+  .demo-cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 6px; }
+  .demo-cat-grid button { display: flex; align-items: center; gap: 6px; padding: 6px; border: 2px solid var(--ink); background: var(--white); color: var(--muted); font-size: 8px; font-weight: 750; }
+  .demo-cat-grid button span { width: 20px; height: 20px; display: grid; place-items: center; color: #fff; border: 1px solid var(--ink); font-size: 10px; }
+  .demo-cat-grid button.selected { background: var(--acid); color: var(--accent-ink); box-shadow: 2px 2px 0 var(--shadow); }
+  .demo-save {
+    display: block; width: 100%; margin-top: 14px; padding: 11px;
+    border: 2px solid var(--ink); background: var(--chip); color: var(--chip-text);
+    font-size: 10px; font-weight: 900; box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .demo-save:active { transform: translate(3px, 3px); box-shadow: none; }
+  .demo-toast {
+    position: absolute; left: 14px; right: 14px; top: 14px; z-index: 12;
+    padding: 9px 11px; background: var(--blue); color: #fff; border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow);
+    font-family: var(--mono); font-size: 8px; font-weight: 750;
+    animation: rise .2s ease;
+  }
+  .demo-toast[hidden] { display: none; }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Ticker ---------- */
+  .ticker { border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); background: var(--white); overflow: hidden; }
+  .ticker-track { display: flex; gap: 0; width: max-content; animation: ticker 36s linear infinite; }
+  .ticker-track:hover { animation-play-state: paused; }
+  .ticker-group { display: flex; align-items: center; gap: 34px; padding: 11px 17px; white-space: nowrap; }
+  .ticker-item { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--muted); }
+  .ticker-item b { color: var(--ink); font-weight: 800; }
+  .ticker-item .neg { color: var(--orange); }
+  .ticker-item .pos { color: var(--blue); }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ---------- Problema ---------- */
+  .problem { padding: 64px 0; }
+  .problem-head { max-width: 60ch; }
+  .problem-head h2 { font-size: clamp(26px, 4.5vw, 38px); }
+  .problem-grid { margin-top: 34px; display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .problem-grid { grid-template-columns: repeat(3, 1fr); } }
+  .problem-card { background: var(--white); border: 2px solid var(--ink); padding: 22px 20px; box-shadow: 5px 5px 0 var(--shadow); }
+  .problem-card .num { font-family: var(--mono); font-size: 11px; font-weight: 800; color: var(--red); }
+  .problem-card p { margin-top: 10px; font-size: 15px; font-weight: 650; line-height: 1.5; }
+
+  /* ---------- Features ---------- */
+  .features { padding: 64px 0; }
+  .features-head { max-width: 60ch; }
+  .features-head h2 { font-size: clamp(26px, 4.5vw, 38px); }
+  .features-grid { margin-top: 34px; display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+  .feature-card {
+    background: var(--white); border: 2px solid var(--ink); padding: 22px;
+    box-shadow: 5px 5px 0 var(--shadow); display: flex; flex-direction: column; gap: 12px;
+  }
+  .feature-icon { width: 42px; height: 42px; display: grid; place-items: center; border: 2px solid var(--ink); color: #fff; font-size: 18px; font-weight: 900; }
+  .feature-card h3 { font-size: 17px; }
+  .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+
+  /* ---------- Tus datos ---------- */
+  .data-section { padding: 64px 0; }
+  .data-box {
+    background: var(--acid); color: var(--accent-ink); border: 3px solid var(--ink);
+    box-shadow: 9px 9px 0 var(--shadow); padding: 40px 28px;
+  }
+  .data-box .eyebrow { color: var(--accent-ink); opacity: .65; }
+  .data-box h2 { font-size: clamp(26px, 4.5vw, 38px); color: var(--accent-ink); max-width: 24ch; }
+  .data-grid { margin-top: 30px; display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .data-grid { grid-template-columns: repeat(2, 1fr); } }
+  .data-item { display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: rgba(255,255,255,.42); border: 2px solid var(--ink); }
+  @media (prefers-color-scheme: dark) { .data-item { background: rgba(255,255,255,.28); } }
+  .data-check { flex: 0 0 auto; width: 26px; height: 26px; display: grid; place-items: center; background: #111111; color: #dfff42; border: 2px solid #111111; font-size: 13px; font-weight: 900; }
+  .data-item strong { display: block; font-size: 14.5px; font-weight: 900; letter-spacing: -.01em; }
+  .data-item p { margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: #111111; opacity: .78; }
+
+  /* ---------- Cómo funciona ---------- */
+  .how { padding: 64px 0; }
+  .how-head h2 { font-size: clamp(26px, 4.5vw, 38px); max-width: 40ch; }
+  .how-steps { margin-top: 40px; display: grid; gap: 24px; grid-template-columns: 1fr; }
+  @media (min-width: 820px) { .how-steps { grid-template-columns: repeat(3, 1fr); } }
+  .how-step { position: relative; padding: 24px 20px 20px; background: var(--white); border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--shadow); }
+  .how-step .step-no {
+    position: absolute; top: -18px; left: 20px; width: 36px; height: 36px; border-radius: 50%;
+    background: var(--acid); color: var(--accent-ink); border: 3px solid var(--ink); display: grid; place-items: center;
+    font-weight: 950; font-size: 15px;
+  }
+  .how-step h3 { margin-top: 12px; font-size: 17px; }
+  .how-step p { margin-top: 8px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+
+  /* ---------- FAQ (mismo patrón <details> que usa la app en Perfil) ---------- */
+  .faq { padding: 64px 0; }
+  .faq-head h2 { font-size: clamp(26px, 4.5vw, 38px); }
+  .faq-list { margin-top: 30px; display: grid; gap: 12px; max-width: 780px; }
+  .faq-item { background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--shadow); }
+  .faq-item summary {
+    list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 18px; cursor: pointer; font-size: 15px; font-weight: 850; letter-spacing: -.01em;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-chevron { flex: 0 0 auto; font-size: 13px; color: var(--muted); transition: transform .15s ease; }
+  .faq-item[open] .faq-chevron { transform: rotate(90deg); }
+  .faq-item[open] summary { border-bottom: 2px solid var(--ink); }
+  .faq-item div { padding: 14px 18px 16px; font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+  /* ---------- CTA ---------- */
+  .cta { padding: 70px 0; }
+  .cta-box {
+    /* Siempre negro tinta, en ambos temas — es el bloque de contraste de la página. */
+    background: #111111; color: #fffdf8; border: 3px solid #111111;
+    padding: 48px 32px; text-align: center; box-shadow: 9px 9px 0 var(--orange);
+    background-image: linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .cta-box h2 { font-size: clamp(26px, 5vw, 40px); color: #fffdf8; }
+  .cta-box p { margin-top: 12px; color: #cfcdc4; font-size: 15px; max-width: 50ch; margin-inline: auto; }
+  .cta-form { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 480px; margin-inline: auto; }
+  .cta-form input[type="email"] {
+    flex: 1 1 240px; padding: 15px 16px; border: 2px solid #111111; font-size: 14px;
+    background: #fffdf8; color: #111111; outline: none; font-family: inherit;
+  }
+  .cta-form input[type="email"]:focus { outline: 3px solid var(--acid); outline-offset: 1px; }
+  .cta-form .btn { border-color: #111111; box-shadow: 5px 5px 0 #000; }
+  .cta-note { margin-top: 14px; font-family: var(--mono); font-size: 10.5px; color: #9a988f; }
+  .cta-success { display: none; margin-top: 20px; padding: 12px 16px; background: var(--acid); color: #111111; border: 2px solid var(--acid); font-weight: 800; font-size: 13px; }
+  .cta-success.show { display: inline-block; }
+  .cta-error { margin-top: 16px; color: #ff6b56; font-size: 13px; font-weight: 750; }
+  .cta-error[hidden] { display: none; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 3px solid var(--ink); padding: 36px 0; }
+  .footer-inner { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+  .footer-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 15px; }
+  .footer-links { display: flex; gap: 22px; flex-wrap: wrap; font-size: 12.5px; font-weight: 700; }
+  .footer-links a { text-decoration: none; opacity: .75; }
+  .footer-links a:hover { opacity: 1; text-decoration: underline; }
+  .footer-copy { width: 100%; margin-top: 18px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+
+  ::selection { background: var(--acid); color: #111111; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .ticker-track { animation: none; }
+    .demo-panel, .demo-toast { animation: none; }
+    .phone-fab.pulse { animation: none; }
+    .phone-track div { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Mesura, inicio">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-word">MESURA</span>
+    </a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#problema">Por qué</a>
+      <a href="#features">Funciones</a>
+      <a href="#tus-datos">Tus datos</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+    <a class="nav-cta" href="https://mesura.mrifo2808.workers.dev/signup">Empieza gratis</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Presentación">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Finanzas personales</span>
+        <h1>Tu plata, <span class="hl">sin ruido</span> ni planillas.</h1>
+        <p class="lead">
+          Registra un gasto en dos toques y ve al instante cuánto te queda del
+          mes, en qué se te fue y quién te debe. Sin Excel, sin letra chica —
+          y el teléfono de al lado no es una foto: pruébalo.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://mesura.mrifo2808.workers.dev/signup">Empieza gratis →</a>
+          <a class="btn btn-ghost" href="#features">Ver funciones</a>
+        </div>
+        <p class="invite-note"><b>Acceso por invitación</b> · cupos limitados mientras Mesura crece</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <strong>&lt; 5 seg</strong>
+            <span>POR MOVIMIENTO</span>
+          </div>
+          <div class="hero-stat">
+            <strong>$0</strong>
+            <span>SIN TARJETA NI PLANES</span>
+          </div>
+          <div class="hero-stat">
+            <strong>1 correo</strong>
+            <span>RESUMEN SEMANAL, SI QUIERES</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-stage">
+        <div class="phone-wrap">
+        <span class="phone-sticker" aria-hidden="true">DEMO REAL — TÓCAME</span>
+        <div class="phone" id="demo-phone">
+          <div class="phone-hero">
+            <div class="phone-topbar">
+              <span class="phone-brand">MESURA</span>
+              <button type="button" class="phone-pill" data-hint="En la app real esto sincroniza tu respaldo a Google Drive. Aquí no hay nada que respaldar todavía.">● SINCRONIZADO</button>
+            </div>
+            <button type="button" class="phone-greeting" data-hint="El perfil vive en la app real. En la demo, registra un gasto con el botón ＋ naranjo.">
+              <span class="phone-avatar" aria-hidden="true">C</span>
+              <div>
+                <p>Hola, Camila</p>
+                <span>Martes 18 de agosto</span>
+              </div>
+            </button>
+            <div class="phone-balance">
+              <p>Disponible este mes</p>
+              <h3 id="demo-balance">$342.500</h3>
+              <small>Presupuesto del mes menos gastos</small>
+            </div>
+            <div class="phone-quick">
+              <button type="button" data-demo-open><b aria-hidden="true">＋</b><span>Gasto</span></button>
+              <button type="button" data-hint="Los presupuestos completos están en la app real. Aquí, prueba registrar un gasto con ＋."><b aria-hidden="true">◎</b><span>Presup.</span></button>
+              <button type="button" data-hint="El historial de movimientos está en la app real. Aquí, registra uno con ＋."><b aria-hidden="true">↗</b><span>Movim.</span></button>
+              <button type="button" data-hint="El calendario de gastos está en la app real. Aquí, registra un gasto con ＋."><b aria-hidden="true">▦</b><span>Calend.</span></button>
+            </div>
+          </div>
+          <div class="phone-body">
+            <div class="phone-card">
+              <div class="phone-card-head">
+                <div>
+                  <span>GASTOS DE AGOSTO</span>
+                  <h4 id="demo-spent">$257.500</h4>
+                </div>
+                <div class="phone-card-right">
+                  <span id="demo-left-label">Te quedan</span>
+                  <strong id="demo-left">$342.500</strong>
+                </div>
+              </div>
+              <div class="phone-track"><div id="demo-bar" style="width:43%"></div></div>
+              <div class="phone-track-copy"><span id="demo-pct">43% usado</span><span>Presupuesto $600.000</span></div>
+            </div>
+
+            <div class="phone-section-title">
+              <div><p>EN QUÉ SE FUE</p><h4>Tus categorías</h4></div>
+            </div>
+            <div class="phone-cat-grid">
+              <button type="button" class="phone-cat" data-democat="supermercado" aria-label="Registrar un gasto en Supermercado"><span class="phone-cat-icon" aria-hidden="true" style="background:#ff5c00">▤</span><strong data-cat-amount="supermercado">$98.400</strong><p>Súper</p></button>
+              <button type="button" class="phone-cat" data-democat="transporte" aria-label="Registrar un gasto en Transporte"><span class="phone-cat-icon" aria-hidden="true" style="background:#0057ff">◆</span><strong data-cat-amount="transporte">$41.200</strong><p>Transporte</p></button>
+              <button type="button" class="phone-cat" data-democat="ocio" aria-label="Registrar un gasto en Ocio"><span class="phone-cat-icon" aria-hidden="true" style="background:#6747ff">☆</span><strong data-cat-amount="ocio">$36.900</strong><p>Ocio</p></button>
+              <button type="button" class="phone-cat" data-democat="salud" aria-label="Registrar un gasto en Salud"><span class="phone-cat-icon" aria-hidden="true" style="background:#ff3f7f">♡</span><strong data-cat-amount="salud">$21.000</strong><p>Salud</p></button>
+            </div>
+          </div>
+
+          <button type="button" class="phone-fab pulse" data-demo-open aria-label="Registrar un gasto en la demo">＋</button>
+          <div class="phone-nav" aria-label="Navegación de la demo">
+            <button type="button" class="active" data-hint="Ya estás en Inicio — toca el botón ＋ naranjo para registrar un gasto."><span aria-hidden="true">⌂</span><span>Inicio</span></button>
+            <button type="button" data-hint="El historial de movimientos está en la app real. Aquí, registra uno con ＋."><span aria-hidden="true">↗</span><span>Movim.</span></button>
+            <button type="button" data-hint="Los presupuestos completos están en la app real. Aquí, prueba registrar un gasto con ＋."><span aria-hidden="true">◎</span><span>Presup.</span></button>
+            <button type="button" data-hint="El perfil vive en la app real. En la demo, registra un gasto con ＋."><span aria-hidden="true">☺</span><span>Perfil</span></button>
+          </div>
+
+          <div class="demo-toast" id="demo-toast" hidden role="status"></div>
+
+          <div class="demo-layer" id="demo-sheet" hidden>
+            <button type="button" class="demo-backdrop" data-demo-close aria-label="Cerrar"></button>
+            <div class="demo-panel" role="dialog" aria-label="Registrar gasto de prueba">
+              <div class="demo-handle" aria-hidden="true"></div>
+              <div class="demo-sheet-head">
+                <div>
+                  <p>NUEVO MOVIMIENTO</p>
+                  <h4>Registrar gasto</h4>
+                </div>
+                <button type="button" class="demo-close" data-demo-close aria-label="Cerrar">×</button>
+              </div>
+              <div class="demo-amount">
+                <span>MONTO</span>
+                <div class="demo-amount-line"><b>$</b><output id="demo-amount">0</output></div>
+              </div>
+              <div class="demo-keys" id="demo-keys" aria-label="Teclado numérico">
+                <button type="button" data-key="1">1</button>
+                <button type="button" data-key="2">2</button>
+                <button type="button" data-key="3">3</button>
+                <button type="button" data-key="4">4</button>
+                <button type="button" data-key="5">5</button>
+                <button type="button" data-key="6">6</button>
+                <button type="button" data-key="7">7</button>
+                <button type="button" data-key="8">8</button>
+                <button type="button" data-key="9">9</button>
+                <button type="button" data-key="0">0</button>
+                <button type="button" data-key="000">000</button>
+                <button type="button" data-key="back" aria-label="Borrar">⌫</button>
+              </div>
+              <div class="demo-cats">
+                <span>CATEGORÍA</span>
+                <div class="demo-cat-grid" id="demo-cats">
+                  <button type="button" data-cat="supermercado"><span style="background:#ff5c00">▤</span>Supermercado</button>
+                  <button type="button" data-cat="transporte"><span style="background:#0057ff">◆</span>Transporte</button>
+                  <button type="button" data-cat="ocio"><span style="background:#6747ff">☆</span>Ocio</button>
+                  <button type="button" data-cat="salud"><span style="background:#ff3f7f">♡</span>Salud</button>
+                </div>
+              </div>
+              <button type="button" class="demo-save" id="demo-save">Guardar movimiento</button>
+            </div>
+          </div>
+        </div>
+        </div>
+        <p class="phone-caption">La demo corre aquí mismo, en tu navegador. Nada se guarda.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-group">
+        <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
+        <span class="ticker-item"><b>bencina</b> <span class="neg">−$15.000</span></span>
+        <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
+        <span class="ticker-item"><b>café con la Vale</b> <span class="neg">−$4.800</span></span>
+        <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
+        <span class="ticker-item"><b>le pagué a Nico su mitad</b> <span class="neg">−$18.500</span></span>
+        <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
+        <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
+        <span class="ticker-item"><b>freelance</b> <span class="pos">+$120.000</span></span>
+        <span class="ticker-item"><b>completos x2</b> <span class="neg">−$7.000</span></span>
+      </div>
+      <div class="ticker-group">
+        <span class="ticker-item"><b>supermercado</b> <span class="neg">−$42.990</span></span>
+        <span class="ticker-item"><b>bencina</b> <span class="neg">−$15.000</span></span>
+        <span class="ticker-item"><b>sueldo</b> <span class="pos">+$850.000</span></span>
+        <span class="ticker-item"><b>café con la Vale</b> <span class="neg">−$4.800</span></span>
+        <span class="ticker-item"><b>farmacia</b> <span class="neg">−$12.350</span></span>
+        <span class="ticker-item"><b>le pagué a Nico su mitad</b> <span class="neg">−$18.500</span></span>
+        <span class="ticker-item"><b>meta: vacaciones</b> <span class="pos">+$50.000</span></span>
+        <span class="ticker-item"><b>cuenta de la luz</b> <span class="neg">−$28.740</span></span>
+        <span class="ticker-item"><b>freelance</b> <span class="pos">+$120.000</span></span>
+        <span class="ticker-item"><b>completos x2</b> <span class="neg">−$7.000</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEMA -->
+  <section class="problem" id="problema" aria-label="El problema">
+    <div class="wrap">
+      <div class="problem-head">
+        <span class="eyebrow">El problema real</span>
+        <h2>¿Sabes en qué se va tu plata?</h2>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <span class="num">01</span>
+          <p>Llega el 25 y la plata no alcanzó — de nuevo. Y no hay forma de reconstruir en qué se fue.</p>
+        </div>
+        <div class="problem-card">
+          <span class="num">02</span>
+          <p>La planilla de Excel duró dos semanas. Nadie abre una planilla desde el celular en la fila del súper.</p>
+        </div>
+        <div class="problem-card">
+          <span class="num">03</span>
+          <p>"Yo pagué la última vez" — las deudas entre amigos se pierden en el chat y nunca queda claro quién debe qué.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features" aria-label="Funciones">
+    <div class="wrap">
+      <div class="features-head">
+        <span class="eyebrow">Todo en un solo lugar</span>
+        <h2>Lo que necesitas, nada de lo que sobra</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#ff5c00">▤</span>
+          <h3>Gastos e ingresos por categoría</h3>
+          <p>Cada movimiento con su categoría — y las categorías son tuyas: renómbralas, cámbiales el color y el ícono, crea las que te falten.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#0057ff">◎</span>
+          <h3>Presupuesto con ritmo de gasto</h3>
+          <p>Define cuánto gastar al mes, en total o por categoría, y Mesura te dice si vas sobre o bajo tu ritmo esperado — antes de que sea tarde.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#e63322">⇄</span>
+          <h3>Deudas compartidas</h3>
+          <p>Divide una cuenta entre varios y lleva el saldo por persona, con abonos parciales y liquidación. Se acabó el "después te pago".</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#22c55e">◈</span>
+          <h3>Metas de ahorro</h3>
+          <p>Fija un objetivo, registra aportes cuando puedas y mira la barra avanzar. El ahorro vive aparte del gasto del mes — sin mezclar números.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#6747ff">▦</span>
+          <h3>Calendario y resumen semanal</h3>
+          <p>Tus movimientos día por día en un calendario, y cada lunes un resumen por correo. Con análisis de IA solo si tú lo activas.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" style="background:#f59e0b">✦</span>
+          <h3>Favoritos y pagos recurrentes</h3>
+          <p>El café de siempre, en un toque. El arriendo y las cuentas del mes, avisados a tiempo para registrarlos sin pensar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TUS DATOS -->
+  <section class="data-section" id="tus-datos" aria-label="Tus datos">
+    <div class="wrap">
+      <div class="data-box">
+        <span class="eyebrow">Sin letra chica</span>
+        <h2>Tu plata es tuya. Tus datos también.</h2>
+        <div class="data-grid">
+          <div class="data-item">
+            <span class="data-check" aria-hidden="true">✓</span>
+            <div>
+              <strong>Respaldo en Excel, siempre</strong>
+              <p>Descarga todos tus movimientos en un .xlsx cuando quieras. Si un día te vas, te vas con todo.</p>
+            </div>
+          </div>
+          <div class="data-item">
+            <span class="data-check" aria-hidden="true">✓</span>
+            <div>
+              <strong>Copia en tu propio Google Drive</strong>
+              <p>Si lo activas, tu respaldo se sincroniza a una hoja en tu Drive — en tu cuenta de Google, no en la nuestra.</p>
+            </div>
+          </div>
+          <div class="data-item">
+            <span class="data-check" aria-hidden="true">✓</span>
+            <div>
+              <strong>Exporta o elimina todo</strong>
+              <p>Exportación completa de tus datos y eliminación de cuenta definitiva, desde tu perfil, sin pedir permiso ni escribir a soporte.</p>
+            </div>
+          </div>
+          <div class="data-item">
+            <span class="data-check" aria-hidden="true">✓</span>
+            <div>
+              <strong>IA apagada por defecto</strong>
+              <p>El análisis con IA del resumen semanal es opcional y parte desactivado. Nada tuyo pasa por un modelo sin que tú lo enciendas.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="how" id="como-funciona" aria-label="Cómo funciona">
+    <div class="wrap">
+      <div class="how-head">
+        <span class="eyebrow">Simple de verdad</span>
+        <h2>De cero a tu primer resumen en tres pasos</h2>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-no" aria-hidden="true">1</div>
+          <h3>Regístrate</h3>
+          <p>Correo y contraseña, nada más. Sin tarjeta, sin período de prueba que se convierte en cobro.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-no" aria-hidden="true">2</div>
+          <h3>Agrega tus movimientos</h3>
+          <p>Gastos e ingresos a medida que ocurren, desde el celular o el computador. Menos de cinco segundos cada uno.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-no" aria-hidden="true">3</div>
+          <h3>Ve tus finanzas</h3>
+          <p>Presupuesto, categorías, deudas y metas siempre al día — y el lunes, tu resumen de la semana en el correo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq" aria-label="Preguntas frecuentes">
+    <div class="wrap">
+      <div class="faq-head">
+        <span class="eyebrow">Lo que siempre preguntan</span>
+        <h2>Preguntas honestas, respuestas cortas</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>¿Es gratis de verdad? ¿Cuál es el truco?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>No hay truco. Mesura nació como proyecto personal y corre sobre infraestructura que cuesta casi nada de mantener. No hay plan pagado escondido, no hay publicidad y no se venden datos — por eso tampoco hay apuro en crecer.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Por qué necesito una invitación?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Para crecer con calma. Cada cuenta nueva usa base de datos y respaldo reales, y preferimos que la app siga rápida y estable para quienes ya la usan antes que abrir la puerta de golpe. Deja tu correo abajo y te avisamos cuando haya cupo.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Pueden ver mis movimientos?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Cada cuenta ve únicamente sus propios datos. Las contraseñas se guardan con hash (nunca en texto plano), las sesiones expiran, y puedes exportar o eliminar todo lo tuyo desde tu perfil cuando quieras.</div>
+        </details>
+        <details class="faq-item">
+          <summary>¿Sirve en iPhone y Android?<span class="faq-chevron" aria-hidden="true">›</span></summary>
+          <div>Sí. Mesura es una app web instalable: la abres desde el navegador y la agregas a tu pantalla de inicio, y desde ahí se ve y se siente como una app nativa — en iPhone, Android y también en el computador.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta" aria-label="Empieza ahora">
+    <div class="wrap">
+      <div class="cta-box">
+        <h2>Empieza gratis hoy</h2>
+        <p>Deja tu correo y te avisamos apenas tengamos un cupo disponible para tu invitación a Mesura.</p>
+        <form class="cta-form" id="waitlist-form">
+          <label for="waitlist-email" style="position:absolute;left:-9999px;">Correo electrónico</label>
+          <input id="waitlist-email" type="email" name="email" placeholder="tu@correo.com" required>
+          <!-- Honeypot anti-bots: invisible para personas, los bots lo rellenan. -->
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+          <button type="submit" class="btn btn-primary">Quiero mi acceso</button>
+        </form>
+        <p class="cta-success" id="waitlist-success">Listo. Te escribiremos apenas se abra un cupo.</p>
+        <p class="cta-error" id="waitlist-error" hidden>No pudimos guardar tu correo. Inténtalo de nuevo en un momento.</p>
+        <p class="cta-note">Sin spam. Solo te contactamos cuando tengas invitación disponible.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark" aria-hidden="true" style="width:28px;height:28px;font-size:14px;">M</span>
+      MESURA
+    </div>
+    <nav class="footer-links" aria-label="Legal">
+      <a href="https://mesura.mrifo2808.workers.dev/terminos">Términos de uso</a>
+      <a href="https://mesura.mrifo2808.workers.dev/privacidad">Privacidad</a>
+      <a href="https://mesura.mrifo2808.workers.dev/login">Iniciar sesión</a>
+    </nav>
+    <p class="footer-copy">© 2026 Mesura · Hecha a mano en Chile · Sin inversionistas ni venta de datos.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Formulario de espera ----------
+     Envía a la Pages Function /api/waitlist (functions/api/waitlist.js), que
+     guarda el correo en el KV namespace WAITLIST. Si el endpoint falla (por
+     ejemplo sirviendo el HTML sin Functions), se avisa en vez de fingir éxito. */
+  var form = document.getElementById("waitlist-form");
+  var success = document.getElementById("waitlist-success");
+  var errorNote = document.getElementById("waitlist-error");
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = form.querySelector("button[type=submit]");
+      var email = document.getElementById("waitlist-email").value.trim();
+      var honeypot = form.querySelector('input[name="website"]').value;
+      btn.disabled = true;
+      var prevLabel = btn.textContent;
+      btn.textContent = "Enviando…";
+      errorNote.hidden = true;
+      fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, website: honeypot })
+      }).then(function (res) {
+        if (!res.ok) throw new Error("waitlist " + res.status);
+        form.style.display = "none";
+        success.classList.add("show");
+      }).catch(function () {
+        errorNote.hidden = false;
+        btn.disabled = false;
+        btn.textContent = prevLabel;
+      });
+    });
+  }
+
+  /* ---------- Demo interactiva del teléfono ----------
+     Mismos números y comportamiento que la app real: disponible = presupuesto
+     − gastado, la barra pasa a rojo al sobregirar y los montos negativos se
+     muestran, no se esconden. Formato es-CL/CLP idéntico al del proyecto. */
+  var fmt = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+  var numFmt = new Intl.NumberFormat("es-CL");
+
+  var BUDGET = 600000;
+  var state = {
+    spent: 257500,
+    cats: { supermercado: 98400, transporte: 41200, ocio: 36900, salud: 21000 }
+  };
+  var draft = { amount: 0, cat: null };
+
+  var sheet = document.getElementById("demo-sheet");
+  var amountOut = document.getElementById("demo-amount");
+  var toast = document.getElementById("demo-toast");
+  var fab = document.querySelector(".phone-fab");
+  var toastTimer = null;
+
+  function render() {
+    var left = BUDGET - state.spent;
+    var pct = Math.min(100, Math.round((state.spent / BUDGET) * 100));
+    var over = left < 0;
+
+    var balance = document.getElementById("demo-balance");
+    balance.textContent = fmt.format(left);
+    balance.classList.toggle("negative", over);
+
+    document.getElementById("demo-spent").textContent = fmt.format(state.spent);
+
+    var leftEl = document.getElementById("demo-left");
+    leftEl.textContent = fmt.format(left);
+    leftEl.classList.toggle("negative", over);
+    document.getElementById("demo-left-label").textContent = over ? "Sobregastaste" : "Te quedan";
+
+    var bar = document.getElementById("demo-bar");
+    bar.style.width = pct + "%";
+    bar.classList.toggle("over", over);
+    document.getElementById("demo-pct").textContent = pct + "% usado";
+
+    Object.keys(state.cats).forEach(function (key) {
+      var el = document.querySelector('[data-cat-amount="' + key + '"]');
+      if (el) el.textContent = fmt.format(state.cats[key]);
+    });
+  }
+
+  function renderDraft() {
+    amountOut.textContent = draft.amount > 0 ? numFmt.format(draft.amount) : "0";
+    var buttons = document.querySelectorAll("#demo-cats button");
+    buttons.forEach(function (btn) {
+      btn.classList.toggle("selected", btn.getAttribute("data-cat") === draft.cat);
+    });
+  }
+
+  function openSheet(preCat) {
+    draft = { amount: 0, cat: typeof preCat === "string" ? preCat : null };
+    renderDraft();
+    sheet.hidden = false;
+    fab.classList.remove("pulse");
+  }
+  function closeSheet() { sheet.hidden = true; }
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.hidden = false;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.hidden = true; }, 2600);
+  }
+
+  document.querySelectorAll("[data-demo-open]").forEach(function (btn) {
+    btn.addEventListener("click", function () { openSheet(); });
+  });
+  document.querySelectorAll("[data-demo-close]").forEach(function (btn) {
+    btn.addEventListener("click", closeSheet);
+  });
+
+  /* Tocar una categoría abre el registro con esa categoría ya elegida. */
+  document.querySelectorAll("[data-democat]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      openSheet(this.getAttribute("data-democat"));
+    });
+  });
+
+  /* Zonas que en la app real navegan a otra pantalla: en vez de quedar muertas,
+     explican qué harían y reactivan el pulso del botón ＋. */
+  document.querySelectorAll("[data-hint]").forEach(function (el) {
+    el.addEventListener("click", function () {
+      showToast(this.getAttribute("data-hint"));
+      fab.classList.add("pulse");
+    });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !sheet.hidden) closeSheet();
+  });
+
+  document.getElementById("demo-keys").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-key]");
+    if (!btn) return;
+    var key = btn.getAttribute("data-key");
+    if (key === "back") {
+      draft.amount = Math.floor(draft.amount / 10);
+    } else if (key === "000") {
+      if (draft.amount > 0 && draft.amount <= 9999) draft.amount = draft.amount * 1000;
+    } else {
+      var next = draft.amount * 10 + parseInt(key, 10);
+      if (next <= 9999999) draft.amount = next;
+    }
+    renderDraft();
+  });
+
+  document.getElementById("demo-cats").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-cat]");
+    if (!btn) return;
+    draft.cat = btn.getAttribute("data-cat");
+    renderDraft();
+  });
+
+  document.getElementById("demo-save").addEventListener("click", function () {
+    if (draft.amount <= 0) { showToast("Ingresa un monto con el teclado."); return; }
+    if (!draft.cat) { showToast("Elige una categoría."); return; }
+    state.spent += draft.amount;
+    state.cats[draft.cat] += draft.amount;
+    render();
+    closeSheet();
+    var left = BUDGET - state.spent;
+    showToast(left < 0
+      ? "Guardado. Ojo: sobregiraste el presupuesto — así se ve en rojo."
+      : "Movimiento guardado. Te quedan " + fmt.format(left) + ".");
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>

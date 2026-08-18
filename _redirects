@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects
+# Landing page is a single static file — no client-side routing to handle,
+# this just makes sure any unknown path still serves the page instead of a 404.
+/*    /index.html   200
