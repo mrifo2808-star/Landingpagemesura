@@ -57,12 +57,12 @@ Features Pro candidatas, mapeadas al dato que las justifica:
 | **Radiografía financiera mensual** (IA + referencias nacionales) | 54% no sabe cómo tomar decisiones financieras |
 | **Metas avanzadas** (reglas de aporte automático sugerido, hitos) | 89% no ahorra mensualmente |
 
-**Regla de oro del free**: el plan gratuito mantiene TODO lo actual (registro,
-presupuesto, ritmo, deudas, metas simples, respaldo/exportación). Se cobra por
-capas nuevas de valor, nunca recortando lo prometido. Compromiso público en la
-landing: *lo que hoy es gratis seguirá siendo gratis para quienes ya estén
-dentro* — convierte a los primeros usuarios en evangelistas y da urgencia real
-a la lista de espera.
+**Regla de trabajo del free** (interna, no promesa pública): la intención es
+cobrar por capas nuevas de valor, no recortar lo gratuito. **Decisión del
+dueño (2026-08-18): la landing NO promete gratuidad futura** — solo comunica
+el estado actual ("hoy gratuito") y que las condiciones del plan Pro se
+anunciarán antes del lanzamiento. Ninguna promesa insostenible por escrito;
+la flexibilidad de modelo queda intacta.
 
 ## 4. Growth loops (ya existentes, solo hay que activarlos)
 
@@ -83,8 +83,8 @@ a la lista de espera.
 
 ## 6. Riesgos y resguardos
 
-- **No prometer de más**: "gratis para siempre" acotado explícitamente a las
-  funciones actuales y a quienes ya tienen cuenta.
+- **No prometer de más**: nada de "gratis para siempre" ni garantías de
+  gratuidad futura en comunicación pública — solo estado actual verificable.
 - **No dar asesoría**: toda referencia es informativa, con fuente y disclaimer.
 - **No depender de sincronización bancaria**: el registro manual es una
   elección de diseño (hábito consciente + cero permisos bancarios), no una
