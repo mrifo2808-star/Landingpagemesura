@@ -1,5 +1,7 @@
 # Mesura — Landing page
 
+**En producción:** https://mesura-landing.pages.dev
+
 Landing page estática (un solo `index.html`, CSS inline, JS vanilla sin dependencias)
 para presentar Mesura antes de que alguien entre a la app, más una Cloudflare Pages
 Function mínima que guarda los correos de la lista de espera.
@@ -54,18 +56,16 @@ del Worker de Mesura. `wrangler` compila y sube la Function junto con lo estáti
    **Build output directory: `/`**.
 3. Cada push a la rama configurada dispara un deploy, Function incluida.
 
-## Activar la lista de espera (2 pasos, una sola vez)
+## Lista de espera — ya configurada ✔
 
-Sin esto la página funciona igual, pero el formulario mostrará "No pudimos guardar
-tu correo" porque la Function responde 503.
+El KV namespace `mesura-waitlist` ya existe y está enlazado como `WAITLIST` vía
+`wrangler.jsonc` (el binding se aplica automáticamente en cada
+`wrangler pages deploy`). No hay pasos pendientes: el formulario en producción
+guarda correos de verdad.
 
-1. **Crear el KV namespace**: dashboard → **Storage & Databases** → **KV** →
-   **Create a namespace** → nombre `mesura-waitlist` (o por terminal:
-   `npx wrangler kv namespace create mesura-waitlist`).
-2. **Enlazarlo al proyecto de Pages**: proyecto `mesura-landing` → **Settings** →
-   **Bindings** → **Add** → **KV namespace** → Variable name: `WAITLIST` →
-   selecciona `mesura-waitlist` → guardar y **redeploy** (los bindings aplican al
-   siguiente deploy).
+Si algún día hay que recrearlo desde cero: crear el namespace
+(`npx wrangler kv namespace create mesura-waitlist`) y poner su `id` en el bloque
+`kv_namespaces` de `wrangler.jsonc`.
 
 ### ¿Dónde "llegan" los correos?
 

@@ -1,0 +1,15 @@
+{
+  // Config del proyecto de Cloudflare Pages "mesura-landing".
+  // El binding WAITLIST es el KV donde functions/api/waitlist.js guarda los
+  // correos de la lista de espera — se aplica en cada `wrangler pages deploy`.
+  "name": "mesura-landing",
+  "pages_build_output_dir": ".",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "WAITLIST",
+      "id": "496737aa6fb74bf18f0526dbb9094251"
+    }
+  ]
+}
