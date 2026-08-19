@@ -92,6 +92,29 @@ el banco y no toma decisiones por nadie. Está dicho literalmente en el pie.
 6. **«Esta es la lista completa, no una selección.»** Al lado de la lista de lo
    que ya se puede usar. Es una promesa fácil de cumplir y difícil de imitar.
 
+## 5 bis. Recorte posterior al despliegue
+
+Con la página ya publicada, el dueño pidió sacar las dos listas de la sección
+«Beta fundadora». Tiene razón y el motivo es comercial, no editorial: un
+inventario de funciones y, sobre todo, una lista de carencias justo encima del
+formulario, cambian el trabajo de la sección de «cerrar» a «dar explicaciones».
+
+Ese bloque existía porque el encargo original pedía declarar qué se puede usar hoy
+y qué está en desarrollo. La honestidad no se pierde: se distribuyó donde ya
+correspondía. Las funciones se nombran en los tres momentos y en la nota al
+margen; las dos limitaciones que sí importan —no está en las tiendas y necesita
+internet— ya estaban en la FAQ. El mapa completo está en
+`CLAIM_INVENTORY.md` §7.
+
+Ganancia medible: la página baja de 9.385 px a 8.430 px en móvil.
+
+Se recortó también la letra chica de «Tus datos», que había crecido hasta
+parecer un anexo legal. La única precisión que valía la pena conservar —que los
+gastos compartidos se anonimizan en vez de borrarse— pasó a la FAQ, que es donde
+alguien la va a buscar.
+
+---
+
 ## 6. Lo que se ganó el espacio y lo que no
 
 **Se ganó el espacio:** la hoja del estado del mes (es el producto), la

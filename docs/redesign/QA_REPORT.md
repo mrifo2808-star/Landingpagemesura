@@ -48,14 +48,16 @@ Carencias detectadas en el baseline, todas resueltas en esta rama:
 
 | Viewport | Alto | Scroll horizontal | Consola | Nav |
 |---|---|---|---|---|
-| 360×800 | 9.764 px | **no** | limpia | banda compacta, sin hamburguesa |
-| 390×844 | 9.385 px | **no** | limpia | banda compacta |
-| 768×1024 | 8.114 px | **no** | limpia | banda compacta |
-| 1024×768 | 6.754 px | **no** | limpia | horizontal completa |
-| 1440×900 | 7.063 px | **no** | limpia | horizontal completa |
-| 1920×1080 | 7.063 px | **no** | limpia | horizontal completa |
+| 360×800 | 8.790 px | **no** | limpia | banda compacta, sin hamburguesa |
+| 390×844 | 8.430 px | **no** | limpia | banda compacta |
+| 768×1024 | 7.557 px | **no** | limpia | banda compacta |
+| 1024×768 | 6.273 px | **no** | limpia | horizontal completa |
+| 1440×900 | 6.594 px | **no** | limpia | horizontal completa |
+| 1920×1080 | 6.594 px | **no** | limpia | horizontal completa |
 
-Verificado en claro y en oscuro en los seis tamaños (12 capturas).
+Verificado en claro y en oscuro en los seis tamaños. Alturas medidas tras el
+recorte de las dos listas de la sección 05 (ver `CONTENT_AUDIT.md` §5 bis); antes
+del recorte eran entre 500 y 950 px más altas.
 
 **Sobre el alto:** la página es más larga que la anterior. Es intencional y no es
 relleno: la hoja del estado del mes ocupa el ancho completo en vez de caber en un

@@ -118,3 +118,36 @@ No se tocaron porque están en otro repositorio, pero conviene corregirlas allá
 2. **`mesurapp/app/privacidad/page.tsx:31`** dice que la hoja se comparte
    *«contigo como lectora/editora»*. El código solo agrega **lector**
    (`Mesura.gs:59`).
+
+---
+
+## 7. Recorte posterior al despliegue (19-ago-2026)
+
+Tras ver la página publicada, el dueño pidió sacar las dos listas de la sección
+«Beta fundadora» («Ya puedes usar» / «Todavía no existe»): se leían como un
+changelog interno y, en una página comercial, enumerar carencias justo antes del
+formulario planta dudas en el peor momento.
+
+**Un problema de fondo que el recorte resuelve:** la lista de carencias incluía
+*«cualquier tipo de conexión bancaria automática»*, que el hero vende como
+virtud (*«sin conectarte al banco»*). La página se contradecía a sí misma.
+
+Ninguna afirmación verificada se perdió: todas siguen publicadas en otro lugar.
+
+| Afirmación | Dónde vive ahora |
+|---|---|
+| Registro por categoría, con categorías editables | Momento 01 |
+| Ritmo de gasto | Momento 02 y la hoja del hero |
+| Gastos compartidos con abonos y liquidación | Momento 03 |
+| Metas de ahorro, calendario, favoritos, recordatorios de pagos fijos | Nota al margen de la sección 01 |
+| **Resumen semanal opt-out** («llega activado y se apaga en un clic») | Nota al margen de la sección 01 — **se reubicó a propósito**, era una corrección deliberada de honestidad y no podía perderse |
+| Respaldo en Excel y copia en JSON | Acuerdo de datos |
+| No está en App Store ni Google Play | FAQ «¿Cómo se instala?» |
+| Necesita conexión a internet | FAQ «¿Cómo se instala?» |
+| **Gastos compartidos se anonimizan al eliminar la cuenta** | FAQ «¿Qué pasa con mis datos?» — **se reubicó** desde la letra chica, que también se recortó por leerse como texto legal interno |
+
+**Afirmaciones que dejaron de publicarse** (sin reemplazo, por ser roadmap y no
+producto actual): presupuesto compartido entre dos cuentas, proyección de fin de
+mes con avisos anticipados, y «presupuesto **por categoría**» — esta última
+existe en el producto (`app/api/budgets/category/route.ts`), simplemente ya no se
+menciona en la landing.
