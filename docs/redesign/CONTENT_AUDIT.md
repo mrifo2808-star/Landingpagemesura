@@ -115,6 +115,24 @@ alguien la va a buscar.
 
 ---
 
+## 5 ter. Pasada de lenguaje para consumidor
+
+Tras el recorte de las listas, el dueño pidió revisar el resto con el mismo
+criterio. El patrón que se corrigió es uno solo con tres caras: **la página
+hablaba consigo misma**. Jerga técnica («hash con sal», «CLP»), estado
+operacional interno («hoy está deshabilitado en todo el servicio») y
+meta-comentario sobre la propia honestidad («nos parece más honesto decirlo
+que…»). Un consumidor no necesita que le anuncien la honestidad: la percibe en
+que los números tengan fuente y en que nadie le pida la clave del banco.
+
+También se resolvió una contradicción: la calculadora invitaba a «desconectarte
+de internet» mientras la FAQ dice que Mesura necesita conexión.
+
+El mapa completo de redacciones, con la verificación de que ninguna afirmación
+cambió de significado, está en CLAIM_INVENTORY.md §8.
+
+---
+
 ## 6. Lo que se ganó el espacio y lo que no
 
 **Se ganó el espacio:** la hoja del estado del mes (es el producto), la

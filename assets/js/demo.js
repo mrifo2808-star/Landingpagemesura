@@ -84,7 +84,7 @@
     var stateName = deltaPct > 25 ? "way-over" : deltaPct > 4 ? "over" : "";
     var text;
     if (spent > REFERENCE) {
-      text = "Ya pasaste el monto de referencia del mes.";
+      text = "Ya pasaste el presupuesto del mes.";
     } else if (deltaPct > 4) {
       text = "Vas " + deltaPct + "% por sobre el ritmo del mes.";
     } else if (deltaPct < -4) {
@@ -104,8 +104,8 @@
     el.available.textContent = CLP.format(available);
     el.available.classList.toggle("fig-amount--negative", available < 0);
     el.availableSub.textContent = available < 0
-      ? "Pasaste el monto de referencia de " + CLP.format(REFERENCE) + "."
-      : "Sobre un monto de referencia de " + CLP.format(REFERENCE) + " para el mes.";
+      ? "Pasaste el presupuesto de " + CLP.format(REFERENCE) + " del mes."
+      : "De un presupuesto de " + CLP.format(REFERENCE) + " para el mes.";
 
     el.spent.textContent = CLP.format(spent);
 

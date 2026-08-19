@@ -151,3 +151,32 @@ producto actual): presupuesto compartido entre dos cuentas, proyección de fin d
 mes con avisos anticipados, y «presupuesto **por categoría**» — esta última
 existe en el producto (`app/api/budgets/category/route.ts`), simplemente ya no se
 menciona en la landing.
+
+---
+
+## 8. Pasada de lenguaje para consumidor (19-ago-2026)
+
+Segunda revisión pedida por el dueño con la misma lógica del recorte: el lector
+es un consumidor decidiendo si probar la app, no un auditor. Se eliminó el
+lenguaje interno, la jerga técnica y el meta-comentario (la página hablando de
+su propia honestidad). **Ninguna afirmación cambió de significado**; cambió la
+voz. Mapa de redacciones:
+
+| Antes (voz de auditor) | Ahora (voz de consumidor) | ¿Sigue siendo verdad? |
+|---|---|---|
+| «Finanzas personales en CLP» | «App chilena de finanzas personales» | Sí — «pesos chilenos» ya está en la bajada |
+| «Monto de referencia del mes» (demo) | «Presupuesto del mes» | Sí — es la palabra que usa el producto real |
+| «hash con sal, nunca en texto plano» | «se guarda de forma que nadie puede leerla — ni siquiera nosotros» | Sí — descripción correcta de un hash sin nombrar el algoritmo |
+| «en pesos chilenos y sin decimales» | «en pesos chilenos» | Sí — el CLP no usa decimales; el detalle era ruido |
+| «El análisis con IA viene apagado y hoy está deshabilitado en todo el servicio» | «No pasa tus datos por inteligencia artificial» + «si algún día ofrecemos análisis con IA, será opcional y vendrá apagado» | Sí — con `AI_GLOBAL_ENABLED: false` el presente «no pasa» es exacto, y el futuro condicional es la política real (default 0 + consentimiento) |
+| Ficha metodológica completa en la fuente UC (N=1.502, CATI, dic-2024) | Solo «CPP UC y Banco Falabella, 2025» + enlace | Sí — el detalle vive en el estudio enlazado y en este inventario (§1) |
+| «—no de la población completa—» en la letra chica CMF | Eliminado | Sí — «de los deudores bancarios» ya acota el universo; la doble negación era redundante |
+| «puedes desconectarte de internet y sigue funcionando» (calculadora) | Eliminado | Corregía algo peor: **contradecía** a la FAQ que dice que Mesura necesita internet |
+| «porque nadie puede sostener esa promesa con honestidad» | «No prometemos que será gratis para siempre.» | Sí — el hecho queda, el sermón se va |
+| «Nos parece más honesto decirlo que escribir "no compartimos nada con terceros"» | Eliminado de la FAQ | Sí — la transparencia sobre Cloudflare y Google **sigue publicada** en la sección 04; lo que se fue es el comentario sobre la propia honestidad |
+| «cada línea de arriba está tomada como decisión y es verificable en el producto» | Eliminado | Era la página describiéndose a sí misma |
+
+Líneas rojas que esta pasada respetó, y que cualquier edición futura debe
+respetar: «mediana» y «deudores bancarios» en el 11,9%; «de quienes lo tienen»
+en el 31%; el resumen semanal como opt-out; la mención a Cloudflare y Google en
+la sección 04; y la anonimización de gastos compartidos en la FAQ de datos.
