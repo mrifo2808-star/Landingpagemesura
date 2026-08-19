@@ -1,0 +1,8 @@
+# La landing es una sola página. Lo único que hay que decir aquí es qué NO
+# indexar: la documentación interna y el endpoint de la lista de espera.
+User-agent: *
+Allow: /
+Disallow: /docs/
+Disallow: /api/
+
+Sitemap: https://mesura-landing.pages.dev/sitemap.xml
