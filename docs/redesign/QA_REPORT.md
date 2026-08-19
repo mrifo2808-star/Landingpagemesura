@@ -2,7 +2,10 @@
 
 19 de agosto de 2026. Rama `claude/landing-distinctive-redesign-20260819`.
 
-Todas las pruebas se ejecutaron contra un servidor local que **replica el
+Estado: **mezclado a `main` y desplegado a producción el 19-ago-2026**, con
+verificación posterior contra el sitio real (§8 bis).
+
+Las pruebas previas al despliegue se ejecutaron contra un servidor local que **replica el
 comportamiento de Cloudflare Pages**: compresión gzip, los headers reales de
 `_headers` (CSP incluida) y caché diferenciada para `/assets/*`. El endpoint
 `/api/waitlist` se sirvió con un **mock local**, de modo que en ningún momento
@@ -232,18 +235,60 @@ sin una sola violación en consola.
 
 ---
 
+## 8 bis. Verificación contra producción (post-deploy)
+
+Mezclado a `main` y desplegado el 19-ago-2026 con aprobación de Matías.
+Verificación **contra `https://mesura-landing.pages.dev` real**, sin enviar el
+formulario en ningún momento (solo se comprobó que exista, que el honeypot esté
+presente y que el endpoint no cambió), para no escribir en el KV de producción
+ni disparar correos.
+
+**26/26 comprobaciones**, en Chromium y WebKit: demo completa, calculadora,
+formulario presente e intacto, **cero peticiones a terceros**, tipografías
+auto-alojadas resueltas, sin errores de consola, sin scroll horizontal a 360px, y
+**cero violaciones de axe** en claro y oscuro.
+
+| Lighthouse contra producción | Móvil | Escritorio |
+|---|---|---|
+| Rendimiento | **95** | **100** |
+| Accesibilidad | **100** | **100** |
+| Buenas prácticas | **100** | **100** |
+| SEO | **100** | **100** |
+| CLS | **0** | **0** |
+
+Rendimiento móvil baja de 97–98 (local) a 95 (producción) por la latencia real
+de red sumada al throttling simulado de Lighthouse. Sigue sobre el objetivo.
+
+**Dos problemas que solo aparecieron al medir contra producción, ya corregidos y
+redesplegados:**
+
+1. **Cloudflare Pages concatena las reglas de `_headers` en vez de
+   sobrescribirlas.** Con `Cache-Control` declarado en `/*` y en `/assets/*`, el
+   header servido quedaba `public, max-age=300, public, max-age=31536000,
+   immutable`: el navegador toma el primer valor y los assets caducaban en 5
+   minutos en lugar de un año. Se quitó el `Cache-Control` global; el HTML queda
+   con el valor por omisión de Pages (`max-age=0, must-revalidate`), que es lo
+   correcto para un documento que cambia. Verificado: los assets ahora sirven el
+   año completo.
+2. **`/robots.txt` devolvía la página HTML con 200**, por la regla comodín
+   `/* /index.html 200`. Los rastreadores —y Lighthouse, que bajaba SEO de 100 a
+   92— la parseaban como robots.txt: 687 errores de sintaxis. Problema
+   preexistente. Se agregaron un `robots.txt` real (que además excluye `/docs/` y
+   `/api/`) y un `sitemap.xml`. SEO vuelve a 100.
+
+---
+
 ## 9. Riesgos y pendientes
 
-1. **Los documentos internos están públicos en producción, hoy.**
-   `https://mesura-landing.pages.dev/docs/ESTRATEGIA.md` devuelve **200** con el
+1. ~~**Los documentos internos están públicos en producción.**~~ **RESUELTO Y
+   VERIFICADO.** Antes del despliegue,
+   `https://mesura-landing.pages.dev/docs/ESTRATEGIA.md` devolvía **200** con el
    texto completo — incluido el precio candidato del plan Pro ($1.990/mes), los
-   benchmarks de competencia y las reglas internas de monetización. Es previo a
-   este rediseño y contradice directamente la decisión de sacar el plan Pro de la
-   comunicación pública.
-   **Mitigación incluida:** una regla `/docs/*  /  301` en `_redirects` y un
-   archivo `.assetsignore` con `docs`. **Ninguna de las dos pudo verificarse
-   contra la plataforma real**, porque no se desplegó. Hay que comprobar ese 200
-   después del primer deploy.
+   benchmarks de competencia y las reglas internas de monetización.
+   Tras el deploy, `/docs/ESTRATEGIA.md`, `/docs/ANALISIS-MERCADO.md` y
+   `/docs/redesign/QA_REPORT.md` devuelven **301 hacia `/`**, y seguir la
+   redirección entrega la landing, no el documento. El `robots.txt` además
+   excluye `/docs/` del rastreo.
 2. **Firefox sin probar** (§6).
 3. **Dos inexactitudes en la política de privacidad del producto**, en el otro
    repositorio y por lo tanto fuera del alcance de esta rama:
