@@ -1,0 +1,5 @@
+# Archivos que NO deben subirse como assets públicos de Cloudflare Pages.
+# La documentación interna vive en el repositorio, no en el sitio.
+# Complementa la regla /docs/* de _redirects (cinturón y tirantes: si la
+# plataforma respeta este archivo, los .md nunca llegan a subirse).
+docs

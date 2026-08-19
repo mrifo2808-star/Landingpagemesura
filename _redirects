@@ -1,4 +1,12 @@
 # Cloudflare Pages redirects
-# Landing page is a single static file — no client-side routing to handle,
-# this just makes sure any unknown path still serves the page instead of a 404.
+
+# La carpeta docs/ es documentación interna (estrategia, precios candidatos del
+# plan Pro, auditorías). Hoy en producción se sirve tal cual: por ejemplo
+# /docs/ESTRATEGIA.md devuelve 200 con el texto completo. No debería.
+# Ver docs/redesign/QA_REPORT.md → "Riesgos y pendientes".
+/docs/*   /   301
+
+# La landing es un solo archivo estático — no hay enrutamiento en el cliente.
+# Esto solo evita que una ruta desconocida devuelva 404. Las Functions
+# (/api/*) tienen prioridad sobre esta regla y no se ven afectadas.
 /*    /index.html   200
