@@ -616,3 +616,111 @@ formulario baja a 7.336 px en móvil y a 6.116 px en tablet, no a 7.464 y 6.276.
 - A 768 px, adelantar `.jot__grid` a ese breakpoint mete las cuatro fichas de
   categoría en la columna central y las obliga a envolver en dos filas. Queda
   apretado pero legible; es el precio de la consolidación de breakpoints.
+
+---
+
+## 12. Segunda pasada: el ritmo seguía demasiado suelto en escritorio
+
+Con la primera pasada ya desplegada, el dueño reportó que **al navegar en
+escritorio el espaciado se sentía demasiado grande**. Se midió antes de tocar
+nada, y la impresión era correcta — pero la causa no era el espaciado en
+general.
+
+### 12.1 Qué se midió
+
+En vez de mirar el `padding` declarado, se calculó el **hueco real de tinta**:
+se une el rectángulo de todo lo que se ve —texto, filetes, barras, campos, cajas
+con fondo propio— y se buscan las franjas donde no hay nada. Después se barre la
+página en pasos de un tercio de pantalla y se calcula qué porcentaje de cada
+pantalla está vacío, que es lo que se percibe al bajar.
+
+**La página no estaba vacía.** Cobertura de tinta del 82,1 %, ninguna pantalla
+con más del 45 % vacío, media del 18,5 %. El problema era otro y estaba
+localizado.
+
+### 12.2 Las dos causas reales
+
+**a) Cuatro saltos de 132 px que rompían el ritmo.** El mayor hueco *dentro* de
+una sección es 34 px (`--space-block`); el resto de la página se mueve entre
+1,3 y 2,8 interlíneas. Las cuatro fronteras con banda medían **132 px, 5,0
+interlíneas, 3,9 × el mayor hueco interno**. Un salto de casi cuatro veces el
+ritmo local no se lee como pausa: se lee como corte, y obliga al ojo a
+reengancharse en cada sección.
+
+El error de la primera pasada fue tratar el canto de la banda como si no
+separara nada: se le puso el mismo aire a ambos lados de un borde de color que
+**ya es el separador más fuerte de la página**. Aire redundante sobre un evento
+visual que no lo necesitaba.
+
+**b) `scroll-padding-top` desfasado.** Estaba en 92 px contra una cabecera que,
+tras el arreglo de objetivos táctiles, mide 60 px. **Cada salto de ancla
+regalaba 32 px muertos**, que se sumaban al padding superior de la sección: al
+pulsar «Cómo funciona» quedaban 108 px de nada entre la barra y el primer texto.
+Esto es literalmente lo que se siente «al navegar», y era un descuido de la
+primera pasada: se midió la barra nueva y no se ajustó el valor que dependía de
+ella.
+
+### 12.3 Ajuste
+
+| Token | Antes | Ahora | @1440 |
+|---|---|---|---|
+| `--space-section` | `clamp(48px, 5.2vw, 76px)` | `clamp(40px, 4.4vw, 64px)` | 76 → **63** |
+| `--space-band` | `clamp(44px, 4.8vw, 70px)` | `clamp(36px, 3.4vw, 48px)` | 69 → **48** |
+| `--space-after-band` | `clamp(40px, 4.4vw, 64px)` | `clamp(24px, 2.4vw, 34px)` | 63 → **34** |
+| `--space-hero` | `clamp(32px, 3.6vw, 52px)` | `clamp(28px, 3vw, 44px)` | 52 → **43** |
+| `scroll-padding-top` | 92 px / 112 px móvil | **68 px** / 110 px móvil | — |
+
+El criterio no es estético: la frontera entre secciones debe ser claramente
+mayor que el mayor hueco interno —si no, las secciones se funden— pero no tanto
+como para romper la continuidad. **Entre 2 × y 2,5 ×** es el rango donde una
+pausa se lee como pausa. Ahí quedó.
+
+### 12.4 Resultado medido
+
+| Indicador | Primera pasada | Ahora |
+|---|---|---|
+| Frontera con banda | 132 px · 5,0 interlíneas · **3,9 ×** | **82 px · 3,1 · 2,4 ×** |
+| Frontera papel→papel | 75 px · 2,8 · 2,2 × | **63 px · 2,4 · 1,9 ×** |
+| Cobertura de tinta | 82,1 % | **85,7 %** |
+| Vacío medio por pantalla | 18,5 % | **14,8 %** |
+| Suma de huecos ≥ 24 px | 951 px (17,3 % de la página) | **709 px (13,6 %)** |
+| Vacío tras saltar a «Cómo funciona» | 108 px | **72 px** |
+| Vacío tras saltar a «Tus datos» | 101 px | **57 px** |
+| Vacío tras saltar a «Preguntas» | 96 px | **42 px** |
+
+Alto total:
+
+| Viewport | Línea base `049ffc1` | Primera pasada | Ahora | Δ total |
+|---|---|---|---|---|
+| 1.440 × 900 | 6.519 | 5.492 | **5.198** | **−20,3 %** |
+| 1.366 × 768 | 6.513 | 5.438 | **5.168** | **−20,7 %** |
+| 1.024 × 768 | 6.129 | 5.112 | **4.917** | **−19,8 %** |
+| 768 × 1.024 | 7.462 | 6.643 | **6.503** | **−12,9 %** |
+| 390 × 844 | 8.294 | 7.963 | **7.823** | −5,7 % |
+| 360 × 800 | 8.611 | 8.419 | **8.279** | −3,9 % |
+| 320 × 720 | 9.023 | 8.894 | **8.754** | −3,0 % |
+
+**Ojo con el techo del encargo.** El objetivo era reducir entre un 12 % y un
+20 %; en escritorio esta pasada lo deja en **20,3 %–20,7 %, apenas por encima**.
+Se hizo porque el dueño pidió expresamente menos aire y porque los indicadores
+de densidad siguen sanos —85,7 % de tinta, ninguna pantalla por encima del 45 %
+de vacío—, pero conviene saber que no queda margen para seguir apretando sin
+entrar en terreno de página comprimida.
+
+### 12.5 Verificación
+
+48/48 pruebas funcionales · 0 violaciones de axe en las cuatro configuraciones ·
+30 paradas de teclado, todas con foco visible · 0 anclas rotas · 0 errores de
+consola · sin scroll horizontal en 320–1.440 · revisión visual en claro y oscuro
+a 1.440 y 390, incluida la salida de banda en móvil para confirmar que no quedó
+comprimida.
+
+### 12.6 Lo que se evaluó y no se hizo
+
+- **Encabezado de «Preguntas» fijo (`position: sticky`).** La columna
+  izquierda del acordeón queda vacía unos 170 px por debajo del titular. Fijarla
+  le daría función mientras se abren y cierran respuestas. No se aplicó: es un
+  cambio de comportamiento, no de espaciado, y no se pidió. Son tres líneas si
+  se quiere.
+- **Apretar más las fronteras.** Con 2,4 × y 1,9 × ya se está en el rango sano.
+  Bajar más empezaría a fundir secciones, que es el problema opuesto y peor.
