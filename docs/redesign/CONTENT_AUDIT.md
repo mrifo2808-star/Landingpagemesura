@@ -147,3 +147,28 @@ página se viera más larga.
 
 Cuando existan usuarios reales dispuestos a dar su nombre, **esa** es la próxima
 sección que se gana el espacio. No más texto.
+
+---
+
+## 5 quater. El cierre pasa a ser uno solo
+
+19 de agosto de 2026. La sección «Beta fundadora» dejó de existir como sección
+propia y su contenido pasó íntegro al bloque de invitación, que ahora cierra la
+página. Las preguntas subieron por delante.
+
+El motivo es de secuencia, no de contenido. La página iba
+`oferta → objeciones → conversión` al revés: «Beta fundadora» enunciaba la oferta
+—acceso por invitación, los cupos se abren de a poco, no hay tarjeta— y era la
+única sección que despertaba la intención sin ofrecer ningún control: ni botón,
+ni enlace, ni campo. Lo siguiente que veía el lector eran las cuatro preguntas, y
+recién después el formulario, que tenía que volver a enunciar la oferta desde
+cero. Esa repetición existía solo porque había una FAQ en medio.
+
+**No se borró ni se reescribió una sola frase.** Los cuatro elementos del
+encuadre —el timbre «Acceso por invitación», el titular «Mesura está creciendo
+despacio, y a propósito», la bajada sobre los cupos y la nota «No hay tarjeta, no
+hay período de prueba y no hay nada que cancelar después»— están completos y en
+el mismo orden, ahora a la izquierda del formulario en vez de solos en una
+sección de 619 px con el 59 % del ancho vacío.
+
+El detalle medido está en `QA_RITMO.md`.

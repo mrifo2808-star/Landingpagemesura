@@ -125,12 +125,21 @@ papel con menos luz, en vez de convertir la página en otra cosa de noche.
   con el porcentaje en escala de titular.
 - **Acuerdo de datos** — dos columnas separadas por un filete vertical, con `+` y
   `–` como marcadores. Sin tarjetas, sin íconos, sin verde y rojo.
-- **Beta fundadora** — intro en medida corta con el timbre de goma; las dos
-  listas abajo, a todo el ancho, para que cada línea respire.
 - **Preguntas** — `<details>` nativos sobre filetes. Sin bordes, sin sombras,
-  sin fondo. Cuatro.
+  sin fondo. Cuatro. Encabezado en una columna y acordeón en la otra
+  (0,62 / 1,38): la misma figura asimétrica de la evidencia y la calculadora,
+  aplicada al bloque operable de la sección. Van **antes** del cierre, porque las
+  objeciones se resuelven antes de pedir el correo, no entre la oferta y el
+  formulario.
+- **Cierre: beta fundadora + invitación** — una sola composición de dos columnas
+  (0,82 / 1,18). A la izquierda el encuadre —timbre de goma, titular, bajada y
+  nota al margen—, sobre papel; a la derecha el bloque de conversión. El encuadre
+  se queda fuera de la tinta a propósito: dentro habría que anular `--ink-2`,
+  `--muted` y `--orange-ink`, que son tokens de papel y sobre `#12110e` no
+  pasan AA.
 - **Invitación** — el único bloque de alto contraste de la página, tinta en ambos
-  temas.
+  temas. No se parte en dos columnas propias: fluye en vertical, porque ahora
+  *es* la columna derecha del cierre.
 
 ## 6. Imperfecciones controladas
 

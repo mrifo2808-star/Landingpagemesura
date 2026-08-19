@@ -46,6 +46,12 @@ Carencias detectadas en el baseline, todas resueltas en esta rama:
 
 ## 2. Matriz de viewports — resultado
 
+> **Estas alturas quedaron obsoletas el 19-ago-2026.** La pasada posterior de
+> ritmo vertical y diagramación cambió el orden del cierre y el sistema de
+> espaciado; la matriz vigente está en [`QA_RITMO.md`](QA_RITMO.md) §6. Lo que
+> sigue documenta el estado tal como quedó tras el rediseño «El mes a la vista»,
+> y se conserva como línea base de esa comparación.
+
 | Viewport | Alto | Scroll horizontal | Consola | Nav |
 |---|---|---|---|---|
 | 360×800 | 8.790 px | **no** | limpia | banda compacta, sin hamburguesa |

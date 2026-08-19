@@ -45,8 +45,10 @@ Cosas que trae y no son obvias a primera vista:
 
 - `index.html` — la estructura completa: hero con el estado del mes, «un mes
   real», la brecha entre planificar y cumplir, calculadora, acuerdo de datos,
-  beta fundadora, preguntas, invitación y pie.
-- `assets/css/landing.css` — sistema visual completo (tokens, tipografía, grilla).
+  preguntas, y el cierre único que reúne la beta fundadora con la invitación,
+  más el pie.
+- `assets/css/landing.css` — sistema visual completo (tokens, escala de
+  espaciado, tipografía, grilla).
 - `assets/js/demo.js` — la demostración del estado del mes.
 - `assets/js/calculator.js` — calculadora de carga financiera, 100% en el navegador.
 - `assets/js/landing.js` — formulario de lista de espera y eventos de medición.
@@ -55,7 +57,10 @@ Cosas que trae y no son obvias a primera vista:
   correo y lo guarda en KV.
 - `_redirects` — sirve `index.html` en rutas desconocidas y bloquea `/docs/*`.
 - `_headers` — CSP, cabeceras de seguridad y caché de assets.
-- `docs/redesign/` — documentación del rediseño. **No debe publicarse.**
+- `docs/redesign/` — documentación del rediseño. **No debe publicarse.** El
+  informe del rediseño está en `QA_REPORT.md`; el de la pasada posterior de
+  ritmo vertical y diagramación, en
+  [`QA_RITMO.md`](docs/redesign/QA_RITMO.md).
 
 > **Ojo con `docs/`.** Es documentación interna (estrategia, precios candidatos
 > del plan Pro). Antes de este rediseño se servía públicamente:
