@@ -3,7 +3,13 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), interest-cohort=()
-  Cache-Control: public, max-age=300
+  # Ojo: Cloudflare Pages CONCATENA las reglas de este archivo, no las
+  # sobrescribe. Si acá se declara un Cache-Control, el de /assets/* se anexa
+  # detrás y el header queda "max-age=300, ..., max-age=31536000": el navegador
+  # se queda con el primer valor y los assets pierden su caché larga. Por eso
+  # el HTML se deja con el valor por omisión de Pages (revalidar siempre, que es
+  # lo correcto para un documento que cambia) y el Cache-Control se declara solo
+  # en la regla específica de abajo.
   # La landing no carga un solo recurso de terceros: tipografías, CSS, JS e
   # imágenes salen de este mismo origen. Por eso la política puede ser estricta
   # de verdad y no una lista de excepciones. 'unsafe-inline' queda solo en
