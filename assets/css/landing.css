@@ -140,6 +140,15 @@ body {
   overflow-x: hidden;
 }
 
+/* El atributo hidden tiene que ganarle a cualquier display de esta hoja. La
+   regla del agente de usuario es `[hidden] { display: none }`, con especificidad
+   de atributo: cualquier regla de clase que declare `display` —y aquí hay
+   varias con inline-flex— la anula y devuelve el elemento al orden de foco.
+   Es como quedaban visibles «Volver al ejemplo original» y «Limpiar», que se
+   ocultan con el atributo desde demo.js y calculator.js, y el botón «Probar
+   con un gasto» cuando no hay JavaScript. */
+[hidden] { display: none !important; }
+
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; }
 button, input, select { font: inherit; color: inherit; }
