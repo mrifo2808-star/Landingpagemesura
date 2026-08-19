@@ -27,12 +27,12 @@ Todas las mediciones del encargo se confirmaron antes de tocar nada, midiendo
 | Afirmación del encargo | Medido | Veredicto |
 |---|---|---|
 | Alto de escritorio ≈ 6.510 px | 6.513 px @1366, 6.519 px @1440 | **confirmado** |
-| `--step` ≈ 95 px en un viewport de 1.363 px | 1363 × 7 % = 95,4 px | **confirmado** |
+| `--step` ≈ 95 px en un viewport de 1.363 px | 1363 × 7 % = 95,4 px | **confirmado**, con una precisión: el tope de 96 px se alcanza a 1.371 px, así que en los anchos que sí se midieron —1.366 y 1.440— `--step` ya estaba topado en 96 |
 | Separaciones de ~190 px entre secciones | 192 px en las siete fronteras internas | **confirmado** |
 | Hero ≈ 1.147 px | 1.148 px | **confirmado** |
 | «Un mes real» ≈ 1.278 px | 1.279 px | **confirmado** |
-| «Beta fundadora» ≈ 618 px, contenido a la izquierda | 619 px; `.beta__intro` ocupaba **42,4 %** del contenedor | **confirmado** |
-| «Preguntas» ≈ 607 px, gran zona derecha vacía | 608 px; el acordeón ocupaba **61,3 %** | **confirmado** |
+| «Beta fundadora» ≈ 618 px, contenido a la izquierda | 619 px; `.beta__intro` medía 526 px de 1.240: **714 px muertos, el 57,6 %** | **confirmado** |
+| «Preguntas» ≈ 607 px, gran zona derecha vacía | 608 px; el acordeón medía 760 px de 1.240: **480 px muertos, el 38,7 %** | **confirmado** |
 | Contenedor de 1.240 px y cabecera funcionan bien | `.wrap` correcto en los nueve anchos probados | **confirmado — no se alteraron** |
 
 Dato que ordena todo lo demás: **el padding vertical de sección sumaba 1.536 px
@@ -96,10 +96,20 @@ Se conservan el CTA del hero y el de la cabecera, como pedía el encargo.
 
 ## 3. Sistema de espaciado
 
-Había **31 valores verticales distintos** escritos a mano, más cinco
-`style="margin-top:…"` sueltos en el HTML. Ahora hay una escala de once tokens en
+Había **31 valores verticales distintos** escritos a mano, más **ocho**
+`style="margin-top:…"` sueltos en el HTML. Los ocho desaparecieron: los `style=`
+que quedan son datos —anchos calculados y colores de categoría, que `demo.js`
+reescribe—, ninguno es espaciado. Ahora hay una escala de once tokens en
 `:root`, derivada del ritmo real de la página —el bloque de línea del cuerpo es
 17 px × 1,55 = 26,35 px y el de mono 17 px— con base de 4 px.
+
+La escala **no absorbió todo, y conviene decirlo**: quedan unos veinte valores
+verticales literales. Casi todos viven dentro de filas de datos y controles, que
+el encargo protege expresamente, pero seis podrían haber entrado y no entraron
+—los tres márgenes de `.beta__intro`, el de `.invite > p`, el `padding-block`
+del pie y las dos rampas fluidas nuevas de `.sheet` y `.signup`—. El titular
+«31 valores → 11 tokens» describe la intención; el resultado es una escala que
+gobierna el ritmo entre bloques, no cada margen de la página.
 
 | Token | Papel | 390 px | 1440 px |
 |---|---|---|---|
@@ -159,9 +169,9 @@ soporte universal y no introduce deuda de compatibilidad.
 
 ### Preguntas frecuentes
 
-`.qa` estaba clavado en `max-width: 78ch` (729 px reales), de modo que desde
-~793 px de viewport en adelante el acordeón se quedaba quieto mientras `.wrap`
-crecía hasta 1.240 px: **511 px muertos, el 41 % de la pantalla.**
+`.qa` estaba clavado en `max-width: 78ch`, que medido daba **760 px**, de modo
+que desde ~800 px de viewport en adelante el acordeón se quedaba quieto mientras
+`.wrap` crecía hasta 1.240 px: **480 px muertos, el 38,7 % del contenedor.**
 
 Ahora el encabezado va en una columna y el acordeón en otra
 (`minmax(0, .62fr) minmax(0, 1.38fr)` desde 900 px). Es la misma figura
@@ -172,8 +182,9 @@ funcionen sin JavaScript.
 
 ### Beta fundadora + invitación
 
-`.beta__intro` estaba en `max-width: 54ch` (505 px) dentro de una sección de
-619 px: **735 px muertos, el 59 % del ancho.**
+`.beta__intro` estaba en `max-width: 54ch`, que medido daba **526 px** de los
+1.240 del contenedor, en una sección de 619 px de alto: **714 px muertos a la
+derecha, el 57,6 % del ancho.**
 
 Ahora el cierre es una sola composición de dos columnas
 (`minmax(0, .82fr) minmax(0, 1.18fr)`): el encuadre de la beta —timbre, titular,
@@ -259,9 +270,12 @@ pide— **añade ~90 px en móvil**: la banda de navegación, los enlaces del pi
 fichas de categoría y «Volver al ejemplo original» pasan de 17–20 px a 44 px. Es
 altura que se gana a cambio de que los controles se puedan tocar.
 
-Lo que sí bajó en móvil es lo que importa: la distancia hasta el formulario, de
-7.598 px a 7.464 px, y el primer viewport, que ahora muestra el titular, la
-bajada, los dos botones y el arranque de la hoja sin scroll.
+Lo que sí bajó en móvil es lo que importa: **la distancia hasta el formulario, de
+7.598 px a 7.336 px**, y la sección «Un mes real», de 1.579 a 1.450 px.
+
+El primer viewport móvil, en cambio, **no cambió de forma apreciable**: la línea
+base ya mostraba el titular, la bajada, los dos botones y el arranque de la hoja
+sin scroll. La ganancia ahí es de unos pocos píxeles, no una capacidad nueva.
 
 ---
 
@@ -271,15 +285,15 @@ bajada, los dos botones y el arranque de la hoja sin scroll.
 
 | Viewport | Antes | Después | Δ |
 |---|---|---|---|
-| 320 × 720 | 9.023 px | 8.938 px | −0,9 % |
-| 360 × 800 | 8.611 px | 8.463 px | −1,7 % |
-| 390 × 844 | 8.294 px | 8.007 px | −3,5 % |
-| 430 × 932 | 8.044 px | 7.721 px | −4,0 % |
-| 768 × 1.024 | 7.462 px | 6.650 px | **−10,9 %** |
-| 1.024 × 768 | 6.129 px | 5.120 px | **−16,5 %** |
-| 1.366 × 768 | 6.513 px | 5.445 px | **−16,4 %** |
-| 1.440 × 900 | 6.519 px | 5.499 px | **−15,6 %** |
-| 1.920 × 1.080 | 6.519 px | 5.509 px | **−15,5 %** |
+| 320 × 720 | 9.023 px | 8.894 px | −1,4 % |
+| 360 × 800 | 8.611 px | 8.419 px | −2,2 % |
+| 390 × 844 | 8.294 px | 7.963 px | −4,0 % |
+| 430 × 932 | 8.044 px | 7.677 px | −4,6 % |
+| 768 × 1.024 | 7.462 px | 6.643 px | **−11,0 %** |
+| 1.024 × 768 | 6.129 px | 5.112 px | **−16,6 %** |
+| 1.366 × 768 | 6.513 px | 5.438 px | **−16,5 %** |
+| 1.440 × 900 | 6.519 px | 5.492 px | **−15,8 %** |
+| 1.920 × 1.080 | 6.519 px | 5.502 px | **−15,6 %** |
 
 El objetivo del 12–20 % se cumple de 1.024 px en adelante, que es donde estaba el
 problema descrito.
@@ -289,7 +303,7 @@ problema descrito.
 | Sección | Antes | Después | pt | pb |
 |---|---|---|---|---|
 | Cabecera | 65 | 60 | 0 | 0 |
-| Hero | 1.148 | 1.043 | 52 | 0 |
+| Hero | 1.148 | 1.036 | 52 | 0 |
 | 01 Un mes real | 1.279 | 1.152 | 75 | 0 |
 | 02 Entre planificar y cumplir | 595 | 581 | 69 | 69 |
 | 03 Calculadora | 624 | 524 | 63 | 0 |
@@ -303,12 +317,12 @@ problema descrito.
 | Sección | Antes | Después |
 |---|---|---|
 | Cabecera | 94 | 105 *(objetivos táctiles)* |
-| Hero | 1.934 | 1.910 |
-| 01 Un mes real | 1.579 | 1.446 |
+| Hero | 1.934 | 1.866 |
+| 01 Un mes real | 1.579 | 1.450 |
 | 02 Entre planificar y cumplir | 715 | 721 |
 | 03 Calculadora | 928 | 894 |
 | 04 Tus datos | 1.103 | 1.062 |
-| 05 Preguntas | 459 | 401 |
+| 05 Preguntas | 459 | 430 |
 | 06 Beta fundadora + invitación | 478 + 687 | **981** |
 | Pie | 317 | 335 *(objetivos táctiles)* |
 
@@ -316,15 +330,15 @@ problema descrito.
 
 | Viewport | Primera cifra | Primer control | Formulario final |
 |---|---|---|---|
-| 390 × 844 | 594 → **591** | 1.631 → **1.624** | 7.598 → **7.464** |
-| 768 × 1.024 | 511 → **487** | 1.360 → **1.390** | 6.854 → **6.276** |
-| 1.366 × 768 | 472 → **444** | 988 → **956** | 5.895 → **4.946** |
-| 1.440 × 900 | 472 → **447** | 988 → **958** | 5.901 → **4.996** |
+| 390 × 844 | 594 → **591** | 1.631 → **1.624** | 7.598 → **7.336** |
+| 768 × 1.024 | 511 → **487** | 1.360 → **1.390** | 6.854 → **6.116** |
+| 1.366 × 768 | 472 → **444** | 988 → **956** | 5.895 → **4.939** |
+| 1.440 × 900 | 472 → **447** | 988 → **958** | 5.901 → **4.989** |
 
 ### Secciones que dejaron de tener espacio sin función
 
-- **Beta fundadora**: 735 px muertos a la derecha → 0.
-- **Preguntas**: 511 px muertos a la derecha → 0.
+- **Beta fundadora**: 714 px muertos a la derecha → 0.
+- **Preguntas**: 480 px muertos a la derecha → 0.
 - **Siete fronteras** de 192 px de aire vacío → 63–75 px, o 63 + inset de banda.
 
 ---
@@ -381,9 +395,12 @@ porque el encuadre se quedó sobre papel (§4).
 
 ### 7.3 Teclado
 
-Recorrido completo: **32 paradas** (eran 30; suman el botón de la demo y el
-enlace de restablecer, ahora con caja propia). **Cero elementos sin foco
-visible.**
+Recorrido completo: **30 paradas, las mismas que la línea base. Cero elementos
+sin foco visible.**
+
+Durante la implementación llegaron a ser 32, y esa cifra se anotó aquí como si
+fuera un efecto benigno de las cajas de 44 px. No lo era: era el síntoma de la
+regresión de `[hidden]` descrita en §11. El QA independiente la encontró.
 
 ### 7.4 Objetivos táctiles
 
@@ -431,6 +448,11 @@ mirado se comprobaron por separado: 0 violaciones de axe, 0 errores de consola,
 sigue dependiendo de `font-variant-numeric: tabular-nums`, que no se tocó. **No
 hay regresión conocida, pero tampoco hay un número de Lighthouse comparable.**
 
+El CSS **sí creció**: 8.869 → 11.458 bytes con gzip (**+2,6 KB, +29 %**), 33,7 →
+41,0 KB en crudo. Buena parte son comentarios. Se sirve con
+`max-age=31536000, immutable` desde el mismo origen, así que el efecto en la
+carga real es despreciable — pero conviene dar la cifra en vez de suponerla.
+
 **Firefox y Safari siguen sin probar**, igual que en el informe anterior. El
 único selector nuevo con algún riesgo de compatibilidad es el combinador `+`,
 que tiene soporte universal; no se introdujo `:has()` precisamente por esto.
@@ -444,6 +466,7 @@ que tiene soporte universal; no se introdujo `:has()` precisamente por esto.
 | `index.html` | Fusión del cierre, preguntas antes del cierre, `.qa-layout`, `.closing`, `#acceso` sobre `.invite`, renumeración 05 ↔ 06, cinco `style="margin-top:…"` retirados |
 | `assets/css/landing.css` | Escala de espaciado, ritmo entre secciones, `.qa-layout`, `.closing`, `.invite` en una columna, objetivos táctiles, `minmax(0, …)`, filetes al contenedor, longitudes de lectura, breakpoints consolidados, riel móvil de `.moment` |
 | `docs/redesign/QA_RITMO.md` | Este informe |
+| `assets/css/landing.css` | `[hidden]` recupera prioridad (§11) y la hoja de impresión no reparte columnas que ya no existen |
 | `docs/redesign/screenshots/ritmo-2026-08-19/` | Evidencia visual antes/después |
 | `README.md`, `docs/redesign/ART_DIRECTION.md`, `docs/redesign/CONTENT_AUDIT.md`, `docs/redesign/QA_REPORT.md` | Referencias al nuevo orden y a este informe |
 
@@ -473,10 +496,16 @@ las tipografías ni el backend de la lista de espera.
    rango de 18–22 que pide el encargo. No se ajustó porque es un subtítulo de
    23 px, no un titular de display, y estrecharlo añadía una tercera línea a los
    tres momentos. Queda señalado, no corregido.
-5. **La tabla de alturas de `QA_REPORT.md` §2 quedó obsoleta.** Se anotó una
+5. **Las cifras de este informe se corrigieron tras el QA independiente.** La
+   primera versión traía cinco números sacados de corridas intermedias: dos
+   alturas de sección en 390 px, dos profundidades de scroll y el peso del CSS.
+   Están corregidos arriba y medidos contra el estado final de la rama. Lo
+   anoto porque el patrón —escribir el informe con la medición de un paso
+   anterior— es fácil de repetir.
+6. **La tabla de alturas de `QA_REPORT.md` §2 quedó obsoleta.** Se anotó una
    remisión a este informe en vez de reescribir un documento que describe otro
    conjunto de cambios.
-6. **Riesgos heredados que siguen abiertos**: Firefox sin probar, las dos
+7. **Riesgos heredados que siguen abiertos**: Firefox sin probar, las dos
    inexactitudes de la política de privacidad del producto (otro repositorio), el
    plan Pro en `docs/ESTRATEGIA.md` y la fecha de vencimiento de las cifras
    (CMF junio 2025, CPP UC diciembre 2024). Ninguno cambia con esta rama.
@@ -503,3 +532,87 @@ que el de la sesión anterior. **Que no estén versionados es la razón por la q
 hubo que reconstruirlos**: si el próximo cambio de layout va a medirse igual,
 vale la pena guardarlos en `docs/redesign/qa/` con un `package.json` propio, que
 no afecta a la landing porque no tiene build.
+
+---
+
+## 11. Lo que encontró el QA independiente
+
+Una tercera revisión, hecha sin conocer las decisiones de implementación,
+reprodujo todos los controles por su cuenta y encontró **una regresión real**.
+Queda aquí porque el hallazgo importa más que el informe.
+
+### 11.1 Regresión: `[hidden]` dejó de ocultar dos controles
+
+Al dar a `.link-quiet` una caja de 44 px con `display: inline-flex`, esa regla
+de clase pasó a ganarle a `[hidden] { display: none }` del agente de usuario, que
+solo tiene especificidad de atributo. `#demo-reset` («Volver al ejemplo
+original») y `#calc-reset` («Limpiar») se ocultan con el **atributo** desde
+`demo.js` y `calculator.js`, no con una clase.
+
+Medido en el DOM al cargar, 1.440 × 900:
+
+| Elemento | `049ffc1` | Rama, antes del arreglo | Rama, después |
+|---|---|---|---|
+| `#demo-reset` | `display: none`, 0 px | **`display: flex`, 44 px, visible** | `display: none`, 0 px |
+| `#calc-reset` | `display: none`, 0 px | **`display: flex`, 44 px, visible** | `display: none`, 0 px |
+
+Efectos: dos controles inútiles pintados desde la primera carga, dos paradas de
+teclado de más —32 en vez de las 30 de la línea base—, dos entradas de sobra en
+el árbol de accesibilidad, «Limpiar» limpiando un formulario vacío, y ~88 px de
+altura móvil sumados sin razón.
+
+**Se arregló la causa, no los dos síntomas**: `[hidden] { display: none
+!important }` en la base de la hoja, para que ninguna clase futura vuelva a
+anularlo. Commit `a6e01fe`.
+
+### 11.2 Un defecto heredado que salió a la luz con el anterior
+
+`.btn` tiene el mismo `display: inline-flex` y hacía lo mismo con el CTA «Probar
+con un gasto», que nace con `[hidden]` y solo `demo.js` destapa. **Sin
+JavaScript se pintaba un botón de 57 px que no hacía nada** — justo lo que el
+README dice que la página evita. Verificado contra `049ffc1`: **el defecto ya
+existía antes de esta rama.** El mismo arreglo lo cubre.
+
+### 11.3 Por qué las 48 pruebas no lo detectaron
+
+Las pruebas 14 y 29 comprobaban el **atributo** `hidden`, no el renderizado, así
+que pasaban con el control a la vista. La 48 comprobaba `.jot` pero no el CTA de
+la demo. Es un punto ciego del arnés, no de la implementación.
+
+Las tres se reforzaron para exigir `display: none` **y** altura cero. Contra la
+rama sin el arreglo dan **45/48**; con el arreglo, 48/48. La prueba ahora falla
+cuando debe fallar, que es lo único que hace útil a una prueba.
+
+### 11.4 Las capturas antes/después estaban mal tomadas
+
+Siete de las capturas iniciales mostraban una sección distinta de la que decía su
+nombre, y entre ellas estaban justamente las de la FAQ y el cierre — las dos que
+este trabajo rehízo. La causa: `html { scroll-behavior: smooth }` hace que
+`window.scrollTo` sea animado, y el disparo salía a medio camino.
+
+Se regeneraron todas desactivando `scroll-behavior` y **verificando que el ancla
+quedó dentro del viewport antes de disparar**; el script avisa si no lo logra.
+La tanda final salió sin avisos.
+
+### 11.5 Cinco cifras de este informe estaban mal
+
+Dos alturas de sección en 390 px, dos profundidades de scroll y el peso del CSS
+venían de corridas intermedias, no del estado final. Están corregidas en §3, §5,
+§6 y §7.6. Dos de ellas **subestimaban la mejora**: la distancia real al
+formulario baja a 7.336 px en móvil y a 6.116 px en tablet, no a 7.464 y 6.276.
+
+### 11.6 Otras observaciones aceptadas y no corregidas
+
+- `.section__head + * > .lead` no coincide con ningún elemento: los `.lead` son
+  nietos, no hijos. No tiene efecto —lo cubren `.evidence .lead` y
+  `.calc .lead`— pero es exactamente el tipo de regla muerta que §1 celebra
+  haber eliminado. Se deja anotada.
+- `.section--band + .section--band` tampoco coincide con nada hoy. Es
+  defensiva a propósito: evita que dos bandas contiguas se fundan si algún día
+  se reordenan las secciones.
+- `.jot__foot` pasó de `gap: 12px` a `gap: 0 12px`. Al envolver en 390 px las
+  dos filas quedan sin separación propia; hoy no se pegan porque el enlace de
+  restablecer aporta el padding de su caja de 44 px.
+- A 768 px, adelantar `.jot__grid` a ese breakpoint mete las cuatro fichas de
+  categoría en la columna central y las obliga a envolver en dos filas. Queda
+  apretado pero legible; es el precio de la consolidación de breakpoints.
