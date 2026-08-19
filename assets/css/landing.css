@@ -1261,5 +1261,8 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 /* ---------- 17. Modo claro forzado por el sistema operativo -------------- */
 @media print {
   .masthead, .hero__ctas, .jot, .invite { display: none; }
+  /* Con el bloque de conversión oculto, el cierre no tiene dos columnas que
+     repartir: el encuadre de la beta ocupa la página entera. */
+  .closing, .qa-layout { display: block; }
   body { background: #fff; color: #000; }
 }
