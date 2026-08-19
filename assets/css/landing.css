@@ -829,7 +829,19 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 }
 .moment__n::before { content: "0" counter(m); }
 .moment h3 { max-width: 22ch; }
-.moment p { margin-top: 12px; color: var(--ink-2); max-width: 46ch; font-size: 16px; }
+.moment p { margin-top: var(--space-near); color: var(--ink-2); max-width: 46ch; font-size: 16px; }
+
+/* Móvil: el número no se lleva un renglón entero para él solo. Conserva su
+   riel —el mismo gesto del escritorio, más angosto— en vez de apilarse encima
+   del título, que es lo que hacía la reducción literal del escritorio. */
+@media (max-width: 899.98px) {
+  /* El riel se estrecha en las pantallas más angostas para no robarle ancho
+     de lectura al texto. */
+  .moment { grid-template-columns: clamp(26px, 8vw, 34px) minmax(0, 1fr); }
+  .moment__n { grid-column: 1; grid-row: 1; padding-top: 4px; }
+  .moment > div,
+  .moment .jotting { grid-column: 2; }
+}
 
 /* El apunte: una fila de cartola que ilustra el momento del que habla. */
 .jotting {
