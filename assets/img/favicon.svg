@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mesura">
+  <rect width="64" height="64" fill="#dfff42"/>
+  <!-- La M de Mesura leída como dos trazos de un libro contable: la línea baja,
+       toca el fondo y vuelve a subir. -->
+  <path d="M12 48V16l20 20 20-20v32" fill="none" stroke="#12110e" stroke-width="8"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
