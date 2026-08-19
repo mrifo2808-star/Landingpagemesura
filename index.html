@@ -342,7 +342,7 @@
         </li>
       </ol>
 
-      <p class="marginal" style="margin-top:34px;max-width:56ch;">
+      <p class="marginal">
         Alrededor de esos tres momentos hay metas de ahorro, calendario, favoritos,
         recordatorios de pagos fijos y un resumen semanal por correo, que llega
         activado y se apaga en un clic.
@@ -373,7 +373,7 @@
 
         <div>
           <h2 class="t-h2">El problema no es que a la gente le falte plan. Es que el plan se pierde de vista a mitad de mes.</h2>
-          <p class="lead" style="margin-top:20px;">
+          <p class="lead">
             Un presupuesto que solo se revisa cuando llega la cuenta no es un
             presupuesto: es un resumen de algo que ya ocurrió. Mesura no existe para
             que hagas un plan mejor — existe para que lo veas mientras todavía puedes
@@ -398,12 +398,12 @@
       <div class="calc">
         <div>
           <h2 class="t-h2">¿Cuánto de tu sueldo ya está comprometido?</h2>
-          <p class="lead" style="margin-top:18px;">
+          <p class="lead">
             La parte del ingreso que se va en cuotas y créditos ya está decidida
             antes de que empiece el mes. Saber cuánto es el primer número honesto:
             lo que queda es lo que realmente administras.
           </p>
-          <p class="marginal" style="margin-top:24px;">
+          <p class="marginal">
             El cálculo ocurre aquí, en tu navegador. No se envía ni se guarda en
             ninguna parte.
           </p>
@@ -513,7 +513,7 @@
         </div>
       </div>
 
-      <p class="fineprint" style="margin-top:26px;">
+      <p class="fineprint">
         Ninguna aplicación puede prometer seguridad absoluta, y esta no lo hace. El
         detalle completo está en los
         <a href="https://mesura.mrifo2808.workers.dev/terminos" rel="noopener">términos</a> y en la
@@ -522,124 +522,130 @@
     </div>
   </section>
 
-  <!-- ═══════════ BETA FUNDADORA ═══════════ -->
-  <section class="section">
+  <!-- ═══════════ PREGUNTAS ═══════════
+       Van antes del cierre a propósito: las objeciones se resuelven ANTES de
+       pedir el correo, no entre la oferta y el formulario. La banda alterna
+       pasó a la sección de cierre para que #datos y ésta no se fundan en un
+       solo bloque de --paper-2. -->
+  <section class="section" id="preguntas">
     <div class="wrap">
-      <div class="section__head">
-        <p class="tag"><b>05</b> Beta fundadora</p>
-      </div>
+      <div class="qa-layout">
+        <div class="section__head">
+          <p class="tag"><b>05</b> Preguntas</p>
+          <h2 class="t-h2">Las cuatro que importan.</h2>
+        </div>
 
-      <div class="beta__intro">
-        <p class="stamp">Acceso por invitación</p>
-        <h2 class="t-h2" style="margin-top:24px;">Mesura está creciendo despacio, y a propósito.</h2>
-        <p class="lead" style="margin-top:18px;">
-          Entrar ahora significa usar la versión que existe hoy y tener línea
-          directa para pedir lo que te falte — lo que digan estas primeras
-          personas define lo que se construye después. Por eso los cupos se
-          abren de a poco.
-        </p>
-        <p class="marginal" style="margin-top:26px;">
-          No hay tarjeta, no hay período de prueba y no hay nada que cancelar
-          después.
-        </p>
+        <div class="qa">
+          <details>
+            <summary>¿Cuánto cuesta actualmente?</summary>
+            <div class="qa__body">
+              <p>
+                Nada. Hoy Mesura no tiene ningún cobro: no hay planes de pago, ni
+                compras dentro de la app, ni tarjeta de por medio.
+              </p>
+              <p>
+                No prometemos que será gratis para siempre. Si algún día existe una
+                versión pagada, te avisaremos antes — y primero a quienes estén en
+                esta lista.
+              </p>
+            </div>
+          </details>
+  
+          <details>
+            <summary>¿Qué pasa con mis datos?</summary>
+            <div class="qa__body">
+              <p>
+                Tu cuenta ve únicamente sus propios datos, y tu contraseña se guarda de
+                forma que nadie puede leerla — ni siquiera quien administra el servidor.
+                La única excepción es un gasto que tú decides dividir: la otra persona
+                ve ese movimiento, nada más.
+              </p>
+              <p>
+                Todo lo tuyo es tuyo: descargas tus movimientos en Excel, o una copia
+                completa de tu cuenta en JSON, y eliminas la cuenta desde tu propio
+                perfil, sin escribirle a soporte. Se borra de verdad — solo queda, sin
+                tu nombre, el saldo de los gastos que dividiste con alguien, porque la
+                otra persona lo necesita. No hay publicidad, ni venta de datos, ni
+                cookies de seguimiento.
+              </p>
+            </div>
+          </details>
+  
+          <details>
+            <summary>¿Debo conectar mi banco?</summary>
+            <div class="qa__body">
+              <p>
+                No, y tampoco podrías: Mesura no tiene ninguna conexión con bancos.
+                No pide claves, no lee cartolas y no usa servicios de agregación
+                financiera.
+              </p>
+              <p>
+                Eso significa que los movimientos los anotas tú. Es más trabajo que
+                una sincronización automática, y es deliberado: anotar un gasto es lo
+                que hace que lo veas. A cambio, no entregas ninguna credencial
+                bancaria a nadie.
+              </p>
+            </div>
+          </details>
+  
+          <details>
+            <summary>¿Cómo se instala?</summary>
+            <div class="qa__body">
+              <p>
+                Hoy Mesura funciona en el navegador. Desde el menú del propio navegador
+                eliges «agregar a pantalla de inicio» y queda con su ícono, en iPhone,
+                en Android y en el computador. No se descarga nada.
+              </p>
+              <p>
+                Dos cosas que conviene saber antes: <b>necesita conexión a internet</b>,
+                no funciona sin señal; y <b>todavía no está en App Store ni en Google
+                Play</b>. Hay una aplicación nativa en desarrollo, pero no vamos a
+                anunciar una fecha que no podamos cumplir.
+              </p>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ PREGUNTAS ═══════════ -->
-  <section class="section section--band" id="preguntas">
+  <!-- ═══════════ CIERRE: BETA FUNDADORA + INVITACIÓN ═══════════
+       Una sola conclusión, no dos. El encuadre de la beta (por qué el acceso
+       es por invitación) y el formulario que lo resuelve viven en la misma
+       composición: antes eran dos secciones separadas por toda la FAQ, y la
+       primera despertaba la intención sin ofrecer ningún control. -->
+  <section class="section section--band">
     <div class="wrap">
       <div class="section__head">
-        <p class="tag"><b>06</b> Preguntas</p>
-        <h2 class="t-h2">Las cuatro que importan.</h2>
+        <p class="tag"><b>06</b> Beta fundadora</p>
       </div>
 
-      <div class="qa">
-        <details>
-          <summary>¿Cuánto cuesta actualmente?</summary>
-          <div class="qa__body">
-            <p>
-              Nada. Hoy Mesura no tiene ningún cobro: no hay planes de pago, ni
-              compras dentro de la app, ni tarjeta de por medio.
-            </p>
-            <p>
-              No prometemos que será gratis para siempre. Si algún día existe una
-              versión pagada, te avisaremos antes — y primero a quienes estén en
-              esta lista.
-            </p>
-          </div>
-        </details>
+      <div class="closing">
+        <div class="beta__intro">
+          <p class="stamp">Acceso por invitación</p>
+          <h2 class="t-h2">Mesura está creciendo despacio, y a propósito.</h2>
+          <p class="lead">
+            Entrar ahora significa usar la versión que existe hoy y tener línea
+            directa para pedir lo que te falte — lo que digan estas primeras
+            personas define lo que se construye después. Por eso los cupos se
+            abren de a poco.
+          </p>
+          <p class="marginal">
+            No hay tarjeta, no hay período de prueba y no hay nada que cancelar
+            después.
+          </p>
+        </div>
 
-        <details>
-          <summary>¿Qué pasa con mis datos?</summary>
-          <div class="qa__body">
-            <p>
-              Tu cuenta ve únicamente sus propios datos, y tu contraseña se guarda de
-              forma que nadie puede leerla — ni siquiera quien administra el servidor.
-              La única excepción es un gasto que tú decides dividir: la otra persona
-              ve ese movimiento, nada más.
-            </p>
-            <p>
-              Todo lo tuyo es tuyo: descargas tus movimientos en Excel, o una copia
-              completa de tu cuenta en JSON, y eliminas la cuenta desde tu propio
-              perfil, sin escribirle a soporte. Se borra de verdad — solo queda, sin
-              tu nombre, el saldo de los gastos que dividiste con alguien, porque la
-              otra persona lo necesita. No hay publicidad, ni venta de datos, ni
-              cookies de seguimiento.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>¿Debo conectar mi banco?</summary>
-          <div class="qa__body">
-            <p>
-              No, y tampoco podrías: Mesura no tiene ninguna conexión con bancos.
-              No pide claves, no lee cartolas y no usa servicios de agregación
-              financiera.
-            </p>
-            <p>
-              Eso significa que los movimientos los anotas tú. Es más trabajo que
-              una sincronización automática, y es deliberado: anotar un gasto es lo
-              que hace que lo veas. A cambio, no entregas ninguna credencial
-              bancaria a nadie.
-            </p>
-          </div>
-        </details>
-
-        <details>
-          <summary>¿Cómo se instala?</summary>
-          <div class="qa__body">
-            <p>
-              Hoy Mesura funciona en el navegador. Desde el menú del propio navegador
-              eliges «agregar a pantalla de inicio» y queda con su ícono, en iPhone,
-              en Android y en el computador. No se descarga nada.
-            </p>
-            <p>
-              Dos cosas que conviene saber antes: <b>necesita conexión a internet</b>,
-              no funciona sin señal; y <b>todavía no está en App Store ni en Google
-              Play</b>. Hay una aplicación nativa en desarrollo, pero no vamos a
-              anunciar una fecha que no podamos cumplir.
-            </p>
-          </div>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════ INVITACIÓN ═══════════ -->
-  <section class="section" id="acceso">
-    <div class="wrap">
-      <div class="invite">
-        <div>
+        <!-- El ancla vive en el bloque de conversión, no en la sección: los tres
+             CTA de la página deben aterrizar en el campo de correo, no encima
+             del encuadre. -->
+        <div class="invite" id="acceso">
           <h2 class="t-h2">Pide tu acceso a la <span class="mark">beta fundadora</span>.</h2>
           <p>
             Deja tu correo y te escribimos cuando se abra un cupo. Es lo único
             que pedimos: no hay formulario largo, ni encuesta, ni tarjeta.
           </p>
-        </div>
 
-        <div>
           <form class="signup" id="waitlist-form" novalidate>
             <div>
               <label class="signup__label" for="waitlist-email">Tu correo</label>

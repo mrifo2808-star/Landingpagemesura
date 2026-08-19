@@ -81,10 +81,25 @@
   --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --measure: 62ch;
   --gutter: clamp(18px, 4vw, 40px);
   --page: 1240px;
-  --step: clamp(48px, 7vw, 96px);
+
+  /* Escala vertical. Base de 4px, derivada del ritmo real de la página: el
+     bloque de línea del cuerpo es 17px × 1,55 = 26,35px y el de mono 17px.
+     Los cinco últimos son fluidos porque separan bloques, no elementos.
+     Antes había 31 valores verticales distintos escritos a mano; esta escala
+     los reemplaza salvo dentro de filas de datos y controles, que no se tocan. */
+  --space-hair:   4px;    /* mínimo: dentro de un mismo objeto */
+  --space-tight:  8px;    /* elementos pegados: dt→dd, etiqueta→campo */
+  --space-near:   12px;   /* elementos relacionados */
+  --space-item:   16px;   /* título→bajada, párrafo→párrafo */
+  --space-group:  24px;   /* bloques relacionados dentro de una columna */
+  --space-block:  clamp(24px, 2.4vw, 34px);     /* encabezado→contenido */
+  --space-moment: clamp(22px, 2.6vw, 32px);     /* fila de registro (.moment) */
+  --space-hero:   clamp(32px, 3.6vw, 52px);     /* respiro superior del hero */
+  --space-after-band: clamp(40px, 4.4vw, 64px); /* tras una banda de color */
+  --space-band:   clamp(44px, 4.8vw, 70px);     /* inset interno de una banda */
+  --space-section: clamp(48px, 5.2vw, 76px);    /* sección a sección */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -257,16 +272,22 @@ h1, h2, h3, h4 {
 .btn--ink { background: var(--ink); color: var(--paper); }
 .btn:active { transform: translateY(1px); }
 
+/* El filete de este enlace es un subrayado, no el borde de su caja: así puede
+   tener 44px de superficie táctil sin que la línea se despegue del texto. */
 .link-quiet {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 2px;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: .04em;
   color: var(--muted);
-  text-decoration: none;
-  border-bottom: 1px solid var(--hair);
-  padding-bottom: 1px;
+  text-decoration: underline;
+  text-decoration-color: var(--hair);
+  text-underline-offset: 4px;
 }
-.link-quiet:hover { color: var(--ink); border-color: currentColor; }
+.link-quiet:hover { color: var(--ink); text-decoration-color: currentColor; }
 
 /* ---------- 5. Masthead -------------------------------------------------- */
 /* No es una barra flotante de SaaS: es la cabecera de una cartola, con su
@@ -284,12 +305,13 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 13px 0;
+  padding: 7px 0;
 }
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  padding-block: 6px;
   text-decoration: none;
   font-weight: 700;
   font-stretch: 78%;
@@ -311,7 +333,13 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: clamp(14px, 2.4vw, 30px);
 }
+/* Los enlaces de navegación llevan su superficie táctil en el padding: como
+   texto suelto medían 17px de alto y no llegaban ni al mínimo de 24px. */
 .masthead__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 13px;
   font-family: var(--mono);
   font-size: 11.5px;
   font-weight: 500;
@@ -325,7 +353,8 @@ h1, h2, h3, h4 {
 /* Calificado con .masthead__nav porque `.masthead__nav a` tiene mas
    especificidad y le estaba imponiendo su color de texto al boton. */
 .masthead__nav .masthead__cta {
-  padding: 9px 15px;
+  min-height: 44px;
+  padding: 12px 15px;
   border: 1.5px solid var(--rule);
   background: var(--ink);
   color: var(--paper);
@@ -341,15 +370,19 @@ h1, h2, h3, h4 {
 
 /* Móvil: la fila de secciones baja a su propia banda con filete. */
 .masthead__strip { display: none; }
-@media (max-width: 719px) {
+@media (max-width: 719.98px) {
   .masthead__nav { display: none; }
   .masthead__strip {
     display: flex;
     gap: 22px;
-    padding: 8px 0;
     border-top: 1px solid var(--hair);
   }
+  /* Es el menú principal en móvil: necesita superficie, no solo texto. */
   .masthead__strip a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-block: 12px;
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: .06em;
@@ -357,17 +390,56 @@ h1, h2, h3, h4 {
     text-decoration: none;
     color: var(--muted);
   }
-  html { scroll-padding-top: 108px; }
+  html { scroll-padding-top: 112px; }
 }
 
 /* ---------- 6. Secciones ------------------------------------------------- */
-.section { padding-block: var(--step); }
-.section--band { background: var(--paper-2); }
-.section__head { margin-bottom: clamp(28px, 4vw, 44px); }
-.section__head .t-h2 { margin-top: 18px; max-width: 20ch; }
-.section__head .lead { margin-top: 16px; }
+/* Ritmo entre secciones. Antes cada .section llevaba var(--step) arriba Y
+   abajo: entre dos secciones contiguas el hueco visual era el doble — 192px a
+   1440 — y el 23% de la altura de la página era aire vacío de sección.
+   Ahora la separación vive en UN solo lado: una sección sin fondo no necesita
+   padding inferior, porque el superior de la siguiente ya es la separación.
+   Una sección con fondo sí lo lleva en ambos, porque ahí el padding no separa:
+   es el margen interior de la banda de color.
+   Se usa el combinador `+` y no `:has()` a propósito — la hoja no usa `:has()`
+   en ninguna parte y Firefox quedó sin probar (QA_REPORT §6). */
+.section { padding-block: var(--space-section) 0; }
+/* El padding de una banda es su margen interior, no la separación con lo
+   anterior: esa la pone el margen, que sí es papel. Sin él, el canto del color
+   quedaría pegado al último renglón de la sección previa. */
+.section--band {
+  background: var(--paper-2);
+  padding-block: var(--space-band);
+  margin-top: var(--space-after-band);
+}
+
+/* Tras una banda, el canto del color ya hace de separador: la sección
+   siguiente necesita aire, pero no la suma de los dos paddings. */
+.section--band + .section:not(.section--band) { padding-top: var(--space-after-band); }
+
+/* Dos bandas seguidas se leerían como un solo bloque de color: se fusionan a
+   propósito y el inset se pone una sola vez. */
+.section--band + .section--band { margin-top: 0; padding-top: 0; }
+
+/* La última sección de <main> recupera su inferior: el pie trae su propio
+   filete y no debe pegarse al bloque de cierre. */
+main > .section:last-child { padding-bottom: var(--space-section); }
+main > .section--band:last-child { padding-bottom: var(--space-band); }
+
+.section__head { margin-bottom: var(--space-block); }
+.section__head .t-h2 { margin-top: var(--space-item); max-width: 18ch; }
 
 /* Nota marginal: el comentario al margen de un libro, no una tarjeta. */
+/* Los márgenes que antes iban en style="margin-top:…" dentro del HTML ahora
+   salen de la escala: un solo valor para "bloque relacionado dentro de una
+   columna", en vez de 34/26/24 escritos a mano en cinco sitios distintos. */
+.section__head + * > .lead,
+.evidence .lead,
+.calc .lead { margin-top: var(--space-item); }
+.moments + .marginal,
+.calc .marginal,
+.pact + .fineprint { margin-top: var(--space-group); }
+
 .marginal {
   font-family: var(--mono);
   font-size: 12px;
@@ -375,10 +447,12 @@ h1, h2, h3, h4 {
   color: var(--muted);
   border-left: 2px solid var(--acid);
   padding-left: 14px;
+  max-width: 56ch;
 }
 
 /* ---------- 7. Hero: el estado del mes ----------------------------------- */
-.hero { padding-block: clamp(36px, 5vw, 64px) var(--step); }
+/* Sin padding inferior: la sección siguiente pone la separación. */
+.hero { padding-block: var(--space-hero) 0; }
 
 /* Titular a la izquierda, bajada y botones alineados al pie de la última
    línea del titular. La asimetría viene de las proporciones, no de meter una
@@ -407,7 +481,7 @@ h1, h2, h3, h4 {
 .hero h1 { margin-top: 18px; }
 .hero .lead { max-width: 40ch; }
 .hero__ctas {
-  margin-top: 26px;
+  margin-top: var(--space-group);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -417,7 +491,7 @@ h1, h2, h3, h4 {
 /* La hoja: el objeto central de la página. Un solo marco grueso en toda la
    landing — este. Todo lo demás se separa con filetes. */
 .sheet {
-  margin-top: clamp(36px, 5vw, 56px);
+  margin-top: clamp(28px, 3.6vw, 48px);
   background: var(--sheet);
   border: 2px solid var(--rule);
 }
@@ -456,8 +530,8 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--hair);
 }
 .figures > div:last-child { border-bottom: 0; }
-@media (min-width: 760px) {
-  .figures { grid-template-columns: 1.25fr 1fr 1.35fr; }
+@media (min-width: 768px) {
+  .figures { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1.35fr); }
   .figures > div { border-bottom: 0; border-right: 1px solid var(--hair); padding: 22px 24px; }
   .figures > div:last-child { border-right: 0; }
 }
@@ -534,9 +608,10 @@ h1, h2, h3, h4 {
 }
 .pace__scale {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: var(--space-item);
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: .04em;
@@ -550,11 +625,11 @@ h1, h2, h3, h4 {
   border-top: 1px solid var(--rule);
 }
 @media (min-width: 900px) {
-  .sheet__body { grid-template-columns: 1.5fr 1fr; }
+  .sheet__body { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   .sheet__ledger { border-right: 1px solid var(--hair); }
 }
 .sheet__ledger, .sheet__aside { padding: 20px 18px 24px; }
-@media (min-width: 760px) { .sheet__ledger, .sheet__aside { padding: 24px; } }
+@media (min-width: 768px) { .sheet__ledger, .sheet__aside { padding: 24px; } }
 
 .block-title {
   font-family: var(--mono);
@@ -631,15 +706,15 @@ h1, h2, h3, h4 {
   padding: 20px 18px 24px;
   background: var(--paper-2);
 }
-@media (min-width: 760px) { .jot { padding: 22px 24px 26px; } }
+@media (min-width: 768px) { .jot { padding: 22px 24px 26px; } }
 .jot__grid {
   display: grid;
   gap: 16px;
   grid-template-columns: 1fr;
   align-items: end;
 }
-@media (min-width: 860px) {
-  .jot__grid { grid-template-columns: minmax(180px, 220px) 1fr auto; gap: 20px; }
+@media (min-width: 768px) {
+  .jot__grid { grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) auto; gap: 20px; }
 }
 .field > .field__label,
 .jot legend {
@@ -685,7 +760,8 @@ h1, h2, h3, h4 {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 9px 13px;
+  min-height: 44px;
+  padding: 11px 13px;
   border: 1.5px solid var(--hair);
   font-size: 13.5px;
   font-weight: 500;
@@ -718,12 +794,12 @@ h1, h2, h3, h4 {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 16px;
-  padding-top: 14px;
+  gap: 0 12px;
+  margin-top: var(--space-near);
+  padding-top: var(--space-tight);
   border-top: 1px solid var(--hair);
 }
-.jot__note { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+.jot__note { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.6; max-width: 58ch; }
 .jot__error { color: var(--red); font-weight: 700; }
 .jot__error:empty { display: none; }
 
@@ -734,11 +810,11 @@ h1, h2, h3, h4 {
   display: grid;
   gap: 8px 28px;
   grid-template-columns: 1fr;
-  padding-block: clamp(26px, 3.6vw, 38px);
+  padding-block: var(--space-moment);
   border-top: 1px solid var(--hair);
 }
 .moment:last-child { border-bottom: 1px solid var(--hair); }
-@media (min-width: 880px) {
+@media (min-width: 900px) {
   /* Asimetría deliberada: número al margen, texto en la columna ancha,
      apunte contable a la derecha — el ojo baja por el riel, no por tres cajas. */
   .moment { grid-template-columns: 84px minmax(0, 1.15fr) minmax(0, .85fr); align-items: start; }
@@ -767,6 +843,7 @@ h1, h2, h3, h4 {
 }
 .jotting b {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 14px;
   font-variant-numeric: tabular-nums;
@@ -786,16 +863,22 @@ h1, h2, h3, h4 {
 .jotting .up { color: var(--orange-ink); }
 
 /* ---------- 9. Evidencia ------------------------------------------------- */
+/* El filete de una sección de dos columnas cruza ambas: es lo que hace que se
+   lean como un mismo renglón del libro y no como dos bloques que arrancan cada
+   uno por su cuenta. Antes vivía solo en .gap-figure (izquierda) y en
+   .statement (derecha), y los dos arranques quedaban desalineados. */
 .evidence {
   display: grid;
   gap: clamp(24px, 4vw, 48px);
   grid-template-columns: 1fr;
   align-items: start;
+  border-top: 2px solid var(--rule);
+  padding-top: var(--space-block);
 }
 @media (min-width: 900px) { .evidence { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } }
 
 /* Dos cifras enfrentadas en la misma escala: la brecha es el mensaje. */
-.gap-figure { border-top: 2px solid var(--rule); }
+.gap-figure { border-top: 0; }
 .gap-figure__row {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -820,7 +903,8 @@ h1, h2, h3, h4 {
 .gap-figure__meter span { display: block; height: 100%; background: var(--ink); }
 .gap-figure__row--weak .gap-figure__meter span { background: var(--orange); }
 .source {
-  margin-top: 18px;
+  margin-top: var(--space-item);
+  max-width: 62ch;
   font-family: var(--mono);
   font-size: 11.5px;
   line-height: 1.7;
@@ -835,12 +919,14 @@ h1, h2, h3, h4 {
   gap: clamp(26px, 4vw, 44px);
   grid-template-columns: 1fr;
   align-items: start;
+  border-top: 2px solid var(--rule);
+  padding-top: var(--space-block);
 }
-@media (min-width: 960px) { .calc { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
+@media (min-width: 900px) { .calc { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
 
 /* La calculadora vive dentro del lenguaje de un estado financiero: filete
    arriba, filas regladas, resultado alineado a la derecha. */
-.statement { border-top: 2px solid var(--rule); }
+.statement { border-top: 0; }
 .statement__row {
   display: grid;
   gap: 10px;
@@ -849,7 +935,7 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--hair);
   align-items: center;
 }
-@media (min-width: 620px) {
+@media (min-width: 640px) {
   .statement__row { grid-template-columns: minmax(0, 1fr) minmax(190px, 240px); gap: 20px; }
 }
 .statement__label { font-size: 15px; line-height: 1.4; }
@@ -877,7 +963,7 @@ h1, h2, h3, h4 {
 }
 .field-error:empty { display: none; }
 
-.result { margin-top: 26px; padding-top: 22px; border-top: 2px solid var(--rule); }
+.result { margin-top: var(--space-block); padding-top: var(--space-group); border-top: 2px solid var(--rule); }
 .result[hidden] { display: none; }
 .result__pct {
   font-family: var(--mono);
@@ -901,7 +987,7 @@ h1, h2, h3, h4 {
 .result__axis {
   position: relative;
   height: 10px;
-  margin-top: 30px;
+  margin-top: var(--space-group);
   background: var(--paper-2);
   border: 1px solid var(--rule);
 }
@@ -920,10 +1006,10 @@ h1, h2, h3, h4 {
   color: var(--muted);
   white-space: nowrap;
 }
-.result__text { margin-top: 44px; font-size: 16px; line-height: 1.6; max-width: 54ch; color: var(--ink-2); }
-.result__cta { margin-top: 20px; }
+.result__text { margin-top: var(--space-group); font-size: 16px; line-height: 1.6; max-width: 54ch; color: var(--ink-2); }
+.result__cta { margin-top: var(--space-group); }
 .fineprint {
-  margin-top: 20px;
+  margin-top: var(--space-group);
   font-family: var(--mono);
   font-size: 11px;
   line-height: 1.7;
@@ -938,14 +1024,19 @@ h1, h2, h3, h4 {
   grid-template-columns: 1fr;
   border-top: 2px solid var(--rule);
 }
-@media (min-width: 820px) {
-  .pact { grid-template-columns: 1fr 1fr; }
+@media (min-width: 768px) {
+  .pact { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .pact__col + .pact__col { border-left: 1px solid var(--rule); padding-left: clamp(24px, 3.4vw, 44px); }
   .pact__col:first-child { padding-right: clamp(24px, 3.4vw, 44px); }
 }
-.pact__col { padding-block: 26px 8px; }
+/* Las dos columnas tienen distinta cantidad de <small>, así que la más corta
+   dejaba el filete vertical colgando por debajo de su último renglón. El cierre
+   lo pone ahora el contenedor. */
+.pact { border-bottom: 1px solid var(--hair); }
+.pact__col { padding-block: var(--space-block) 0; }
+.pact li:last-child { border-bottom: 0; }
 .pact__col + .pact__col { border-top: 1px solid var(--hair); }
-@media (min-width: 820px) { .pact__col + .pact__col { border-top: 0; } }
+@media (min-width: 768px) { .pact__col + .pact__col { border-top: 0; } }
 .pact h3 {
   font-family: var(--mono);
   font-size: 12px;
@@ -956,7 +1047,7 @@ h1, h2, h3, h4 {
 }
 .pact__col:first-child h3 { color: var(--ink); }
 .pact__col:last-child h3 { color: var(--muted); }
-.pact ul { list-style: none; margin-top: 18px; }
+.pact ul { list-style: none; margin-top: var(--space-item); }
 /* El signo va posicionado, no como celda de grilla: si la <li> fuera grid, el
    <small> se convertiría en un ítem más y caería en la columna del signo. */
 .pact li {
@@ -979,11 +1070,24 @@ h1, h2, h3, h4 {
 .pact__col:last-child li::before { content: "–"; color: var(--muted); }
 .pact li small { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); }
 
-/* ---------- 12. Beta fundadora ------------------------------------------ */
-/* La intro ocupa una medida corta a la izquierda; las dos listas van abajo, a
-   todo el ancho, para que cada línea respire. Antes vivían en una columna de
-   la mitad y quedaban ilegibles. */
-.beta__intro { max-width: 54ch; }
+/* ---------- 12. Cierre: beta fundadora + invitación ---------------------- */
+/* Antes eran dos secciones separadas por toda la FAQ, y la de la beta ocupaba
+   una sección entera de 619px con el texto confinado al 42% izquierdo. Ahora
+   comparten una sola composición: el encuadre a la izquierda, en medida de
+   lectura, y el bloque de conversión a la derecha, algo más ancho. */
+.closing {
+  display: grid;
+  gap: clamp(28px, 3.6vw, 44px);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .closing { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(32px, 3.6vw, 56px); }
+}
+.beta__intro { max-width: 48ch; }
+.beta__intro .t-h2 { margin-top: 22px; max-width: 19ch; }
+.beta__intro .lead { margin-top: 16px; }
+.beta__intro .marginal { margin-top: 22px; }
 
 /* Timbre de goma: la única imperfección rotada de la página. */
 .stamp {
@@ -999,7 +1103,27 @@ h1, h2, h3, h4 {
   transform: rotate(-2.2deg);
 }
 /* ---------- 13. Preguntas ----------------------------------------------- */
+/* Encabezado en una columna y acordeón en la otra. Antes el acordeón vivía
+   solo, tapado a 78ch, y dejaba la mitad derecha de la pantalla sin ninguna
+   función. La grilla es la misma asimetría editorial del resto de la página,
+   no una cuadrícula de tarjetas: las preguntas siguen siendo filas regladas. */
+.qa-layout {
+  display: grid;
+  gap: clamp(20px, 2.4vw, 32px);
+  grid-template-columns: 1fr;
+}
 .qa { max-width: 78ch; border-top: 2px solid var(--rule); }
+@media (min-width: 900px) {
+  .qa-layout {
+    grid-template-columns: minmax(0, .62fr) minmax(0, 1.38fr);
+    gap: clamp(32px, 3.6vw, 56px);
+    align-items: start;
+  }
+  /* En dos columnas el encabezado ya no separa nada: el aire lo pone la grilla. */
+  .qa-layout .section__head { margin-bottom: 0; }
+  /* El ancho lo fija la columna, no una medida arbitraria. */
+  .qa-layout .qa { max-width: none; }
+}
 .qa details { border-bottom: 1px solid var(--hair); }
 .qa summary {
   list-style: none;
@@ -1007,7 +1131,7 @@ h1, h2, h3, h4 {
   align-items: baseline;
   justify-content: space-between;
   gap: 18px;
-  padding: 20px 0;
+  padding: 18px 0;
   cursor: pointer;
   font-size: clamp(17px, 1.9vw, 20px);
   font-weight: 700;
@@ -1025,28 +1149,25 @@ h1, h2, h3, h4 {
   line-height: 1;
 }
 .qa details[open] summary::after { content: "–"; }
-.qa__body { padding: 0 0 22px; max-width: 62ch; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
+.qa__body { padding: 0 0 22px; max-width: 54ch; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
 .qa__body p + p { margin-top: 12px; }
 .qa__body a { text-underline-offset: 3px; }
 
 /* ---------- 14. Invitación final ---------------------------------------- */
-/* El único bloque de alto contraste de la página. Tinta en ambos temas. */
+/* El único bloque de alto contraste de la página. Tinta en ambos temas.
+   Ya no se parte en dos columnas propias: ahora es la columna derecha del
+   cierre, así que fluye en vertical y el ancho lo pone la grilla de .closing. */
 .invite {
   background: #12110e;
   color: #f4efe2;
   border: 2px solid #12110e;
-  padding: clamp(34px, 5.5vw, 60px);
-  display: grid;
-  gap: clamp(26px, 4vw, 52px);
-  grid-template-columns: 1fr;
-  align-items: start;
+  padding: clamp(26px, 3.4vw, 40px);
 }
-@media (min-width: 900px) { .invite { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-.invite h2 { color: #f4efe2; max-width: 15ch; }
-.invite p { color: #b6b0a1; margin-top: 16px; max-width: 44ch; font-size: 16px; }
+.invite h2 { color: #f4efe2; max-width: 16ch; }
+.invite > p { color: #b6b0a1; margin-top: 14px; max-width: 44ch; font-size: 16px; }
 .invite .mark { background: var(--acid); color: var(--on-acid); }
 
-.signup { display: grid; gap: 14px; }
+.signup { display: grid; gap: 14px; margin-top: clamp(22px, 2.4vw, 30px); }
 .signup__label {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -1068,7 +1189,7 @@ h1, h2, h3, h4 {
 .signup input[type="email"]:focus-visible { outline: 3px solid var(--acid); outline-offset: 2px; }
 .signup input[type="email"][aria-invalid="true"] { border-color: #ff7361; }
 .signup button[type="submit"] { justify-self: start; }
-.signup__consent { font-family: var(--mono); font-size: 11.5px; line-height: 1.7; color: #8f8a7d; }
+.signup__consent { font-family: var(--mono); font-size: 11.5px; line-height: 1.7; color: #8f8a7d; max-width: 56ch; }
 .signup__consent a { color: #cfc9b9; text-underline-offset: 3px; }
 .honey { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
@@ -1083,7 +1204,7 @@ h1, h2, h3, h4 {
 }
 
 /* ---------- 15. Footer --------------------------------------------------- */
-.foot { border-top: 1px solid var(--rule); padding-block: 32px 44px; }
+.foot { border-top: 1px solid var(--rule); padding-block: 28px 36px; }
 .foot__inner {
   display: flex;
   flex-wrap: wrap;
@@ -1091,8 +1212,11 @@ h1, h2, h3, h4 {
   justify-content: space-between;
   gap: 18px 28px;
 }
-.foot__links { display: flex; flex-wrap: wrap; gap: 20px; }
+.foot__links { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .foot__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: .04em;
@@ -1102,14 +1226,14 @@ h1, h2, h3, h4 {
 .foot__links a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
 .foot__note {
   width: 100%;
-  margin-top: 22px;
-  padding-top: 18px;
+  margin-top: var(--space-item);
+  padding-top: var(--space-item);
   border-top: 1px solid var(--hair-soft);
   font-family: var(--mono);
   font-size: 11px;
   line-height: 1.7;
   color: var(--muted);
-  max-width: 76ch;
+  max-width: 64ch;
 }
 
 /* ---------- 16. Preferencias de movimiento ------------------------------ */
