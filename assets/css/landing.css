@@ -125,9 +125,16 @@
 
 html {
   scroll-behavior: smooth;
-  /* Justo lo que mide la cabecera fija mas un respiro. Estaba en 92px contra
-     una barra de 60: cada salto de ancla regalaba 32px muertos. */
-  scroll-padding-top: 68px;
+  /* El offset del salto de ancla. El VALOR es el que midió QA_RITMO §12.3 —68px
+     en escritorio, 110px bajo 720px— y no se toca: esa pasada lo calibró contra
+     la cabecera real y bajó el vacío tras saltar de 108px a 72. Lo único que
+     cambia es de dónde sale: antes eran dos números literales, uno acá y otro
+     dentro de un @media a 250 líneas de distancia; ahora se compone de
+     --masthead-h, declarada junto a las reglas del masthead (§5), donde se
+     decide el alto que este número tiene que seguir. Ese desacople ya costó
+     caro una vez: quedó en 92px contra una barra de 60 y cada salto regalaba
+     32px muertos, hasta que §12.2b lo encontró. */
+  scroll-padding-top: calc(var(--masthead-h) + var(--anchor-gap));
   -webkit-text-size-adjust: 100%;
 }
 
@@ -304,6 +311,24 @@ h1, h2, h3, h4 {
 /* No es una barra flotante de SaaS: es la cabecera de una cartola, con su
    filete inferior. En móvil se parte en dos líneas antes que colapsar en
    hamburguesa — cuatro destinos caben perfectamente. */
+
+/* Alto real de la cabecera fija, medido: una fila en escritorio (60px) y dos
+   bajo 720px, donde aparece .masthead__strip (105px). Es lo que consume el
+   destino de cualquier ancla, así que se declara aquí —donde se decide— y no
+   en la base de la hoja, lejos de la causa.
+   El respiro NO es un valor nuevo: 105 + 5 = 110 y 60 + 8 = 68 son exactamente
+   los dos scroll-padding-top que dejó medidos QA_RITMO §12.3, descompuestos en
+   sus dos partes. El vacío tras saltar sigue siendo 72px en «Cómo funciona»,
+   57 en «Tus datos» y 42 en «Preguntas», que son las cifras de §12.4. Subirlo
+   sería volver a inflar justo lo que esa pasada apretó. */
+:root {
+  --masthead-h: 105px;
+  --anchor-gap: 5px;
+}
+@media (min-width: 720px) {
+  :root { --masthead-h: 60px; --anchor-gap: 8px; }
+}
+
 .masthead {
   position: sticky;
   top: 0;
@@ -401,7 +426,6 @@ h1, h2, h3, h4 {
     text-decoration: none;
     color: var(--muted);
   }
-  html { scroll-padding-top: 110px; }
 }
 
 /* ---------- 6. Secciones ------------------------------------------------- */

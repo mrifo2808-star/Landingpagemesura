@@ -3,6 +3,10 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), interest-cohort=()
+  # La landing no abre ventanas ni depende de que otra pestaña la alcance por
+  # window.opener: aislar el grupo de contexto no le quita nada y corta el
+  # acceso cruzado de cualquier página que la abra.
+  Cross-Origin-Opener-Policy: same-origin
   # Ojo: Cloudflare Pages CONCATENA las reglas de este archivo, no las
   # sobrescribe. Si acá se declara un Cache-Control, el de /assets/* se anexa
   # detrás y el header queda "max-age=300, ..., max-age=31536000": el navegador
@@ -15,6 +19,20 @@
   # de verdad y no una lista de excepciones. 'unsafe-inline' queda solo en
   # style-src porque el HTML usa atributos style= y la demo escribe anchos
   # calculados; no hay ningún <script> inline.
+  #
+  # Se evaluó separar style-src 'self' de style-src-attr 'unsafe-inline', que
+  # dejaría fuera cualquier <style> inyectado y permitiría solo los atributos
+  # style=. Medido, y NO se aplica: style-src-attr es CSP nivel 3 y los
+  # motores que no lo implementan ignoran la directiva y caen a style-src, que
+  # ahí ya no trae 'unsafe-inline'. Servida así y sin JavaScript —la
+  # degradación que el README promete— la hoja del mes se rompe: la barra de
+  # ritmo salta de 277px a 414px (se pinta al 100% en vez del 67% real), la
+  # marca del día esperado se va a 0 y los segmentos de categoría quedan sin
+  # ancho ni color. Con JavaScript la demo se recupera porque escribe por
+  # CSSOM, que la CSP no gobierna, pero la consola igual acumula 18
+  # violaciones por carga. Firefox sigue sin probarse en este proyecto
+  # (QA_REPORT §6), así que no hay forma de garantizar el soporte.
+  # Evidencia: docs/redesign/qa/scripts/csp-experimento.js
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
 
 # Los assets llevan su contenido en el nombre solo por convención, así que un

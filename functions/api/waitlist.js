@@ -6,16 +6,68 @@
  * Ver README.md para los dos pasos de configuración.
  *
  * Deliberadamente no guarda IP ni user-agent — la landing promete "sin venta
- * de datos" y lo mínimo necesario acá es el correo y la fecha.
+ * de datos" y lo mínimo necesario acá es el correo y la fecha. Eso no es una
+ * omisión que convenga "mejorar": es la promesa escrita en la sección "El trato
+ * con tus datos".
+ *
+ * El contrato con el frontend no cambia: POST { email, website }, honeypot,
+ * idempotencia por correo, respuestas { ok } o { error } con el mensaje en
+ * español.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/* El cuerpo legítimo son dos campos y el correo tope mide 254 caracteres: con
+   holgura son unos 300 bytes. 1 KB deja margen de sobra y evita leer —y
+   parsear— cualquier cosa mayor. */
+const MAX_BODY = 1024;
+
+/**
+ * Cualquier método que no sea POST. Es un endpoint de un solo verbo, así que
+ * corresponde 405 con Allow y no el 404 genérico del comodín de Pages.
+ * OPTIONS también responde 405: la landing es del mismo origen y nunca dispara
+ * un preflight; no hay CORS que conceder.
+ */
+export function onRequest(context) {
+  if (context.request.method === "POST") return onRequestPost(context);
+  return json({ error: "Método no permitido" }, 405, { Allow: "POST" });
+}
+
 export async function onRequestPost({ request, env, waitUntil }) {
+  // Content-Type antes de leer nada: el frontend manda application/json y no
+  // hay ninguna otra forma legítima de llegar acá. Cerrarlo además impide que
+  // un formulario de otro origen publique aquí, que es lo único que la CSP
+  // form-action no alcanza a cubrir.
+  const tipo = (request.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  if (tipo !== "application/json") {
+    return json({ error: "Formato no admitido" }, 415);
+  }
+
+  // Content-Length no es de fiar por sí solo —puede faltar o mentir— así que se
+  // usa como filtro barato y el largo real se vuelve a comprobar tras leer.
+  const declarado = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declarado) && declarado > MAX_BODY) {
+    return json({ error: "Cuerpo demasiado grande" }, 413);
+  }
+
+  let crudo;
+  try {
+    crudo = await request.text();
+  } catch {
+    return json({ error: "Cuerpo inválido" }, 400);
+  }
+  if (crudo.length > MAX_BODY) {
+    return json({ error: "Cuerpo demasiado grande" }, 413);
+  }
+
   let body;
   try {
-    body = await request.json();
+    body = JSON.parse(crudo);
   } catch {
+    return json({ error: "Cuerpo inválido" }, 400);
+  }
+  // JSON.parse acepta `null`, `3` y `"hola"`: todos rompen el acceso a body.email.
+  if (body === null || typeof body !== "object" || Array.isArray(body)) {
     return json({ error: "Cuerpo inválido" }, 400);
   }
 
@@ -60,9 +112,9 @@ export async function onRequestPost({ request, env, waitUntil }) {
   return json({ ok: true });
 }
 
-function json(data, status = 200) {
+function json(data, status = 200, extra) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...extra },
   });
 }
