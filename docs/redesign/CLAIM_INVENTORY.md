@@ -249,9 +249,10 @@ afirmación absoluta con letra chica es peor que una afirmación matizada.
 
 Pasada de **vocabulario**, sin rediseño y sin tocar el layout. Rama
 `claude/landing-plain-language-latam-20260819`, partiendo de
-`claude/landing-ai-copy-voice-20260819` @ `576e152` — esa rama **no estaba
-mezclada a `main`** al empezar (`main` seguía en `4daa4a5`), así que se partió de
-ella para no dejar el arreglo de la afirmación sobre IA fuera del árbol.
+`claude/landing-ai-copy-voice-20260819` @ `576e152`, que **ya está en `main`**:
+se mezcló por el PR #1 (`5a9a5bf`) y su árbol es idéntico al de `origin/main`.
+Dicho de otro modo, esta rama sale del contenido vigente de `main` y el PR
+aporta un solo commit.
 
 Dos encargos en una sola pasada:
 
