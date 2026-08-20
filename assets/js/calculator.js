@@ -67,7 +67,7 @@
     var deb = parseCLP(debt.value);
 
     if (inc <= 0) {
-      incomeError.textContent = "Necesitamos tu ingreso mensual para calcular el porcentaje.";
+      incomeError.textContent = "Escribe cuánto te llega al mes para poder calcular el porcentaje.";
       income.setAttribute("aria-invalid", "true");
       income.focus();
       result.hidden = true;
@@ -97,11 +97,13 @@
              CLP.format(inc) + " — se reparte entre gastos del mes y lo que alcances a guardar. " +
              "Saber en qué se reparte es justamente lo que hace Mesura.";
     } else if (value > 100) {
-      body = "Tus cuotas mensuales (" + CLP.format(deb) + ") superan tu ingreso declarado (" +
+      body = "Tus cuotas mensuales (" + CLP.format(deb) + ") superan el ingreso que escribiste (" +
              CLP.format(inc) + "). Revisa las cifras: si son correctas, conviene buscar orientación " +
-             "en una entidad como el SERNAC o tu institución financiera, más allá de cualquier app.";
+             "más allá de cualquier app — en Chile, el SERNAC o la institución donde tomaste el " +
+             "crédito; fuera de Chile, el organismo que defiende al consumidor en tu país.";
     } else if (value === CMF_MEDIAN) {
-      body = "Tu carga financiera coincide con la mediana nacional de " + median + "%. " +
+      body = "Tu carga financiera coincide con la mediana de " + median + "% de los deudores " +
+             "bancarios en Chile. " +
              "El otro " + decimal(100 - value) + "% de tu ingreso es el que se reparte mes a mes " +
              "sin que casi nadie lo mire de cerca.";
     } else if (value < CMF_MEDIAN) {

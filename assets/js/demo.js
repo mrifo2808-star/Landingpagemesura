@@ -284,7 +284,7 @@
     var first = el.form.querySelector('input[name="demo-cat"]');
     if (first) first.checked = true;
     el.reset.hidden = true;
-    el.live.textContent = "Ejemplo restablecido a su estado original.";
+    el.live.textContent = "Volvimos al ejemplo original.";
     el.amount.focus();
   });
 
