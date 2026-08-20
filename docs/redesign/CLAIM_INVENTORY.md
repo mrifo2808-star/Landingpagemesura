@@ -65,7 +65,7 @@ sólida a cuatro cifras impresionantes.
 | «La contraseña se guarda solo como hash con sal, nunca en texto plano» | Seguridad | `app/lib/password-hash.ts:81-85` (PBKDF2-HMAC-SHA256, sal de 16 bytes, comparación en tiempo constante) | **Ajustada** | Se afirma el hecho sin superlativos y **sin citar el número de iteraciones**: el propio código documenta que las 100.000 iteraciones son un techo impuesto por Cloudflare Workers y quedan bajo el piso OWASP de 600.000 (`password-hash.ts:9-14`). Es un P0 residual abierto, no un argumento de venta |
 | «Cada cuenta ve solo sus propios datos… la única excepción es un gasto que tú decides dividir» | Seguridad | Filtro por usuario en `app/api/expenses/route.ts:144,152,266,329-330,358-359,385-386`; excepción en `:161`. Suites `financial-invariants-security.test.ts`, `debt-groups-auth.test.ts` | **Comprobada** | La excepción se declara en la propia landing en vez de esconderla |
 | «Eliminas tu cuenta desde tu perfil, sin escribirle a soporte, y se borra de verdad» | Funcionalidad | `app/api/account/delete/route.ts:43-45` (síncrono, exige contraseña); `app/lib/account-deletion.ts:95-117` (`db.delete(users)`, borra R2 y hoja de Drive) | **Ajustada** | Es hard delete real. Se añadió el matiz de que los gastos compartidos se **anonimizan** en vez de borrarse (`account-deletion.ts:83-85`), porque el saldo de la contraparte depende de esas filas |
-| «El análisis con IA viene apagado y hoy está deshabilitado en todo el servicio» | Funcionalidad | `db/schema.ts:285` default `0`; consentimiento versionado en `worker/index.ts:61`; **`wrangler.jsonc:17` `AI_GLOBAL_ENABLED: "false"`** + `app/lib/ai-limits.ts:50` | **Ajustada** | Antes se ofrecía como algo que el usuario puede encender y usar. Hoy no corre para nadie aunque active el toggle. Se dice tal cual |
+| «No usa inteligencia artificial, salvo que tú la actives» + la letra chica que nombra el análisis semanal y el registro por voz | Funcionalidad | `wrangler.jsonc:17` `AI_GLOBAL_ENABLED: "false"`, `db/schema.ts:285` default `0`, consentimiento versionado en `worker/index.ts:61`; para la voz, `docs/input-channels/PRIVACY_AND_CONSENT.md` del repo de la app (matriz de datos, tabla de los tres consentimientos y garantías con sus pruebas: `multichannel-input-invariants`, `quick-entry-ui-structure`, `privacy-architecture-invariants`) | **Ajustada** | Reemplaza a «No pasa tus datos por inteligencia artificial» (ver §9). La versión anterior era exacta solo mientras la voz estuviera apagada; ésta es exacta en los dos escenarios |
 | «No se conecta a tu banco ni te pide claves bancarias» | Funcionalidad | Búsqueda de `fintoc\|plaid\|belvo\|cartola\|open banking` en `app/ worker/ db/`: cero coincidencias | **Comprobada** | Es el diferenciador más sólido y más fácil de verificar de toda la página |
 | «Ninguna aplicación puede prometer seguridad absoluta y esta no lo hace» | Seguridad | — | **Comprobada** | Reemplaza cualquier formulación tipo «100% seguro». No se publica ninguna |
 
@@ -180,3 +180,65 @@ Líneas rojas que esta pasada respetó, y que cualquier edición futura debe
 respetar: «mediana» y «deudores bancarios» en el 11,9%; «de quienes lo tienen»
 en el 31%; el resumen semanal como opt-out; la mención a Cloudflare y Google en
 la sección 04; y la anonimización de gastos compartidos en la FAQ de datos.
+
+---
+
+## 9. Corrección de la afirmación sobre IA, previa al registro por voz (19-ago-2026)
+
+Pasada acotada, sin rediseño: solo la afirmación sobre inteligencia artificial.
+Motivo: la app va a activar el **registro de gastos por voz**, que envía la
+grabación al servicio de transcripción de **Cloudflare Workers AI**. Está
+implementado y detrás de un interruptor (`VOICE_INPUT_ENABLED`), todavía en
+`false`. La frase publicada hasta ahora era exacta con la voz apagada y dejaba
+de serlo el día del encendido.
+
+Fuente de la redacción: `docs/input-channels/PRIVACY_AND_CONSENT.md` del
+repositorio de la app (`Mesura-app-source`), sección «Textos públicos que hay
+que corregir», leída en modo solo lectura. La redacción se adaptó al formato de
+la sección 04 —afirmación corta + `<small>`— conservando su significado exacto.
+
+| Antes (publicado) | Ahora | Por qué |
+|---|---|---|
+| «No pasa tus datos por inteligencia artificial» | «No usa inteligencia artificial, salvo que tú la actives» | El absoluto deja de ser cierto en cuanto se encienda la voz: el audio sale hacia un tercero para transcribirse. La nueva versión es verdadera con la voz apagada **y** encendida, así que no hay que volver a tocarla el día del encendido |
+| «Si algún día ofrecemos análisis con IA, será opcional y vendrá apagado.» | «Tus cuentas se calculan siempre sin IA. Las dos funciones que sí la usan —el análisis semanal y el registro por voz— vienen apagadas y cada una se enciende con su propio permiso; la de voz envía tu grabación al servicio de transcripción de Cloudflare para convertirla en texto, no la guarda y no entrena modelos con ella.» | El condicional a futuro («si algún día») ya no describe el producto: las dos funciones existen. Se nombra al proveedor, se dice que el audio sale, y se declaran los cuatro hechos que lo diferencian de «mandamos tus datos a una IA»: opcional, permiso separado, no se guarda, no entrena |
+
+**Qué respalda cada parte de la letra chica**
+
+| Afirmación | Respaldo |
+|---|---|
+| «Tus cuentas se calculan siempre sin IA» | Totales, categorías y presupuesto son cálculo del producto; la matriz de datos del documento de la app no lista ninguna salida hacia un proveedor de IA para esas operaciones |
+| «vienen apagadas» | `AI_GLOBAL_ENABLED: "false"` y `db/schema.ts:285` default `0` para el análisis; `VOICE_INPUT_ENABLED` en `false` y consentimiento de voz **desactivado por defecto** |
+| «cada una se enciende con su propio permiso» | Tres consentimientos separados con versiones distintas (`AI_CONSENT_VERSION`, `VOICE_INPUT_CONSENT_VERSION`, `COMMUNICATIONS_VERSION`); `POST /api/consents` mapea cada tipo a la suya. Rechazar el de voz no bloquea nada |
+| «envía tu grabación al servicio de transcripción de Cloudflare» | Matriz de datos: la grabación sale del dispositivo hacia Cloudflare Workers AI durante la petición. **No se suaviza: el audio sale hacia un tercero** |
+| «no la guarda» | La ruta de transcripción no importa la capa de base de datos ni el binding de almacenamiento, ni escribe el audio en logs; verificado por `tests/multichannel-input-invariants.test.ts`. La transcripción solo se guarda si la persona marca explícitamente «guardar como nota» |
+| «no entrena modelos con ella» | Texto del consentimiento del producto (`VoiceConsentCard.tsx`), cuya presencia vigila `tests/quick-entry-ui-structure.test.ts` |
+
+**Barrido del resto de la página.** Se revisaron FAQ (HTML y JSON-LD),
+metadatos, `og:`/`twitter:`, `robots.txt`, `sitemap.xml`, CSS y JS. La única
+aparición de «inteligencia artificial» / «IA» en material publicado era la
+corregida. Ninguna otra afirmación se vuelve inexacta al encender la voz: la
+FAQ «¿Qué pasa con mis datos?» habla de aislamiento por cuenta, exportación,
+eliminación, publicidad, venta de datos y cookies, y todo eso sigue igual.
+
+**Un punto pendiente, deliberadamente no tocado.** En «Lo que Mesura usa», la
+línea «Cloudflare aloja la app y Google envía los correos» seguirá siendo
+verdadera pero **incompleta** el día del encendido: Cloudflare pasará también a
+transcribir. Queda fuera del alcance de esta pasada por instrucción explícita
+(esa línea no se toca). Hoy el hecho igual queda publicado, dos ítems más abajo
+en la misma pantalla, donde la letra chica nombra «el servicio de transcripción
+de Cloudflare». Si se prefiere decirlo también arriba, es una edición de una
+línea.
+
+**Cifra CMF re-verificada.** El 11,9% se comprobó de nuevo contra la fuente
+([nota de prensa CMF](https://www.cmfchile.cl/portal/prensa/625/w4-article-102984.html),
+HTTP 200 al 19-ago-2026). El texto de la nota confirma las dos precisiones que
+la landing publica: «se utiliza la **mediana** de la distribución de cada una de
+las variables» y «la carga financiera […] se ubica en **11,9%**», con datos a
+junio de 2025. La letra chica de la landing ya declara que sirve «para poner tu
+número en contexto — no es una recomendación financiera ni un diagnóstico de tu
+situación». Sin cambios.
+
+**Línea roja nueva.** No volver a publicar un absoluto sobre IA («no pasa»,
+«nunca», «cero IA»). Cualquier redacción futura tiene que seguir siendo cierta
+con el registro por voz encendido, y no se resuelve con un asterisco: una
+afirmación absoluta con letra chica es peor que una afirmación matizada.
