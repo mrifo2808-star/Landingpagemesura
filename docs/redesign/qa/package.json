@@ -1,0 +1,28 @@
+{
+  "name": "mesura-landing-qa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Arnés de QA de la landing de Mesura. Vive aparte a propósito: la landing no tiene build y este package.json no la toca.",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/run-all.js",
+    "serve": "node scripts/serve.js",
+    "waitlist": "node scripts/waitlist.js",
+    "viewports": "node scripts/viewports.js",
+    "anclas": "node scripts/anclas.js",
+    "red": "node scripts/red.js",
+    "axe": "node scripts/axe.js",
+    "funcional": "node scripts/funcional.js",
+    "perf": "node scripts/perf.js",
+    "lighthouse": "node scripts/lighthouse.js",
+    "capturas": "node scripts/capturas.js",
+    "minificar": "node scripts/minificar.js",
+    "csp": "node scripts/csp-experimento.js",
+    "icono": "node scripts/icono.js"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.2",
+    "lighthouse": "^12.8.2",
+    "puppeteer-core": "^23.11.1"
+  }
+}

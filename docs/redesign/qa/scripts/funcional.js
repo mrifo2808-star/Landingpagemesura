@@ -1,0 +1,381 @@
+/**
+ * Pruebas funcionales de la demo, la calculadora y el formulario, reconstruidas
+ * a partir de la descripcion prueba por prueba de QA_REPORT 3 y QA_RITMO 7.1.
+ *
+ * El formulario corre SIEMPRE contra el mock de lib/server.js. Nunca contra
+ * /api/waitlist de produccion: escribir en el KV dispara un correo al dueno.
+ *
+ * Las pruebas de [hidden] comprueban `display: none` Y altura cero, no solo el
+ * atributo. Comprobar el atributo fue el punto ciego que dejo pasar la
+ * regresion de QA_RITMO 11.1.
+ */
+import { levantar } from "../lib/server.js";
+import { abrir, pagina } from "../lib/navegador.js";
+
+const s = await levantar();
+const browser = await abrir();
+
+const casos = [];
+const prueba = (grupo, nombre, fn) => casos.push({ grupo, nombre, fn });
+
+function afirmar(cond, detalle) {
+  if (!cond) throw new Error(detalle || "no se cumplió");
+}
+const igual = (a, b, nota) => afirmar(a === b, `esperaba ${JSON.stringify(b)}, llegó ${JSON.stringify(a)}${nota ? ` — ${nota}` : ""}`);
+
+/** Estado renderizado de un elemento: lo que ve la persona, no el atributo. */
+const visible = (page, sel) =>
+  page.evaluate((q) => {
+    const e = document.querySelector(q);
+    if (!e) return { existe: false };
+    const c = getComputedStyle(e);
+    const r = e.getBoundingClientRect();
+    return { existe: true, display: c.display, alto: Math.round(r.height), visible: c.display !== "none" && r.height > 0 };
+  }, sel);
+
+async function conPagina(fn, opciones = {}) {
+  const page = await pagina(browser, opciones.viewport || { width: 1440, height: 900 }, opciones.tema || "light");
+  if (opciones.sinJs) await page.setJavaScriptEnabled(false);
+  // Algunas pruebas provocan un error de red a propósito; ese error SÍ debe
+  // llegar a la consola y no cuenta como consola sucia.
+  const ruidoEsperado = opciones.ruidoEsperado || [];
+  await page.goto(s.url + "/", { waitUntil: "networkidle0" });
+  try {
+    await fn(page);
+    const sucio = page.consola.filter((l) => !ruidoEsperado.some((re) => re.test(l)));
+    afirmar(sucio.length === 0, `consola: ${sucio.join(" | ")}`);
+  } finally {
+    await page.close();
+  }
+}
+
+const texto = (page, sel) => page.$eval(sel, (e) => e.textContent.trim());
+
+/* ═══════════ Demostración del estado del mes ═══════════ */
+
+prueba("demo", "arranca marcada como lista y con los controles a la vista", () =>
+  conPagina(async (page) => {
+    igual(await page.$eval("#estado-mes", (e) => e.hasAttribute("data-ready")), true);
+    afirmar((await visible(page, ".jot")).visible, "el formulario de anotar gasto debería verse con JS");
+  }));
+
+prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
+  conPagina(async (page) => {
+    igual(await page.$eval("#estado-mes", (e) => e.hasAttribute("data-ready")), false);
+    const jot = await visible(page, ".jot");
+    igual(jot.visible, false, "la .jot no debe verse sin JS");
+    // El CTA del hero nace con [hidden] y solo demo.js lo destapa: si una regla
+    // de clase le gana a [hidden], se pinta un botón que no hace nada.
+    const cta = await visible(page, "[data-demo-focus]");
+    igual(cta.display, "none", "el CTA de la demo debe seguir oculto sin JS");
+    igual(cta.alto, 0);
+    // Y la hoja tiene que seguir mostrando sus cifras.
+    igual(await texto(page, "#demo-available"), "$204.000");
+    igual((await page.$$("details")).length, 4);
+  }, { sinJs: true }));
+
+prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
+  conPagina(async (page) => {
+    const gastado = await texto(page, "#demo-spent");
+    const cats = await page.$$eval(".cats__amount", (ns) =>
+      ns.reduce((t, n) => t + Number(n.textContent.replace(/[^0-9]/g, "")), 0));
+    igual(Number(gastado.replace(/[^0-9]/g, "")), cats, "gastado vs suma de categorías");
+  }));
+
+prueba("demo", "el monto se formatea en CLP mientras se escribe", () =>
+  conPagina(async (page) => {
+    await page.click("#demo-amount");
+    await page.type("#demo-amount", "23400");
+    const v = await page.$eval("#demo-amount", (e) => e.value);
+    afirmar(/^\$?23\.400$/.test(v), `valor formateado inesperado: ${v}`);
+  }));
+
+prueba("demo", "anotar un gasto recalcula saldo y ritmo, y lo inserta arriba", () =>
+  conPagina(async (page) => {
+    const antes = await texto(page, "#demo-available");
+    await page.click("#demo-amount");
+    await page.type("#demo-amount", "15000");
+    await page.click("#demo-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    const despues = await texto(page, "#demo-available");
+    afirmar(antes !== despues, "el saldo no cambió");
+    const num = (t) => Number(t.replace(/[^0-9-]/g, ""));
+    igual(num(despues), num(antes) - 15000);
+    const primero = await page.$eval("#demo-entries li .entries__amount", (e) => e.textContent);
+    afirmar(primero.includes("15.000"), `el movimiento nuevo no quedó primero: ${primero}`);
+  }));
+
+prueba("demo", "el aviso de aria-live se actualiza al anotar", () =>
+  conPagina(async (page) => {
+    igual(await texto(page, "#demo-live"), "");
+    await page.click("#demo-amount");
+    await page.type("#demo-amount", "9000");
+    await page.click("#demo-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await texto(page, "#demo-live")).length > 0, "#demo-live quedó vacío");
+    igual(await page.$eval("#demo-live", (e) => e.getAttribute("aria-live")), "polite");
+  }));
+
+prueba("demo", "monto vacío se rechaza con mensaje y aria-invalid", () =>
+  conPagina(async (page) => {
+    await page.click("#demo-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 80));
+    igual(await page.$eval("#demo-amount", (e) => e.getAttribute("aria-invalid")), "true");
+    afirmar((await texto(page, "#demo-error")).length > 0, "sin mensaje de error");
+  }));
+
+prueba("demo", "restablecer aparece al usar, devuelve todo y se vuelve a ocultar", () =>
+  conPagina(async (page) => {
+    const inicial = await visible(page, "#demo-reset");
+    igual(inicial.display, "none", "restablecer no debería verse al cargar");
+    igual(inicial.alto, 0);
+
+    const saldo0 = await texto(page, "#demo-available");
+    await page.click("#demo-cat-carrete");
+    await page.click("#demo-amount");
+    await page.type("#demo-amount", "12000");
+    await page.click("#demo-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await visible(page, "#demo-reset")).visible, "restablecer debería verse tras anotar");
+
+    await page.click("#demo-reset");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await texto(page, "#demo-available"), saldo0, "el saldo no volvió al original");
+    igual(await page.$eval("#demo-cat-super", (e) => e.checked), true, "la categoría no volvió a la primera");
+    igual((await visible(page, "#demo-reset")).display, "none", "restablecer debería volver a ocultarse");
+  }));
+
+prueba("demo", "la barra de ritmo se satura al 100% y no desborda", () =>
+  conPagina(async (page) => {
+    for (let i = 0; i < 6; i++) {
+      await page.click("#demo-amount", { clickCount: 3 });
+      await page.type("#demo-amount", "150000");
+      await page.click("#demo-form button[type=submit]");
+      await new Promise((r) => setTimeout(r, 60));
+    }
+    const r = await page.evaluate(() => {
+      const fill = document.getElementById("demo-fill");
+      return { pct: fill.style.width, ancho: fill.getBoundingClientRect().width, riel: fill.parentElement.getBoundingClientRect().width };
+    });
+    // El CSSOM normaliza "100.0%" a "100%": se compara el número, no la cadena.
+    igual(parseFloat(r.pct), 100);
+    afirmar(r.ancho <= r.riel + 1, `la barra desborda su riel: ${r.ancho} > ${r.riel}`);
+  }));
+
+prueba("demo", "el sobregiro se marca en rojo", () =>
+  conPagina(async (page) => {
+    for (let i = 0; i < 6; i++) {
+      await page.click("#demo-amount", { clickCount: 3 });
+      await page.type("#demo-amount", "150000");
+      await page.click("#demo-form button[type=submit]");
+      await new Promise((r) => setTimeout(r, 60));
+    }
+    // demo.js distingue "over" (>4% sobre el ritmo) de "way-over" (>25%):
+    // seis gastos de 150.000 caen holgadamente en el segundo.
+    const estado = await page.$eval("#demo-verdict", (e) => e.dataset.state);
+    igual(estado, "way-over");
+    // No se clava el hexadecimal: el tono cambia entre claro y oscuro y entre
+    // "over" y "way-over". Lo que la prueba defiende es que sea rojo.
+    const rgb = await page.$eval("#demo-verdict", (e) =>
+      getComputedStyle(e).color.match(/[0-9]+/g).map(Number));
+    afirmar(rgb[0] > 150 && rgb[0] > rgb[1] * 2 && rgb[0] > rgb[2] * 2,
+      `el veredicto no es rojo: rgb(${rgb.join(", ")})`);
+  }));
+
+prueba("demo", "el CTA del hero manda el foco al campo de monto", () =>
+  conPagina(async (page) => {
+    await page.click("[data-demo-focus]");
+    await new Promise((r) => setTimeout(r, 200));
+    igual(await page.evaluate(() => document.activeElement.id), "demo-amount");
+  }));
+
+/* ═══════════ Calculadora ═══════════ */
+
+prueba("calculadora", "800.000 / 95.000 da 11,9% y cita la mediana", () =>
+  conPagina(async (page) => {
+    await page.click("#calc-income");
+    await page.type("#calc-income", "800000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await texto(page, "#calc-pct"), "11,9%");
+    afirmar((await texto(page, "#calc-text")).toLowerCase().includes("mediana"), "el texto no menciona la mediana");
+    igual(await page.$eval("#calc-result", (e) => e.getAttribute("aria-live")), "polite");
+  }));
+
+prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
+  conPagina(async (page) => {
+    await page.click("#calc-income");
+    await page.type("#calc-income", "0");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await texto(page, "#calc-income-error")).length > 0, "sin mensaje de error");
+    igual((await visible(page, "#calc-result")).visible, false, "el resultado no debería verse");
+  }));
+
+prueba("calculadora", "deuda mayor que el ingreso deriva a orientación formal", () =>
+  conPagina(async (page) => {
+    await page.click("#calc-income");
+    await page.type("#calc-income", "400000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "900000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await texto(page, "#calc-pct"), "225,0%");
+    const fill = await page.$eval("#calc-fill", (e) => e.style.width);
+    igual(parseFloat(fill), 100, "la barra debería saturarse");
+  }));
+
+prueba("calculadora", "doce dígitos no rompen el formato", () =>
+  conPagina(async (page) => {
+    await page.click("#calc-income");
+    await page.type("#calc-income", "999999999999");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "1000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await texto(page, "#calc-pct")).includes("%"), "el porcentaje se rompió");
+  }));
+
+prueba("calculadora", "limpiar oculta el resultado y vacía los campos", () =>
+  conPagina(async (page) => {
+    igual((await visible(page, "#calc-reset")).display, "none", "limpiar no debería verse al cargar");
+    await page.click("#calc-income");
+    await page.type("#calc-income", "800000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    await page.click("#calc-reset");
+    await new Promise((r) => setTimeout(r, 120));
+    igual((await visible(page, "#calc-result")).visible, false);
+    igual(await page.$eval("#calc-income", (e) => e.value), "");
+    igual(await page.$eval("#calc-debt", (e) => e.value), "");
+  }));
+
+/* ═══════════ Formulario de lista de espera (contra el mock) ═══════════ */
+
+prueba("formulario", "correo inválido: mensaje, aria-invalid y ninguna petición", () =>
+  conPagina(async (page) => {
+    const posts = [];
+    page.on("request", (r) => { if (r.method() === "POST") posts.push(r.url()); });
+    await page.click("#waitlist-email");
+    await page.type("#waitlist-email", "no-es-correo");
+    await page.click("#waitlist-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 200));
+    igual(await page.$eval("#waitlist-email", (e) => e.getAttribute("aria-invalid")), "true");
+    afirmar((await texto(page, "#waitlist-msg")).length > 0, "sin mensaje");
+    igual(posts.length, 0, "no debería haber salido ninguna petición");
+  }));
+
+prueba("formulario", "envío correcto: una sola petición, formulario oculto, foco al mensaje", () =>
+  conPagina(async (page) => {
+    const posts = [];
+    page.on("request", (r) => { if (r.method() === "POST") posts.push(r.url()); });
+    await page.click("#waitlist-email");
+    await page.type("#waitlist-email", "ana@ejemplo.cl");
+    await page.click("#waitlist-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 400));
+    igual(posts.length, 1);
+    afirmar(posts[0].endsWith("/api/waitlist"), `endpoint inesperado: ${posts[0]}`);
+    igual((await visible(page, "#waitlist-form")).visible, false, "el formulario debería ocultarse");
+    igual(await page.$eval("#waitlist-msg", (e) => e.dataset.kind), "ok");
+    igual(await page.evaluate(() => document.activeElement.id), "waitlist-msg");
+  }));
+
+prueba("formulario", "doble clic dispara UNA sola petición", () =>
+  conPagina(async (page) => {
+    const posts = [];
+    page.on("request", (r) => { if (r.method() === "POST") posts.push(r.url()); });
+    await page.click("#waitlist-email");
+    await page.type("#waitlist-email", "ana@ejemplo.cl");
+    const boton = await page.$("#waitlist-form button[type=submit]");
+    await boton.click();
+    await boton.click().catch(() => {});
+    await new Promise((r) => setTimeout(r, 500));
+    igual(posts.length, 1, "la guardia de doble envío no funcionó");
+  }));
+
+prueba("formulario", "el honeypot viaja vacío y sigue fuera del recorrido de teclado", () =>
+  conPagina(async (page) => {
+    let cuerpo = null;
+    page.on("request", (r) => { if (r.method() === "POST") cuerpo = r.postData(); });
+    igual(await page.$eval(".honey", (e) => e.getAttribute("tabindex")), "-1");
+    await page.click("#waitlist-email");
+    await page.type("#waitlist-email", "ana@ejemplo.cl");
+    await page.click("#waitlist-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 400));
+    igual(JSON.parse(cuerpo).website, "");
+    igual(JSON.parse(cuerpo).email, "ana@ejemplo.cl");
+  }));
+
+prueba("formulario", "error de red: mensaje recuperable, botón reactivado y correo conservado", () =>
+  conPagina(async (page) => {
+    await page.setRequestInterception(true);
+    page.on("request", (r) => (r.url().endsWith("/api/waitlist") ? r.abort() : r.continue()));
+    await page.click("#waitlist-email");
+    await page.type("#waitlist-email", "ana@ejemplo.cl");
+    await page.click("#waitlist-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 400));
+    igual(await page.$eval("#waitlist-msg", (e) => e.dataset.kind), "error");
+    igual(await page.$eval("#waitlist-form button[type=submit]", (e) => e.disabled), false);
+    igual(await page.$eval("#waitlist-email", (e) => e.value), "ana@ejemplo.cl");
+    igual((await visible(page, "#waitlist-form")).visible, true, "el formulario debe seguir a la vista");
+  }, { ruidoEsperado: [/ERR_FAILED/, /Failed to load resource/] }));
+
+/* ═══════════ Teclado, tema y movimiento ═══════════ */
+
+prueba("teclado", "todo el recorrido tiene foco visible", () =>
+  conPagina(async (page) => {
+    const sinFoco = [];
+    let paradas = 0;
+    for (let i = 0; i < 60; i++) {
+      await page.keyboard.press("Tab");
+      const r = await page.evaluate(() => {
+        const e = document.activeElement;
+        if (!e || e === document.body) return null;
+        const c = getComputedStyle(e);
+        return { id: e.id || e.className || e.tagName, outline: c.outlineWidth, sombra: c.boxShadow };
+      });
+      if (!r) break;
+      paradas++;
+      if (r.outline === "0px" && r.sombra === "none") sinFoco.push(r.id);
+    }
+    afirmar(paradas > 20, `solo ${paradas} paradas de teclado`);
+    igual(sinFoco.length, 0, `sin foco visible: ${sinFoco.join(", ")}`);
+  }));
+
+prueba("tema", "el modo oscuro pinta el papel oscuro y no rompe nada", () =>
+  conPagina(async (page) => {
+    igual(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), "rgb(27, 25, 20)");
+  }, { tema: "dark" }));
+
+prueba("movimiento", "prefers-reduced-motion apaga las transiciones", () =>
+  conPagina(async (page) => {
+    await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
+    const d = await page.evaluate(() => getComputedStyle(document.querySelector(".btn")).transitionDuration);
+    afirmar(parseFloat(d) <= 0.001, `duración de transición: ${d}`);
+  }));
+
+/* ═══════════ Arnés ═══════════ */
+
+let ok = 0;
+let grupoActual = "";
+for (const c of casos) {
+  if (c.grupo !== grupoActual) { grupoActual = c.grupo; console.log(`\n── ${grupoActual} ──`); }
+  try {
+    await c.fn();
+    ok++;
+    console.log(`  ok    ${c.nombre}`);
+  } catch (e) {
+    console.log(`  FALLA ${c.nombre}\n        ${e.message}`);
+  }
+}
+
+await browser.close();
+s.servidor.close();
+console.log(`\nFuncionales: ${ok}/${casos.length}`);
+process.exitCode = ok === casos.length ? 0 : 1;
