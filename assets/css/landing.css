@@ -125,10 +125,26 @@
 
 html {
   scroll-behavior: smooth;
-  /* Justo lo que mide la cabecera fija mas un respiro. Estaba en 92px contra
-     una barra de 60: cada salto de ancla regalaba 32px muertos. */
-  scroll-padding-top: 68px;
   -webkit-text-size-adjust: 100%;
+}
+
+/* El salto de ancla lo resuelve cada destino con su propio scroll-margin-top,
+   no un scroll-padding-top global con un número escrito a mano. Dos razones.
+   Una: el valor sale de --masthead-h, declarada junto a las reglas del
+   masthead (§5), así que cambiar la altura de la cabecera y olvidar el offset
+   deja de ser posible — ya pasó una vez, con 92px contra una barra de 60
+   (QA_RITMO §12.2b). Dos: scroll-padding en el contenedor tiene soporte más
+   irregular fuera de Blink para la navegación por fragmento; scroll-margin en
+   el destino no.
+   Las dos vías NO se combinan a propósito: se suman, y el ancla caería al
+   doble de distancia de la cabecera. */
+#contenido,
+#como-funciona,
+#calculadora,
+#datos,
+#preguntas,
+#acceso {
+  scroll-margin-top: calc(var(--masthead-h) + var(--anchor-gap));
 }
 
 body {
@@ -304,6 +320,20 @@ h1, h2, h3, h4 {
 /* No es una barra flotante de SaaS: es la cabecera de una cartola, con su
    filete inferior. En móvil se parte en dos líneas antes que colapsar en
    hamburguesa — cuatro destinos caben perfectamente. */
+
+/* Alto real de la cabecera fija, medido: una fila en escritorio (60px) y dos
+   bajo 720px, donde aparece .masthead__strip (105px). Es lo que consume el
+   destino de cualquier ancla, así que se declara aquí —donde se decide— y no
+   en :root, lejos de la causa. El respiro son 14px: con los 5–8px que daba el
+   scroll-padding anterior el título quedaba pegado al filete de la barra. */
+:root {
+  --masthead-h: 105px;
+  --anchor-gap: 14px;
+}
+@media (min-width: 720px) {
+  :root { --masthead-h: 60px; }
+}
+
 .masthead {
   position: sticky;
   top: 0;
@@ -401,7 +431,6 @@ h1, h2, h3, h4 {
     text-decoration: none;
     color: var(--muted);
   }
-  html { scroll-padding-top: 110px; }
 }
 
 /* ---------- 6. Secciones ------------------------------------------------- */
