@@ -478,9 +478,9 @@ las tipografías ni el backend de la lista de espera.
 
 ## 9. Riesgos y pendientes reales
 
-1. **Lighthouse sin medir** (§7.6). Es el único control del encargo que no se
-   pudo ejecutar. Conviene correrlo una vez desde el navegador antes de aceptar
-   la rama.
+1. ~~**Lighthouse sin medir**~~ **(§7.6). CERRADO** en `QA_MEJORAS.md` §B1:
+   móvil 99 y escritorio 100, con Accesibilidad, Buenas prácticas y SEO en 100
+   en los dos perfiles, contra el servidor local con los headers reales.
 2. **La reducción en móvil es pequeña** (−0,9 % a −4,0 % entre 320 y 430 px).
    Está explicado en §5 y es honesto: el problema era de escritorio y el arreglo
    de objetivos táctiles cuesta altura. Si se quisiera bajar más, la única

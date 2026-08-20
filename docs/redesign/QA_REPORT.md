@@ -181,6 +181,11 @@ minificarlo exigiría introducir un paso de compilación en un proyecto que el
 encargo pide mantener sin herramientas de build. 3 KB antes de gzip, con
 Rendimiento en 97–98 móvil, no justifica ese costo.
 
+*Revisado después:* la estimación resultó corta — el ahorro real con gzip es de
+**6 KB, un 51 %**, no 3 KB. Se volvió a descartar igual, pero por otro motivo:
+medido, **no mueve el puntaje de Lighthouse ni un punto**. Detalle en
+`QA_MEJORAS.md` §B2.
+
 ---
 
 ## 6. Cross-browser
@@ -222,6 +227,12 @@ con la FAQ visible · `theme-color` por esquema · favicon SVG propio · `lang="
 No se declaró `SoftwareApplication` con `offers`: fijar un precio en datos
 estructurados es una afirmación comercial, y hoy no hay plan de pago que declarar.
 No se inventaron `aggregateRating` ni `Organization`.
+
+*Revisado después:* `SoftwareApplication` **sí** se declaró en
+`QA_MEJORAS.md` §C2, con `price: 0` y `LimitedAvailability`. El argumento de
+arriba vale para un precio inventado; el 0 y el acceso por invitación son
+exactamente lo que dicen la FAQ y el cierre de la página. Tampoco ahí se
+inventaron `aggregateRating` ni `Organization`.
 
 ---
 
@@ -314,6 +325,10 @@ redesplegados:**
 ---
 
 ## 10. Cómo reproducir estas pruebas
+
+> **Desactualizado.** Los scripts ya están versionados en
+> [`docs/redesign/qa/`](qa/README.md): `npm install && npm test`. Lo de abajo
+> describe la situación de esta sesión, no la de hoy.
 
 Los scripts quedaron en el directorio temporal de la sesión, no en el repositorio
 (no corresponde versionar herramientas de un solo uso en una landing sin build).

@@ -60,7 +60,13 @@ Cosas que trae y no son obvias a primera vista:
 - `docs/redesign/` — documentación del rediseño. **No debe publicarse.** El
   informe del rediseño está en `QA_REPORT.md`; el de la pasada posterior de
   ritmo vertical y diagramación, en
-  [`QA_RITMO.md`](docs/redesign/QA_RITMO.md).
+  [`QA_RITMO.md`](docs/redesign/QA_RITMO.md); el de anclas, Lighthouse,
+  metadatos y endurecimiento del endpoint, en
+  [`QA_MEJORAS.md`](docs/redesign/QA_MEJORAS.md).
+- `docs/redesign/qa/` — el arnés de QA, con `package.json` propio. **No afecta
+  a la landing**, que sigue sin build ni dependencias, y `.assetsignore` lo
+  excluye del despliegue. `cd docs/redesign/qa && npm install && npm test`.
+  Detalle en [`docs/redesign/qa/README.md`](docs/redesign/qa/README.md).
 
 > **Ojo con `docs/`.** Es documentación interna (estrategia, precios candidatos
 > del plan Pro). Antes de este rediseño se servía públicamente:
