@@ -48,7 +48,7 @@ sólida a cuatro cifras impresionantes.
 | «Metas de ahorro con aportes y progreso» | Funcionalidad | `db/schema.ts:149,171`; `app/api/savings-goals/` | **Comprobada** | Existe en web y móvil |
 | «Calendario, favoritos y **recordatorios de pagos fijos**» | Funcionalidad | `app/lib/calendar.ts`; `db/schema.ts:108-127`; `db/schema.ts:188-236` | **Ajustada** | Antes decía «pagos recurrentes», que sugiere automatismo. El producto es explícito: *«Mesura nunca los registra sola»* (`RecurringManager.tsx:113`). Se cambió a «recordatorios» |
 | «Resumen semanal por correo — viene activado y lo apagas en un clic» | Funcionalidad | `db/schema.ts:283` default `1`; cron `wrangler.jsonc:51`; `worker/index.ts:52-53` | **Ajustada** | Es **opt-out**, no opt-in. Antes se insinuaba lo contrario. Ahora se dice que viene activado |
-| «Respaldo en Excel y copia completa de tu cuenta en JSON» | Funcionalidad | `app/api/export/route.ts:33-39` (.xlsx); `app/api/account/export/route.ts:95-96` (.json, exige contraseña) | **Comprobada** | Son dos exportaciones distintas y ambas existen |
+| «Respaldo en Excel y copia completa de tu cuenta en JSON» | Funcionalidad | `app/api/export/route.ts:33-39` (.xlsx); `app/api/account/export/route.ts:95-96` (.json, exige contraseña) | **Comprobada** | Son dos exportaciones distintas y ambas existen. **Desde §10 se publica como «un respaldo completo de tu cuenta»**: mismo hecho, sin el nombre del formato |
 | Respaldo en Google Drive | Funcionalidad | `google-apps-script/Mesura.gs:47-53, 214-216`; `:59` `file.addViewer(email)` | **Eliminada** | **El mayor riesgo de la versión anterior.** La hoja se crea en el Drive del **operador**, no en el del usuario, y al usuario se le da permiso de **lector**. Decir «respaldo en Google Drive» invita a leer lo contrario de lo que ocurre. Se eliminó de la landing |
 | Plan «Mesura Pro» con features y precio | Comercial | Búsqueda de `stripe\|mercadopago\|webpay\|transbank\|suscripci\|paywall` en `app/ worker/ db/`: **cero coincidencias** | **Eliminada** | No existe una línea de código de planes, límites ni pasarela de pago. Vender un plan futuro con features nombradas es prometer sin respaldo. Vive solo en `docs/ESTRATEGIA.md` |
 
@@ -66,7 +66,7 @@ sólida a cuatro cifras impresionantes.
 | «Cada cuenta ve solo sus propios datos… la única excepción es un gasto que tú decides dividir» | Seguridad | Filtro por usuario en `app/api/expenses/route.ts:144,152,266,329-330,358-359,385-386`; excepción en `:161`. Suites `financial-invariants-security.test.ts`, `debt-groups-auth.test.ts` | **Comprobada** | La excepción se declara en la propia landing en vez de esconderla |
 | «Eliminas tu cuenta desde tu perfil, sin escribirle a soporte, y se borra de verdad» | Funcionalidad | `app/api/account/delete/route.ts:43-45` (síncrono, exige contraseña); `app/lib/account-deletion.ts:95-117` (`db.delete(users)`, borra R2 y hoja de Drive) | **Ajustada** | Es hard delete real. Se añadió el matiz de que los gastos compartidos se **anonimizan** en vez de borrarse (`account-deletion.ts:83-85`), porque el saldo de la contraparte depende de esas filas |
 | «No usa inteligencia artificial, salvo que tú la actives» + la letra chica que nombra el análisis semanal y el registro por voz | Funcionalidad | `wrangler.jsonc:17` `AI_GLOBAL_ENABLED: "false"`, `db/schema.ts:285` default `0`, consentimiento versionado en `worker/index.ts:61`; para la voz, `docs/input-channels/PRIVACY_AND_CONSENT.md` del repo de la app (matriz de datos, tabla de los tres consentimientos y garantías con sus pruebas: `multichannel-input-invariants`, `quick-entry-ui-structure`, `privacy-architecture-invariants`) | **Ajustada** | Reemplaza a «No pasa tus datos por inteligencia artificial» (ver §9). La versión anterior era exacta solo mientras la voz estuviera apagada; ésta es exacta en los dos escenarios |
-| «No se conecta a tu banco ni te pide claves bancarias» | Funcionalidad | Búsqueda de `fintoc\|plaid\|belvo\|cartola\|open banking` en `app/ worker/ db/`: cero coincidencias | **Comprobada** | Es el diferenciador más sólido y más fácil de verificar de toda la página |
+| «No se conecta a tu banco ni te pide claves bancarias» | Funcionalidad | Búsqueda de `fintoc\|plaid\|belvo\|cartola\|open banking` en `app/ worker/ db/`: cero coincidencias | **Comprobada** | Es el diferenciador más sólido y más fácil de verificar de toda la página. La FAQ que lo desarrolla cambió de vocabulario en §10 («estados de cuenta», «servicios que entren al banco por ti»), no de contenido |
 | «Ninguna aplicación puede prometer seguridad absoluta y esta no lo hace» | Seguridad | — | **Comprobada** | Reemplaza cualquier formulación tipo «100% seguro». No se publica ninguna |
 
 ---
@@ -242,3 +242,175 @@ situación». Sin cambios.
 «nunca», «cero IA»). Cualquier redacción futura tiene que seguir siendo cierta
 con el registro por voz encendido, y no se resuelve con un asterisco: una
 afirmación absoluta con letra chica es peor que una afirmación matizada.
+
+---
+
+## 10. Barrido de lenguaje llano y comprensión regional (19-ago-2026)
+
+Pasada de **vocabulario**, sin rediseño y sin tocar el layout. Rama
+`claude/landing-plain-language-latam-20260819`, partiendo de
+`claude/landing-ai-copy-voice-20260819` @ `576e152`, que **ya está en `main`**:
+se mezcló por el PR #1 (`5a9a5bf`) y su árbol es idéntico al de `origin/main`.
+Dicho de otro modo, esta rama sale del contenido vigente de `main` y el PR
+aporta un solo commit.
+
+Dos encargos en una sola pasada:
+
+1. Sacar de la página el vocabulario que solo entiende quien construye software.
+2. Que la página se pueda leer sin tropiezos desde Perú, Argentina, México,
+   Colombia o Venezuela, **sin dejar de sonar chilena**.
+
+**Ninguna afirmación cambió de significado.** Todas las de §1–§9 siguen
+publicadas, con su universo, su fuente y sus precisiones intactas.
+
+### 10.1 Jerga técnica retirada
+
+| Término | Dónde estaba | Ahora dice | Por qué sigue siendo verdad |
+|---|---|---|---|
+| **JSON** | Acuerdo de datos (`<small>` de «Tu respaldo»), FAQ «¿Qué pasa con mis datos?» y la misma respuesta en el JSON-LD | «un **respaldo completo de tu cuenta**» | Sigue siendo la segunda exportación, distinta del Excel y de la cuenta entera (`app/api/account/export/route.ts`). El nombre del formato no era información para quien lee: era la etiqueta interna del archivo |
+| **servicios de agregación (financiera)** | FAQ «¿Debo conectar mi banco?» y su versión en el JSON-LD | «servicios que **entren al banco por ti**» | Describe exactamente lo que hace un agregador. La búsqueda que respalda la afirmación (`fintoc\|plaid\|belvo\|open banking`, cero coincidencias) no cambia |
+| **credencial bancaria** | FAQ «¿Debo conectar mi banco?» | «no le entregas a nadie **las claves de tu banco**» | Misma afirmación, con la palabra que usa la gente |
+| **quien administra el servidor** | FAQ «¿Qué pasa con mis datos?» | «ni siquiera **quien mantiene Mesura**» | El punto era que el operador tampoco puede leer la contraseña. Se conserva; se nombra a la persona, no a la máquina |
+| **aloja** | Acuerdo de datos, «Dos servicios para funcionar» | «Cloudflare **mantiene la app en internet**» | **Línea roja respetada:** Cloudflare y Google siguen nombrados, y el resumen semanal sigue declarado como correo que pasa por Google |
+| **corre** (en «el ejemplo corre en tu navegador») | Nota al pie de la demo del hero | «el ejemplo **funciona** en tu navegador» | Calco de programador. El hecho —cálculo local, sin envío, sin cuenta— no cambia |
+
+**Términos buscados que no existían en material publicado:** token, caché,
+endpoint, hash, PWA, service worker, worker, log, esquema, API, y cualquier
+código de error crudo. El *hash* ya se había traducido en la pasada §8
+(«se guarda de forma que nadie puede leerla»).
+
+**Revisado y conservado:** «cookies de seguimiento». Es el término que la gente
+ve todos los días en los avisos de consentimiento y en las políticas de
+privacidad; traducirlo lo volvería más confuso, no menos.
+
+**Encontrado y deliberadamente no tocado:** las respuestas de error de
+`functions/api/waitlist.js` («Cuerpo inválido», «Correo inválido», «Lista de
+espera no configurada») son JSON de la Function y **nunca se muestran**:
+`landing.js` descarta el cuerpo de la respuesta y escribe su propio mensaje. No
+son texto publicado.
+
+### 10.2 Mensajes de error
+
+Los tres mensajes que una persona puede llegar a ver se revisaron con el
+criterio de que digan **qué pasó y qué hacer**:
+
+| Antes | Ahora |
+|---|---|
+| «Revisa el correo: parece que le falta algo.» | «Ese correo no está completo. Revísalo y vuelve a enviarlo.» |
+| «Necesitamos tu ingreso mensual para calcular el porcentaje.» | «Escribe cuánto te llega al mes para poder calcular el porcentaje.» |
+| «Ejemplo restablecido a su estado original.» (aviso para lector de pantalla) | «Volvimos al ejemplo original.» |
+
+Sin cambios: «No pudimos guardar tu correo — puede ser la conexión. Inténtalo
+otra vez en un momento; tu correo sigue escrito arriba.» y «Escribe un monto
+para anotarlo.» Ya decían causa y salida, y no tenían jerga.
+
+### 10.3 Comprensión regional
+
+La app admite hoy más monedas que el peso chileno, así que la página tiene que
+poder leerla alguien de fuera de Chile. El criterio no fue neutralizar el
+español: fue **quitar lo que se malentiende o no se entiende, y dejar lo que
+solo suena chileno**.
+
+**«Luca» no aparece** en ningún texto publicado — se buscó en HTML, JS,
+metadatos, JSON-LD, `robots.txt` y `sitemap.xml`. Era el caso conocido (mil
+pesos en Chile y Argentina, un sol en Perú) y no existía. Tampoco «boleta»,
+«gamba», «palo» ni «al tiro».
+
+| Expresión | Dónde | Decisión | Criterio |
+|---|---|---|---|
+| **cartolas** | FAQ del banco y su JSON-LD | → «tus **estados de cuenta**» | «Cartola» es chilena; en México y Perú es «estado de cuenta», en Colombia «extracto», en Argentina «resumen». «Estado de cuenta» se entiende en los seis países |
+| **ingreso líquido** | Etiqueta de la calculadora | → «Tu **ingreso mensual**», con la explicación que ya estaba abajo | «Líquido» como «neto» es chileno y además contable. El `<small>` («Lo que te llega a la cuenta, después de los descuentos») ya definía el concepto sin depender de la palabra |
+| **avances** | Calculadora, qué cuenta como deuda | → «avances **en efectivo**» | «Avance» solo se lee como avance de efectivo en Chile. Con las dos palabras se entiende en toda la región |
+| **mediana nacional 11,9%** | Marca del eje del resultado | → «**mediana en Chile** 11,9%» | «Nacional» era ambiguo: un lector peruano lo lee como *su* país. El dato es de la CMF y es chileno, y ahora lo dice. **La cifra, la palabra «mediana» y el universo «deudores bancarios» no se tocaron** |
+| **mediana nacional** (texto del resultado) | `calculator.js`, rama «coincide con la mediana» | → «la mediana de 11,9% de los deudores bancarios en Chile» | Queda igual que las otras cuatro ramas, que ya decían el universo completo |
+| **SERNAC** | `calculator.js`, rama de cuotas sobre el ingreso | → «en Chile, el SERNAC o la institución donde tomaste el crédito; fuera de Chile, el organismo que defiende al consumidor en tu país» | Antes se ofrecía un organismo chileno como si fuera universal. Ahora se declara chileno y el lector de otro país recibe una pista útil |
+
+**Revisado y conservado a propósito** — esto es la voz de la página, no un
+descuido:
+
+| Expresión | Dónde | Por qué se queda |
+|---|---|---|
+| **Bencina** | Movimiento del estado del mes | Es la palabra chilena para gasolina y no significa otra cosa en ningún otro país: no se puede *malentender*. La fila trae su categoría al lado («Transporte · vie 15»), que entrega el referente a quien no conozca la palabra |
+| **Feria de la Vega** | Movimiento del estado del mes y apunte del momento 01 | Lugar real de Santiago. Va acompañado de «Supermercado», que da el sentido. Cambiarlo por un genérico sería exactamente lo que el encargo prohíbe |
+| **«el arriendo a medias, el asado que pagaste tú, la plata que te deben»** | Momento 03 | La frase más chilena de la página y la más concreta. «Arrendar», «asado» y «plata» se entienden en toda Hispanoamérica aunque no sean la palabra cotidiana en cada país |
+| **«Cumpleaños de la Javi»** | Movimiento del estado del mes | El artículo antes del nombre es marca chilena y rioplatense. Se entiende sin esfuerzo y es parte de que el texto suene a alguien |
+| **sueldo**, **computador**, **cuenta de la luz** | Calculadora, FAQ, movimientos | Se usan y se entienden en los seis países |
+| **carrete** | `value="carrete"` e `id="demo-cat-carrete"` | Identificador interno del formulario, nunca visible: la etiqueta que se lee dice «Salidas». No es texto publicado y cambiarlo solo arriesgaría romper CSS y JS |
+
+**Cifras y evidencia chilena: intactas.** El 71% y el 31% del CPP UC con su
+cláusula «de quienes lo tienen»; el 11,9% de la CMF con «mediana» y «deudores
+bancarios»; Cloudflare y Google; la anonimización de gastos compartidos; el
+resumen semanal opt-out; el acceso por invitación; «Hecha en Chile». Ni una
+palabra de eso se tocó, y los dos enlaces a las fuentes siguen apuntando a la
+misma URL.
+
+**Sin meta-comentario.** La pasada no agregó ni una frase de la página hablando
+de sí misma, de su propia honestidad ni de objeciones anticipadas. La línea roja
+de §8 se mantiene.
+
+### 10.4 Un pendiente que esta pasada no podía resolver
+
+La landing declara **«en pesos chilenos»** en cuatro lugares: la meta
+descripción, `og:`/`twitter:`, la bajada del hero y el acuerdo de datos. La
+afirmación está verificada en §2 contra `db/schema.ts:284` (default `"CLP"`).
+
+Si la app efectivamente admite hoy sol peruano, peso argentino, peso mexicano,
+peso colombiano y bolívar, esa afirmación **queda incompleta** — es la misma
+figura del problema de la IA en §9: exacta ayer, angosta hoy. No se tocó porque
+(a) el encargo era de vocabulario y esto es un cambio de afirmación, y (b) no se
+puede verificar desde este repositorio: exige leer el código de la app, como se
+hizo para §2 y §9.
+
+Lo mismo vale para el formato de los montos: la calculadora imprime todo con
+`Intl.NumberFormat("es-CL", CLP)`, de modo que quien escriba soles verá el
+resultado con formato de peso chileno. El **porcentaje**, que es lo que la
+calculadora afirma, es correcto en cualquier moneda.
+
+**Recomendación:** verificar las monedas en el repositorio de la app y, si se
+confirman, corregir la afirmación en una pasada propia con la evidencia al lado.
+
+### 10.5 Efecto en la altura de la página
+
+El ritmo vertical medido en `QA_RITMO.md` **no se deshizo**. Medido con el mismo
+método —Chrome sin interfaz, seis anchos, claro y oscuro— antes y después:
+
+| Ancho | Antes | Después | Δ |
+|---|---|---|---|
+| 320 × 720 | 8.871 px | 8.906 px | **+35 px** (+0,4 %) |
+| 390 × 844 | 7.943 px | 7.959 px | **+16 px** (+0,2 %) |
+| 768 × 1.024 | 6.603 px | 6.603 px | **0** |
+| 1.024 × 768 | 4.975 px | 4.979 px | +4 px |
+| 1.366 × 768 | 5.204 px | 5.204 px | **0** |
+| 1.440 × 900 | 5.234 px | 5.234 px | **0** |
+
+Hero, «Un mes real», la brecha, las preguntas y el cierre miden **exactamente lo
+mismo en los doce escenarios**. El movimiento viene de dos `<small>` que ganaron
+una línea en las pantallas más angostas: «avances en efectivo» en la calculadora
+(+15/+16 px) y «Cloudflare mantiene la app en internet» en el acuerdo de datos
+(+19 px a 320).
+
+Dos redacciones se acortaron durante la pasada precisamente para devolver
+altura, sin perder nada: «un respaldo completo de tu cuenta» en vez de «una
+copia completa de tu cuenta en un archivo de respaldo» (−23 caracteres, misma
+afirmación), y se quitó el «cada mes» que duplicaba lo que ya decía la etiqueta
+del campo. Con eso el escritorio volvió a 0 px de diferencia.
+
+### 10.6 Controles
+
+Ejecutados contra un servidor local que replica los headers reales de `_headers`
+—CSP incluida— y con **mock de `/api/waitlist`**: no se escribió en el KV de
+producción ni se disparó ningún correo.
+
+- **axe-core** (`wcag2a` + `wcag2aa` + `wcag21a` + `wcag21aa` + `best-practice`)
+  en claro y oscuro, a 390 y 1.440: **0 violaciones** en las cuatro
+  configuraciones.
+- **12/12 pruebas funcionales**: el JSON-LD sigue parseando con sus cuatro
+  preguntas; la demo recalcula al anotar un gasto y vuelve al ejemplo original
+  con el aviso nuevo; los tres mensajes de error aparecen con el texto nuevo; la
+  calculadora entrega porcentaje y texto, con la marca del eje diciendo Chile;
+  la rama de sobreendeudamiento acota el SERNAC a Chile; el envío al mock
+  responde éxito y oculta el formulario.
+- **0 errores de consola** en los doce escenarios medidos.
+- **0 scroll horizontal** entre 320 y 1.440 px.
+- **12 anclas internas**, todas apuntando a un `id` existente. Los cinco enlaces
+  externos no se modificaron: siguen siendo los mismos `https://` de antes.

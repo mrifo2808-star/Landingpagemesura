@@ -51,7 +51,7 @@
     if (!value || !email.checkValidity()) {
       email.setAttribute("aria-invalid", "true");
       msg.setAttribute("data-kind", "error");
-      msg.textContent = "Revisa el correo: parece que le falta algo.";
+      msg.textContent = "Ese correo no está completo. Revísalo y vuelve a enviarlo.";
       email.focus();
       return;
     }

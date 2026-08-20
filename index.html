@@ -61,7 +61,7 @@
           "name": "¿Qué pasa con mis datos?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Tu cuenta ve solo sus propios datos y tu contraseña se guarda de forma que nadie puede leerla. Puedes descargar tus movimientos en Excel o una copia completa en JSON, y eliminar tu cuenta desde tu propio perfil sin escribirle a nadie. No hay publicidad, ni venta de datos, ni cookies de seguimiento."
+            "text": "Tu cuenta ve solo sus propios datos y tu contraseña se guarda de forma que nadie puede leerla. Puedes descargar tus movimientos en Excel o un respaldo completo de tu cuenta, y eliminarla desde tu propio perfil sin escribirle a nadie. No hay publicidad, ni venta de datos, ni cookies de seguimiento."
           }
         },
         {
@@ -69,7 +69,7 @@
           "name": "¿Debo conectar mi banco?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No, y tampoco puedes: Mesura no tiene conexión con bancos. No pide claves bancarias, no lee cartolas y no usa servicios de agregación. Todo lo que aparece en tu mes lo anotaste tú."
+            "text": "No, y tampoco puedes: Mesura no tiene conexión con bancos. No pide claves bancarias, no lee tus estados de cuenta y no usa servicios que entren al banco por ti. Todo lo que aparece en tu mes lo anotaste tú."
           }
         },
         {
@@ -270,7 +270,7 @@
 
           <div class="jot__foot">
             <p class="jot__note">
-              El ejemplo corre en tu navegador. No se guarda, no se envía y no necesita cuenta.
+              El ejemplo funciona en tu navegador. No se guarda, no se envía y no necesita cuenta.
             </p>
             <button type="button" class="link-quiet" id="demo-reset" hidden>
               Volver al ejemplo original
@@ -413,8 +413,8 @@
           <form class="statement" id="calc-form" novalidate>
             <div class="statement__row">
               <label class="statement__label" for="calc-income">
-                Tu ingreso líquido mensual
-                <small>Lo que te llega a la cuenta, después de descuentos</small>
+                Tu ingreso mensual
+                <small>Lo que te llega a la cuenta, después de los descuentos</small>
               </label>
               <div>
                 <span class="money-input">
@@ -430,7 +430,7 @@
             <div class="statement__row">
               <label class="statement__label" for="calc-debt">
                 Lo que pagas al mes en deudas
-                <small>Cuotas de créditos, tarjetas y avances</small>
+                <small>Cuotas de créditos, tarjetas y avances en efectivo</small>
               </label>
               <div>
                 <span class="money-input">
@@ -452,7 +452,7 @@
             <p class="result__caption">De tu ingreso mensual se va en deudas</p>
             <div class="result__axis" aria-hidden="true">
               <div class="result__fill" id="calc-fill" style="width:0%"></div>
-              <div class="result__ref" id="calc-ref" style="left:29.8%"><span>mediana nacional 11,9%</span></div>
+              <div class="result__ref" id="calc-ref" style="left:29.8%"><span>mediana en Chile 11,9%</span></div>
             </div>
             <p class="result__text" id="calc-text"></p>
             <p class="result__cta"><a class="btn btn--primary" href="#acceso">Pedir acceso a la beta</a></p>
@@ -488,11 +488,12 @@
             <li>Los movimientos que anotas tú, en pesos chilenos.</li>
             <li>
               Dos servicios para funcionar
-              <small>Cloudflare aloja la app y Google envía los correos, como el resumen semanal.</small>
+              <small>Cloudflare mantiene la app en internet y Google manda los correos,
+              como el resumen semanal.</small>
             </li>
             <li>
               Tu respaldo, cuando lo pides
-              <small>Descargas tus movimientos en Excel o una copia completa de tu cuenta en JSON.</small>
+              <small>Descargas tus movimientos en Excel, o un respaldo completo de tu cuenta.</small>
             </li>
           </ul>
         </div>
@@ -560,14 +561,14 @@
             <div class="qa__body">
               <p>
                 Tu cuenta ve únicamente sus propios datos, y tu contraseña se guarda de
-                forma que nadie puede leerla — ni siquiera quien administra el servidor.
+                forma que nadie puede leerla — ni siquiera quien mantiene Mesura.
                 La única excepción es un gasto que tú decides dividir: la otra persona
                 ve ese movimiento, nada más.
               </p>
               <p>
-                Todo lo tuyo es tuyo: descargas tus movimientos en Excel, o una copia
-                completa de tu cuenta en JSON, y eliminas la cuenta desde tu propio
-                perfil, sin escribirle a soporte. Se borra de verdad — solo queda, sin
+                Todo lo tuyo es tuyo: descargas tus movimientos en Excel, o un respaldo
+                completo de tu cuenta, y eliminas la cuenta desde tu propio perfil, sin
+                escribirle a soporte. Se borra de verdad — solo queda, sin
                 tu nombre, el saldo de los gastos que dividiste con alguien, porque la
                 otra persona lo necesita. No hay publicidad, ni venta de datos, ni
                 cookies de seguimiento.
@@ -580,14 +581,14 @@
             <div class="qa__body">
               <p>
                 No, y tampoco podrías: Mesura no tiene ninguna conexión con bancos.
-                No pide claves, no lee cartolas y no usa servicios de agregación
-                financiera.
+                No pide claves, no lee tus estados de cuenta y no usa servicios que
+                entren al banco por ti.
               </p>
               <p>
                 Eso significa que los movimientos los anotas tú. Es más trabajo que
                 una sincronización automática, y es deliberado: anotar un gasto es lo
-                que hace que lo veas. A cambio, no entregas ninguna credencial
-                bancaria a nadie.
+                que hace que lo veas. A cambio, no le entregas a nadie las claves de
+                tu banco.
               </p>
             </div>
           </details>
