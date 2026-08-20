@@ -112,107 +112,119 @@
     "viewport": "390x844",
     "tema": "light",
     "ancla": "#acceso",
-    "holgura": 42,
+    "holgura": 33,
     "titulo": "Pide tu acceso a la beta fundadora.",
-    "archivo": "despues-390x844-light-acceso.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "390x844",
     "tema": "light",
     "ancla": "#como-funciona",
-    "holgura": 88,
+    "holgura": 79,
     "titulo": "Nadie abre una app de finanzas para hacer un presu",
-    "archivo": "despues-390x844-light-como-funciona.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "390x844",
     "tema": "light",
     "ancla": "#preguntas",
-    "holgura": 72,
+    "holgura": 63,
     "titulo": "Las cuatro que importan.",
-    "archivo": "despues-390x844-light-preguntas.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "390x844",
     "tema": "dark",
     "ancla": "#acceso",
-    "holgura": 42,
+    "holgura": 33,
     "titulo": "Pide tu acceso a la beta fundadora.",
-    "archivo": "despues-390x844-dark-acceso.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "390x844",
     "tema": "dark",
     "ancla": "#como-funciona",
-    "holgura": 88,
+    "holgura": 79,
     "titulo": "Nadie abre una app de finanzas para hacer un presu",
-    "archivo": "despues-390x844-dark-como-funciona.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "390x844",
     "tema": "dark",
     "ancla": "#preguntas",
-    "holgura": 72,
+    "holgura": 63,
     "titulo": "Las cuatro que importan.",
-    "archivo": "despues-390x844-dark-preguntas.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "1440x900",
     "tema": "light",
-    "ancla": "#acceso",
-    "holgura": 120,
-    "titulo": "Pide tu acceso a la beta fundadora.",
-    "archivo": "despues-1440x900-light-acceso.png"
-  },
-  {
-    "tanda": "despues",
-    "viewport": "1440x900",
-    "tema": "light",
-    "ancla": "#como-funciona",
-    "holgura": 111,
-    "titulo": "Nadie abre una app de finanzas para hacer un presu",
-    "archivo": "despues-1440x900-light-como-funciona.png"
-  },
-  {
-    "tanda": "despues",
-    "viewport": "1440x900",
-    "tema": "light",
-    "ancla": "#preguntas",
-    "holgura": 81,
-    "titulo": "Las cuatro que importan.",
-    "archivo": "despues-1440x900-light-preguntas.png"
-  },
-  {
-    "tanda": "despues",
-    "viewport": "1440x900",
-    "tema": "dark",
     "ancla": "#acceso",
     "holgura": 120,
     "titulo": "Pide tu acceso a la beta fundadora.",
-    "archivo": "despues-1440x900-dark-acceso.png"
+    "archivo": null,
+    "identicaAlAntes": true
+  },
+  {
+    "tanda": "despues",
+    "viewport": "1440x900",
+    "tema": "light",
+    "ancla": "#como-funciona",
+    "holgura": 105,
+    "titulo": "Nadie abre una app de finanzas para hacer un presu",
+    "archivo": null,
+    "identicaAlAntes": true
+  },
+  {
+    "tanda": "despues",
+    "viewport": "1440x900",
+    "tema": "light",
+    "ancla": "#preguntas",
+    "holgura": 75,
+    "titulo": "Las cuatro que importan.",
+    "archivo": null,
+    "identicaAlAntes": true
+  },
+  {
+    "tanda": "despues",
+    "viewport": "1440x900",
+    "tema": "dark",
+    "ancla": "#acceso",
+    "holgura": 120,
+    "titulo": "Pide tu acceso a la beta fundadora.",
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "1440x900",
     "tema": "dark",
     "ancla": "#como-funciona",
-    "holgura": 111,
+    "holgura": 105,
     "titulo": "Nadie abre una app de finanzas para hacer un presu",
-    "archivo": "despues-1440x900-dark-como-funciona.png"
+    "archivo": null,
+    "identicaAlAntes": true
   },
   {
     "tanda": "despues",
     "viewport": "1440x900",
     "tema": "dark",
     "ancla": "#preguntas",
-    "holgura": 81,
+    "holgura": 75,
     "titulo": "Las cuatro que importan.",
-    "archivo": "despues-1440x900-dark-preguntas.png"
+    "archivo": null,
+    "identicaAlAntes": true
   }
 ]

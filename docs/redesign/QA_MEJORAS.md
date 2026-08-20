@@ -5,11 +5,15 @@
 
 Estado: **implementado y probado en local. No mezclado a `main`. No desplegado.**
 
-Alcance: el salto de ancla bajo la cabecera fija, los dos controles que
-`QA_RITMO.md` §9 dejó pendientes —Lighthouse y minificación de CSS—, la fluidez
-del scroll, dos metadatos que faltaban, endurecimiento del endpoint de la lista
-de espera, y el arnés de QA versionado que el propio repositorio venía pidiendo
-desde hace dos pasadas.
+Alcance: los dos controles que `QA_RITMO.md` §9 dejó pendientes —Lighthouse y
+minificación de CSS—, la fluidez del scroll, dos metadatos que faltaban,
+endurecimiento del endpoint de la lista de espera, y el arnés de QA versionado
+que el propio repositorio venía pidiendo desde hace dos pasadas.
+
+**De los diez puntos del encargo, tres ya estaban resueltos en `main`.** Están
+listados en §K, con lo que se midió para comprobarlo. El más importante es A1:
+el salto de ancla **ya funcionaba**, y la primera versión de esta rama lo
+empeoró antes de que la medición lo mostrara. Está contado en §0.
 
 **No se tocó una sola línea de copy.** El contenido pasó por auditoría de
 afirmaciones en `CLAIM_INVENTORY.md` y nada de este encargo obligaba a
@@ -23,91 +27,132 @@ disparó un correo.
 
 ---
 
-## 0. Un cambio se apartó del diagnóstico del encargo
+## 0. A1 ya estaba resuelto. Lo verifiqué, me equivoqué, y lo corregí
 
 El encargo describe A1 como que «ningún destino de ancla tiene
 `scroll-margin-top`» y que por eso el título queda tapado por la cabecera.
-**Medido antes de tocar nada, eso no es lo que pasa en Chrome.**
+**Medido antes de tocar nada, eso no es lo que pasa.**
 
-`main` sí tiene un offset: `html { scroll-padding-top: 68px }`, con un override
-de `110px` bajo 720px. Los **60 aterrizajes** de la matriz —seis anclas × cinco
-anchos × dos temas— caían correctos, con el título entero bajo la barra.
+`main` sí tiene offset: `html { scroll-padding-top: 68px }`, con un override de
+`110px` bajo 720 px. Lo puso la segunda pasada de ritmo vertical, que lo
+encontró desfasado en 92 px contra una cabecera de 60 y lo recalibró midiendo
+(`QA_RITMO.md` §12.2b–§12.3). Los **60 aterrizajes** de la matriz —seis anclas ×
+cinco anchos × dos temas— caen correctos, con el título entero bajo la barra.
 
-Lo que sí era cierto es el problema de fondo, y por eso el arreglo se hizo igual:
+### La primera versión de esta rama lo empeoró
 
-| | `main` | Esta rama |
-|---|---|---|
-| De dónde sale el offset | dos números literales, en la base de la hoja y en un `@media` a 300 líneas del masthead | `--masthead-h`, declarada junto a las reglas del masthead |
-| Holgura del título bajo la barra | 5 px en móvil, 8–9 px en escritorio | **14–15 px en todos los anchos** |
-| Mecanismo | `scroll-padding-top` en el contenedor | `scroll-margin-top` en cada destino |
+Traté ese offset como un número suelto que convenía reemplazar, subí el respiro
+de 5–8 px a 14 px «porque el encargo lo pide», y con eso **volví a inflar
+exactamente la métrica que la pasada de ritmo había apretado**. Medido:
 
-Las tres cosas importan. El número literal **ya se desfasó una vez**: quedó en
-92 px contra una barra de 60 y cada salto regalaba 32 px muertos, hasta que
-`QA_RITMO.md` §12.2b lo encontró. La holgura de 5 px deja el título pegado al
-filete de la cabecera, por debajo del respiro de 12–16 px que pide el encargo. Y
-`scroll-padding` en el contenedor tiene soporte más irregular fuera de Blink
-para la navegación por fragmento, que es la explicación más plausible de lo que
-el encargo reporta haber visto en producción — **este proyecto sigue sin probar
-Firefox** (`QA_REPORT.md` §6).
+| Vacío tras saltar, 1.440 px | `QA_RITMO.md` §12.4 | Primera versión de esta rama | Ahora |
+|---|---|---|---|
+| «Cómo funciona» | 72 px | **78 px** | **72 px** |
+| «Tus datos» | 57 px | **63 px** | **57 px** |
+| «Preguntas» | 42 px | **48 px** | **42 px** |
 
-**Las dos vías no se combinan a propósito: se suman**, y el ancla caería al
-doble de distancia de la cabecera. Por eso `scroll-padding-top` se retiró al
-mover el offset a los destinos.
+En móvil el desvío era mayor: +9 px en los cuatro destinos. Seis y nueve píxeles
+no suenan a nada, pero son sobre una página que ya está en el techo del margen
+aceptable —20,3 % de reducción, y §12.4 advierte que «no queda margen para
+seguir apretando»— y son justo el tipo de cosa que se deshace sin querer cuando
+se lee un valor calibrado como si fuera un descuido.
 
-Se dice acá porque el encargo pide verificar, y verificar incluye informar
-cuando el diagnóstico de partida no calza con lo medido.
+También había cambiado el **mecanismo**, de `scroll-padding-top` en el
+contenedor a `scroll-margin-top` en seis selectores. Eso pierde algo que el
+original sí daba: `scroll-padding` cubre **todo** scroll-into-view, incluido el
+que provoca `.focus()` —el del mensaje de la lista de espera y el del campo de
+la demo—, y seis reglas de ancla no. Hoy ninguno de esos dos casos queda bajo la
+barra en ninguna de las dos versiones, así que no había regresión visible; pero
+era cobertura regalada a cambio de nada.
 
----
+### Lo que quedó
 
-## A. El salto de ancla
-
-### A1. `--masthead-h` en vez de números escritos a mano
+Los valores de `QA_RITMO.md` §12.3 vuelven **intactos**, y el mecanismo también.
+Lo único que cambia es de dónde sale el número:
 
 ```css
 /* junto a las reglas del masthead, donde se decide el alto */
-:root { --masthead-h: 105px; --anchor-gap: 14px; }
-@media (min-width: 720px) { :root { --masthead-h: 60px; } }
+:root { --masthead-h: 105px; --anchor-gap: 5px; }        /* = 110px */
+@media (min-width: 720px) { :root { --masthead-h: 60px; --anchor-gap: 8px; } }  /* = 68px */
 
-#contenido, #como-funciona, #calculadora, #datos, #preguntas, #acceso {
-  scroll-margin-top: calc(var(--masthead-h) + var(--anchor-gap));
-}
+html { scroll-padding-top: calc(var(--masthead-h) + var(--anchor-gap)); }
 ```
 
-Los dos valores de `--masthead-h` son el alto medido de la cabecera, no una
-estimación: 60 px en escritorio y 105 px bajo 720 px, donde aparece
-`.masthead__strip` y la barra pasa a dos filas. Barrido de 320 a 1920 px: el
-salto está exactamente en 720, que es el breakpoint que ya usaba la hoja.
+`105 + 5 = 110` y `60 + 8 = 68` son los dos valores de esa pasada, descompuestos
+en las dos partes que los explican: el alto real de la cabecera —una fila en
+escritorio, dos bajo 720 px donde aparece `.masthead__strip`— y el respiro que
+ya llevaban encima.
 
-### Resultado — holgura del título bajo el canto de la cabecera
+**Comprobado que el resultado es idéntico**, no parecido:
 
-Los seis destinos, en los cinco anchos, en claro y oscuro: **60/60 antes y
-60/60 después.** Lo que cambia es la holgura.
+| | `main` | Esta rama |
+|---|---|---|
+| `scroll-padding-top` computado en 320 · 390 · 719 px | 110px | **110px** |
+| en 720 · 768 · 1.024 · 1.440 · 1.920 px | 68px | **68px** |
+| Vacío tras saltar (4 destinos × 2 anchos) | — | **las 8 cifras iguales** |
+| Capturas del aterrizaje (3 anclas × 2 anchos × 2 temas) | — | **12/12 pares byte a byte idénticos** |
+| Alto total de página (5 anchos) | — | **las 5 cifras iguales** |
 
-| Ancho | Cabecera | `main` | Esta rama |
-|---|---|---|---|
-| 360 px | 105 px | 5 px | **14 px** |
-| 390 px | 105 px | 5–6 px | **14 px** |
-| 768 px | 60 px | 9 px | **15 px** |
-| 1.024 px | 60 px | 8–9 px | **14–15 px** |
-| 1.440 px | 60 px | 8–9 px | **14–15 px** |
+### Entonces, ¿por qué cambiar algo?
 
-Idéntico en los dos temas: el tema no cambia la geometría.
+Porque el número **ya se desfasó una vez** y el modo en que estaba escrito es la
+razón: dos literales, uno en la base de la hoja y otro dentro de un `@media` a
+250 líneas de distancia, ninguno cerca de la cabecera cuyo alto tienen que
+seguir. Cuando el arreglo de objetivos táctiles bajó la barra de 92 a 60 px,
+nada avisó, y el desfase vivió una pasada entera hasta que §12.2b lo encontró.
+
+Ahora los dos valores viven a cinco líneas de lo que los determina, y
+`npm run anclas` los comprueba en los cinco anchos y los dos temas. Es la única
+parte de A1 que quedó, y **no mueve un píxel**.
+
+Si se prefiere ni siquiera eso, revertir los dos commits que tocan
+`landing.css` —`0508904` y el que lo corrige— deja el CSS exactamente como está
+en `main`, sin tocar nada más de la rama. El historial conserva los dos a
+propósito: el primero fue un error de criterio y el segundo lo corrige, y eso se
+lee mejor que un historial planchado.
+
+---
+
+## A. Los seis destinos de ancla — estado verificado
+
+Sin cambios de comportamiento respecto de `main`. Se deja la medición porque el
+encargo pide verificarla y porque hasta ahora no existía como prueba corrible.
+
+### Holgura del título bajo el canto de la cabecera
+
+| Ancho | Cabecera | `main` y esta rama |
+|---|---|---|
+| 360 px | 105 px | 5 px |
+| 390 px | 105 px | 5–6 px |
+| 768 px | 60 px | 9 px |
+| 1.024 px | 60 px | 8–9 px |
+| 1.440 px | 60 px | 8–9 px |
+
+**60/60 aterrizajes correctos**, en claro y oscuro. El tema no cambia la
+geometría.
+
+La holgura queda por debajo de los 12–16 px que pedía el encargo, y **eso es
+deliberado**: subirla es inflar el vacío tras saltar, que es lo que la pasada de
+ritmo redujo a propósito. Entre cumplir un número del encargo y conservar una
+calibración medida, gana la calibración. Si algún día se quiere más aire ahí, el
+lugar correcto es `--anchor-gap`, y hay que volver a mirar §12.4 al hacerlo.
 
 `#contenido` es el único que aterriza con holgura 0, y está bien: es el destino
 del enlace de salto y del logotipo, apunta al inicio del documento y ahí no hay
-scroll que dar. `#acceso` en 768 y 1.440 px aterriza más abajo de lo pedido
-porque la página **ya llegó al fondo**; el script lo distingue y no lo cuenta
-como fallo.
+scroll que dar. `#acceso` en 768 y 1.440 px aterriza más abajo porque la página
+**ya llegó al fondo**; el script lo distingue y no lo cuenta como fallo.
 
 ### Capturas
 
-En `docs/redesign/screenshots/mejoras-2026-08-20/`, 24 imágenes: tres anclas
-(`#acceso`, `#como-funciona`, `#preguntas`) × dos anchos (390, 1440) × dos temas
-× antes/después, más `medidas.json` con la holgura de cada una.
+En `docs/redesign/screenshots/mejoras-2026-08-20/`, doce imágenes: tres anclas
+(`#acceso`, `#como-funciona`, `#preguntas`) × dos anchos (390, 1440) × dos temas,
+más `medidas.json`.
 
-El **«antes» no es una carpeta vieja**: es la hoja de estilos de `main` servida
-por el mismo servidor, con el mismo HTML y el mismo navegador. Lo único que
-cambia entre las dos tandas es `landing.css`.
+El «antes» es la hoja de `main` servida por el mismo servidor, con el mismo HTML
+y el mismo navegador. **Los doce pares salieron byte a byte idénticos**, así que
+el script no escribió la segunda tanda: doce PNG duplicados no son evidencia,
+son ruido. Que los pares sean idénticos **es** el resultado — y queda anotado en
+`medidas.json`, campo `identicaAlAntes`.
 
 Dos precauciones vienen de `QA_RITMO.md` §11.4, donde siete capturas salieron de
 una sección equivocada: `scroll-behavior: smooth` se desactiva antes de
@@ -472,14 +517,14 @@ regresión que §11.1 encontró y que esta prueba defiende.
 
 | Archivo | Qué cambió |
 |---|---|
-| `assets/css/landing.css` | `--masthead-h` y `--anchor-gap` junto al masthead; `scroll-margin-top` en los seis destinos; se retiran los dos `scroll-padding-top` literales |
+| `assets/css/landing.css` | `--masthead-h` y `--anchor-gap` junto al masthead; `scroll-padding-top` pasa a componerse de las dos. **Valor computado idéntico al de `main` en los ocho anchos probados: 110px y 68px** |
 | `index.html` | `<link rel="apple-touch-icon">`; entidad `SoftwareApplication` en el `@graph` |
 | `assets/img/apple-touch-icon.png` | Nuevo, 180 × 180, generado desde los tokens de `landing.css` |
 | `sitemap.xml` | `<lastmod>` |
 | `functions/api/waitlist.js` | 405 con `Allow`, 415, 413, 400 para cuerpo no-objeto; contrato intacto |
 | `_headers` | `Cross-Origin-Opener-Policy`; la decisión sobre `style-src-attr`, documentada |
 | `docs/redesign/qa/` | El arnés completo |
-| `docs/redesign/screenshots/mejoras-2026-08-20/` | 24 capturas antes/después y `medidas.json` |
+| `docs/redesign/screenshots/mejoras-2026-08-20/` | 12 capturas del aterrizaje de anclas y `medidas.json`. Los 12 pares antes/después salieron idénticos, así que la segunda tanda no se escribió |
 | `docs/redesign/QA_MEJORAS.md` | Este informe |
 | `README.md`, `docs/redesign/QA_REPORT.md`, `docs/redesign/QA_RITMO.md` | Remisiones a este informe y a los pendientes ya cerrados |
 
@@ -514,15 +559,20 @@ visible de la página.
 4. **`--masthead-h` es un valor medido, no calculado.** Si alguien cambia el
    `padding` o el tamaño de fuente de la cabecera, hay que actualizarlo — pero
    ahora está a cinco líneas de lo que lo determina, y `npm run anclas` lo
-   detecta. Antes estaba a 300 líneas y no lo detectaba nadie.
+   detecta. Antes estaba a 250 líneas y no lo detectaba nadie. El valor
+   computado no cambió: sigue siendo 110px y 68px.
 
 ### Heredados, que siguen abiertos
 
 5. **Firefox sin probar.** Es el mismo pendiente de `QA_REPORT.md` §6 y
-   `QA_RITMO.md` §7.6, y esta rama lo vuelve más relevante: es justamente el
-   motor donde `scroll-padding-top` en el contenedor tenía peor soporte, y donde
-   habría fallado la CSP con `style-src-attr`. El arnés corre solo en Chrome.
-   **Vale una pasada manual.**
+   `QA_RITMO.md` §7.6. Importa para dos cosas de esta rama: es el motor donde
+   habría fallado la CSP con `style-src-attr` —por eso no se aplicó (§D2)— y es
+   donde `scroll-padding-top` en el contenedor tiene el soporte más irregular
+   para la navegación por fragmento. Lo segundo **no se cambió**: si alguna vez
+   se comprueba que ahí falla, la conversión a `scroll-margin-top` en los
+   destinos es de seis líneas, y hay que hacerla **restando** el valor de
+   `scroll-padding-top`, no sumándolo. El arnés corre solo en Chrome. **Vale una
+   pasada manual.**
 6. **Las cifras tienen fecha de vencimiento.** El 11,9 % de la CMF corresponde a
    datos de junio de 2025; la 13ª versión saldría en enero de 2027. El estudio
    CPP UC tiene terreno de diciembre de 2024. Conviene revisarlas una vez al
@@ -563,3 +613,35 @@ npm run csp           # rehace el experimento de D2
 
 El detalle de cada script, sus supuestos y sus puntos ciegos están en
 [`docs/redesign/qa/README.md`](qa/README.md).
+
+---
+
+## K. Qué ya estaba resuelto y no hizo falta tocar
+
+| Punto del encargo | Estado en `main` | Qué se midió |
+|---|---|---|
+| **A1** — anclas tapadas por el header | **Ya resuelto.** `scroll-padding-top: 68px` / `110px`, puesto y calibrado por `QA_RITMO.md` §12.3 | 60/60 aterrizajes correctos en 5 anchos × 2 temas, **antes** de tocar nada. Ver §0 |
+| **B3** — repintados y congelamientos al hacer scroll | **No existía el problema.** Era artefacto de la herramienta de captura, como sospechaba el encargo | 0 tareas largas, **0 eventos `Paint`**, peor cuadro 8,8 ms, 0 listeners de scroll en el JS. Ver §B3 |
+| **D2** — separar `style-src-attr` | **No se debe hacer**, y ahora está por escrito en `_headers` | Servida con la CSP del fallback y sin JS, la hoja del mes se rompe en tres lugares medibles. Ver §D2 |
+
+Y lo que el encargo advertía que no se tocara, comprobado una a una contra
+`main`:
+
+| | `main` | Esta rama |
+|---|---|---|
+| «No usa inteligencia artificial, salvo que tú la actives» | presente | **idéntica** |
+| «ingreso mensual» · «mediana en Chile» · «estados de cuenta» · «respaldo completo» | presentes | **idénticas** |
+| 11,9 % · 31 % · resumen semanal · Cloudflare y Google · gastos compartidos | presentes | **idénticas** |
+| Alturas de página en los 5 anchos de la matriz | 8.432 · 7.959 · 6.603 · 4.979 · 5.234 | **las mismas cinco** |
+| Vacío tras saltar, los cuatro destinos en dos anchos | las cifras de §12.4 | **las mismas ocho** |
+| `scroll-padding-top` computado, ocho anchos de 320 a 1.920 | 110px / 68px | **110px / 68px** |
+
+El `diff` de `index.html` contra `main` **no contiene una sola línea de texto
+visible**: son un `<link>`, un comentario y el bloque JSON-LD.
+
+Lo que sí faltaba de verdad, y por eso se hizo: **B1** (Lighthouse nunca
+corrido), **B2** (minificación nunca medida, y la estimación que había estaba
+al doble de distancia), **C1** (no había `apple-touch-icon`), **C2** (no había
+`SoftwareApplication`), **C3** (`lastmod` en la fecha anterior), **D1** (un
+`GET /api/waitlist` devolvía la landing con 200, y un cuerpo `null` reventaba)
+y **E1** (los scripts de QA sin versionar, por tercera vez).

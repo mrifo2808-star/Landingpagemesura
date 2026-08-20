@@ -125,26 +125,17 @@
 
 html {
   scroll-behavior: smooth;
+  /* El offset del salto de ancla. El VALOR es el que midió QA_RITMO §12.3 —68px
+     en escritorio, 110px bajo 720px— y no se toca: esa pasada lo calibró contra
+     la cabecera real y bajó el vacío tras saltar de 108px a 72. Lo único que
+     cambia es de dónde sale: antes eran dos números literales, uno acá y otro
+     dentro de un @media a 250 líneas de distancia; ahora se compone de
+     --masthead-h, declarada junto a las reglas del masthead (§5), donde se
+     decide el alto que este número tiene que seguir. Ese desacople ya costó
+     caro una vez: quedó en 92px contra una barra de 60 y cada salto regalaba
+     32px muertos, hasta que §12.2b lo encontró. */
+  scroll-padding-top: calc(var(--masthead-h) + var(--anchor-gap));
   -webkit-text-size-adjust: 100%;
-}
-
-/* El salto de ancla lo resuelve cada destino con su propio scroll-margin-top,
-   no un scroll-padding-top global con un número escrito a mano. Dos razones.
-   Una: el valor sale de --masthead-h, declarada junto a las reglas del
-   masthead (§5), así que cambiar la altura de la cabecera y olvidar el offset
-   deja de ser posible — ya pasó una vez, con 92px contra una barra de 60
-   (QA_RITMO §12.2b). Dos: scroll-padding en el contenedor tiene soporte más
-   irregular fuera de Blink para la navegación por fragmento; scroll-margin en
-   el destino no.
-   Las dos vías NO se combinan a propósito: se suman, y el ancla caería al
-   doble de distancia de la cabecera. */
-#contenido,
-#como-funciona,
-#calculadora,
-#datos,
-#preguntas,
-#acceso {
-  scroll-margin-top: calc(var(--masthead-h) + var(--anchor-gap));
 }
 
 body {
@@ -324,14 +315,18 @@ h1, h2, h3, h4 {
 /* Alto real de la cabecera fija, medido: una fila en escritorio (60px) y dos
    bajo 720px, donde aparece .masthead__strip (105px). Es lo que consume el
    destino de cualquier ancla, así que se declara aquí —donde se decide— y no
-   en :root, lejos de la causa. El respiro son 14px: con los 5–8px que daba el
-   scroll-padding anterior el título quedaba pegado al filete de la barra. */
+   en la base de la hoja, lejos de la causa.
+   El respiro NO es un valor nuevo: 105 + 5 = 110 y 60 + 8 = 68 son exactamente
+   los dos scroll-padding-top que dejó medidos QA_RITMO §12.3, descompuestos en
+   sus dos partes. El vacío tras saltar sigue siendo 72px en «Cómo funciona»,
+   57 en «Tus datos» y 42 en «Preguntas», que son las cifras de §12.4. Subirlo
+   sería volver a inflar justo lo que esa pasada apretó. */
 :root {
   --masthead-h: 105px;
-  --anchor-gap: 14px;
+  --anchor-gap: 5px;
 }
 @media (min-width: 720px) {
-  :root { --masthead-h: 60px; }
+  :root { --masthead-h: 60px; --anchor-gap: 8px; }
 }
 
 .masthead {

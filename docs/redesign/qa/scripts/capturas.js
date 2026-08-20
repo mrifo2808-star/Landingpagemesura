@@ -36,6 +36,11 @@ const ANCLAS = ["#acceso", "#como-funciona", "#preguntas"];
 const browser = await abrir();
 const avisos = [];
 const informe = [];
+/* Cuando el "después" sale byte a byte igual al "antes", no se escribe el
+   archivo: doce PNG duplicados no son evidencia, son ruido. Que un par salga
+   idéntico ES el resultado —significa que el cambio no movió nada a la vista— y
+   queda anotado en medidas.json. */
+const antes = new Map();
 
 for (const tanda of ["antes", "despues"]) {
   const s = await levantar(tanda === "antes" ? { sustituir: { "/assets/css/landing.css": cssMain } } : {});
@@ -65,10 +70,24 @@ for (const tanda of ["antes", "despues"]) {
 
         if (!estado.enViewport) avisos.push(`${tanda} ${vp.nombre} ${tema} ${ancla}: el título quedó fuera del viewport`);
 
-        const nombre = `${tanda}-${vp.nombre}-${tema}-${ancla.slice(1)}.png`;
-        await page.screenshot({ path: path.join(DESTINO, nombre) });
-        informe.push({ tanda, viewport: vp.nombre, tema, ancla, holgura: estado.holgura, titulo: estado.titulo, archivo: nombre });
-        console.log(`  ${nombre.padEnd(44)} holgura del título bajo la cabecera: ${String(estado.holgura).padStart(4)} px`);
+        const clave = `${vp.nombre}-${tema}-${ancla.slice(1)}`;
+        const nombre = `${tanda}-${clave}.png`;
+        const imagen = Buffer.from(await page.screenshot());
+
+        const igualAlAntes = tanda === "despues" && antes.get(clave)?.equals(imagen);
+        if (tanda === "antes") antes.set(clave, imagen);
+        if (!igualAlAntes) writeFileSync(path.join(DESTINO, nombre), imagen);
+
+        informe.push({
+          tanda, viewport: vp.nombre, tema, ancla,
+          holgura: estado.holgura, titulo: estado.titulo,
+          archivo: igualAlAntes ? null : nombre,
+          identicaAlAntes: igualAlAntes || undefined,
+        });
+        console.log(
+          `  ${nombre.padEnd(44)} holgura del título bajo la cabecera: ${String(estado.holgura).padStart(4)} px` +
+          (igualAlAntes ? "  · idéntica al antes, no se escribe" : "")
+        );
       }
       await page.close();
     }
@@ -79,7 +98,13 @@ for (const tanda of ["antes", "despues"]) {
 await browser.close();
 
 writeFileSync(path.join(DESTINO, "medidas.json"), JSON.stringify(informe, null, 2));
-console.log(`\n${informe.length} capturas en docs/redesign/screenshots/mejoras-2026-08-20/`);
+const escritas = informe.filter((f) => f.archivo).length;
+const iguales = informe.filter((f) => f.identicaAlAntes).length;
+console.log(
+  `\n${informe.length} vistas comparadas · ${escritas} archivos escritos en ` +
+  `docs/redesign/screenshots/mejoras-2026-08-20/` +
+  (iguales ? `\n${iguales} pares salieron byte a byte idénticos: el cambio no movió nada a la vista.` : "")
+);
 if (avisos.length) {
   console.log("AVISOS:");
   for (const a of avisos) console.log("  · " + a);
