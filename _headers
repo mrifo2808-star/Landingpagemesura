@@ -35,7 +35,29 @@
   # Evidencia: docs/redesign/qa/scripts/csp-experimento.js
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'
 
-# Los assets llevan su contenido en el nombre solo por convención, así que un
-# año de caché es seguro mientras los nombres no se reciclen con otro contenido.
-/assets/*
+# CAMBIADO el 21 de agosto: la regla anterior era "un año de caché es seguro
+# mientras los nombres no se reciclen con otro contenido" para TODO /assets/*.
+# Esa condición no se cumplió nunca en la práctica: demo.js, mesura-datos.js y
+# landing.css cambian de contenido bajo el mismo nombre en casi cada pasada de
+# este proyecto. El resultado real: cualquiera que haya visitado la página
+# antes de un deploy sigue con el JS/CSS viejo cacheado de forma "immutable"
+# —el navegador ni siquiera revalida, así que un hard refresh no basta si el
+# usuario no sabe que tiene que limpiar caché— y ve bugs ya corregidos como si
+# siguieran ahí (el bug del selector de moneda reapareció así el 21 de agosto,
+# confirmado: el código en producción ya tenía el fix, el navegador de prueba
+# no lo estaba pidiendo de nuevo). Las fuentes y las imágenes sí cumplen la
+# condición original (su contenido no cambia una vez que el archivo existe),
+# así que se quedan con caché larga. JS y CSS pasan a revalidar siempre: con
+# ETag ya presente, eso es un 304 casi gratis cuando no cambiaron, y contenido
+# nuevo de inmediato cuando sí.
+/assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+/assets/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/css/*
+  Cache-Control: public, max-age=0, must-revalidate
