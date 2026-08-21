@@ -71,10 +71,14 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(cta.alto, 0);
     // Y la hoja tiene que seguir mostrando sus cifras.
     igual(await texto(page, "#demo-available"), "$156.325");
-    // 2 en "01 · Lo compartido" + 12 en "06 · Preguntas" — subió desde 10 en la
-    // pasada del 21 de agosto que movió el detalle de invitación, gastos fijos
-    // y los cuatro casos del cuerpo visible al FAQ, que es opt-in.
-    igual((await page.$$("details")).length, 14);
+    // 2 en "01 · Lo compartido" + 9 en "06 · Preguntas" + 1 en "En qué se ha
+    // ido" (categorías del ejemplo) + 1 en "Una herramienta suelta"
+    // (calculadora) — bajó desde 14 en la pasada del recorte de contenido del
+    // 21 de agosto: la del upgrade real de esa misma fecha fusionó preguntas
+    // redundantes del FAQ (de 12 a 9) y colapsó dos bloques que antes se
+    // mostraban siempre para bajar el scroll móvil de 13,6 a un rango objetivo
+    // de 7-9 pantallas, sin borrar ese contenido.
+    igual((await page.$$("details")).length, 13);
   }, { sinJs: true }));
 
 prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
@@ -201,7 +205,7 @@ prueba("moneda", "cambiar el selector recalcula la hoja y actualiza la URL", () 
     await new Promise((r) => setTimeout(r, 120));
     igual(await page.$eval("html", (e) => e.getAttribute("data-moneda")), "PEN");
     afirmar((await texto(page, "#demo-available")).startsWith("S/"), "la hoja no cambió a soles");
-    afirmar((await texto(page, "#demo-verdict")).startsWith("Vas S/"), "el veredicto no cambió a soles");
+    afirmar((await texto(page, "#demo-verdict")).startsWith("S/"), "el veredicto no cambió a soles");
     igual(await page.evaluate(() => new URL(location.href).searchParams.get("m")), "PEN");
     // El símbolo de la calculadora, más abajo en la página, tiene que seguir a
     // la misma moneda: es el mismo token, un solo punto de configuración.
@@ -268,9 +272,15 @@ prueba("moneda", "una eleccion hecha antes de que demo.js cargue no se pierde", 
 });
 
 /* ═══════════ Calculadora ═══════════ */
+// La calculadora vive colapsada detrás de un <details> (recorte de scroll
+// móvil del 21 de agosto): hay que abrirlo antes de que Puppeteer pueda
+// hacer clic en sus campos, que si no cuentan como no visibles.
+const abrirCalculadora = (page) =>
+  page.evaluate(() => { document.querySelector("#calculadora details").open = true; });
 
 prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
   conPagina(async (page) => {
+    await abrirCalculadora(page);
     await page.click("#calc-income");
     await page.type("#calc-income", "800000");
     await page.click("#calc-debt");
@@ -285,6 +295,7 @@ prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
 
 prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
   conPagina(async (page) => {
+    await abrirCalculadora(page);
     await page.click("#calc-income");
     await page.type("#calc-income", "0");
     await page.click("#calc-debt");
@@ -297,6 +308,7 @@ prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
 
 prueba("calculadora", "deuda mayor que el ingreso no promete un 'te queda' negativo", () =>
   conPagina(async (page) => {
+    await abrirCalculadora(page);
     await page.click("#calc-income");
     await page.type("#calc-income", "400000");
     await page.click("#calc-debt");
@@ -310,6 +322,7 @@ prueba("calculadora", "deuda mayor que el ingreso no promete un 'te queda' negat
 
 prueba("calculadora", "doce dígitos no rompen el formato", () =>
   conPagina(async (page) => {
+    await abrirCalculadora(page);
     await page.click("#calc-income");
     await page.type("#calc-income", "999999999999");
     await page.click("#calc-debt");
@@ -321,6 +334,7 @@ prueba("calculadora", "doce dígitos no rompen el formato", () =>
 
 prueba("calculadora", "limpiar oculta el resultado y vacía los campos", () =>
   conPagina(async (page) => {
+    await abrirCalculadora(page);
     igual((await visible(page, "#calc-reset")).display, "none", "limpiar no debería verse al cargar");
     await page.click("#calc-income");
     await page.type("#calc-income", "800000");

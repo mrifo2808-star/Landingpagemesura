@@ -101,6 +101,21 @@
   --space-band:   clamp(36px, 3.4vw, 48px);     /* inset interno de una banda */
   --space-section: clamp(40px, 4.4vw, 64px);    /* seccion a seccion */
 }
+/* Bajo 720px el piso de estos cinco valores era el mismo que en escritorio
+   —el clamp() no baja de 24-40px en ningún ancho—, pero en un teléfono el
+   aire entre secciones no cumple la misma función que en una pantalla ancha
+   (separar columnas de la vista). Es sólo espaciado, ninguna palabra se
+   toca: recorte de scroll móvil del 21 de agosto (13,6 → objetivo 7-9
+   pantallas), medido en EVALUACION-MOVIL-20260821.md. */
+@media (max-width: 719.98px) {
+  :root {
+    --space-block: 20px;
+    --space-after-band: 18px;
+    --space-band: 26px;
+    --space-section: 28px;
+    --space-hero: 20px;
+  }
+}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -180,6 +195,21 @@ button { background: none; border: 0; cursor: pointer; }
   position: absolute; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+/* El enlace "Saltar al contenido" es el único .sr-only pensado para que
+   alguien lo vea: quien navega con teclado y sin lector de pantalla, al
+   presionar Tab, no veía nada — el link se anunciaba a un lector de pantalla
+   pero quedaba recortado incluso con foco. Acotado a <a> para no afectar los
+   avisos aria-live (#moneda-live, #demo-live), que sí deben seguir invisibles
+   cuando reciben foco programático. */
+a.sr-only:focus {
+  position: static;
+  width: auto; height: auto;
+  padding: 10px 16px; margin: 0;
+  overflow: visible; clip: auto; clip-path: none; white-space: normal;
+  display: inline-block;
+  background: var(--ink); color: var(--paper);
+  z-index: 100;
 }
 
 /* El bloque para anotar gastos solo aparece cuando demo.js confirmo que
@@ -364,6 +394,11 @@ h1, h2, h3, h4 {
   font-weight: 700;
   border: 1px solid var(--ink);
 }
+.masthead__right {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 30px);
+}
 .masthead__nav {
   display: flex;
   align-items: center;
@@ -386,9 +421,10 @@ h1, h2, h3, h4 {
   white-space: nowrap;
 }
 .masthead__nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
-/* Calificado con .masthead__nav porque `.masthead__nav a` tiene mas
-   especificidad y le estaba imponiendo su color de texto al boton. */
-.masthead__nav .masthead__cta {
+/* Sibling de .masthead__nav (no hijo, ver comentario en el HTML): visible en
+   todos los anchos, incluido bajo 720px, donde .masthead__nav se oculta
+   entero y antes no quedaba ningún CTA de acceso en la cabecera. */
+.masthead__cta {
   min-height: 44px;
   padding: 12px 15px;
   border: 1.5px solid var(--rule);
@@ -402,7 +438,7 @@ h1, h2, h3, h4 {
   text-decoration: none;
   white-space: nowrap;
 }
-.masthead__nav .masthead__cta:hover { background: var(--acid); color: var(--on-acid); }
+.masthead__cta:hover { background: var(--acid); color: var(--on-acid); }
 
 /* Móvil: la fila de secciones baja a su propia banda con filete. */
 .masthead__strip { display: none; }
@@ -565,6 +601,9 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   border-bottom: 1px solid var(--hair);
 }
 .figures > div:last-child { border-bottom: 0; }
+@media (max-width: 719.98px) {
+  .figures > div { padding: 14px 16px; }
+}
 @media (min-width: 768px) {
   .figures { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1.35fr); }
   .figures > div { border-bottom: 0; border-right: 1px solid var(--hair); padding: 22px 24px; }
@@ -1304,6 +1343,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 700;
+  min-height: 44px;
   padding: 8px 10px;
   border: 1.5px solid var(--rule);
   background: var(--sheet);
@@ -1315,6 +1355,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .06em;
+  min-height: 44px;
   padding: 8px 12px;
   border: 1.5px solid var(--rule);
   background: transparent;
@@ -1329,17 +1370,12 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   max-width: 46ch;
 }
 
-/* ---------- 10c. Rótulo y nota del escaparate ---------------------------- */
+/* ---------- 10c. Rótulo del escaparate ------------------------------------
+   Antes eran dos párrafos (rótulo + nota de fidelidad del ejemplo): se
+   fusionaron en uno solo en el recorte de scroll móvil del 21 de agosto. */
 .showcase-label {
   font-size: 15.5px;
   line-height: 1.55;
-  max-width: 62ch;
-  margin-bottom: 6px;
-}
-.showcase-note {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink-2);
   max-width: 62ch;
   margin-bottom: var(--space-item);
 }
@@ -1396,20 +1432,14 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
    borde completo, para no competir en peso con el borde de la caja. */
 .notice-group--warn { border-left: 3px solid var(--orange-ink); }
 
-/* ---------- 10e. Cifra diaria: fuera del recuadro que replica la app ----- */
-.cifra-diaria {
-  margin-top: clamp(20px, 2.4vw, 30px);
-  padding: clamp(18px, 2.4vw, 28px);
-  border: 2px dashed var(--rule);
-}
-.cifra-diaria__num {
-  font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(26px, 3.6vw, 36px);
-  font-weight: 700;
-  letter-spacing: -.03em;
-}
-.cifra-diaria p { margin-top: 10px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); max-width: 58ch; }
+/* ---------- 10e. CTA tras el ejemplo --------------------------------------
+   Reemplaza el bloque "cifra diaria" (borde punteado, único de la página —
+   señalado como inconsistente con el lenguaje de líneas sólidas del resto
+   del sitio) que además citaba una nota ya falsa: la app real sí muestra
+   esta división desde el 19-20 de agosto, con esta misma jerarquía. Aquí,
+   en su lugar, el CTA en el pico de intención real de la página: justo
+   después de que alguien ya probó que el ejemplo funciona. */
+.hero__post-demo-cta { margin-top: var(--space-group); }
 
 /* ---------- 10f. Cuatro casos (02b) --------------------------------------
    Bloque con marco propio para que se pueda saltar entero: quien no está en
