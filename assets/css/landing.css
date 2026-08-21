@@ -1358,6 +1358,44 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .callout--warn { border-left-color: var(--orange-ink); }
 .callout + .callout { margin-top: 12px; }
 
+/* ---------- 10d-b. Grupo de avisos: varias advertencias relacionadas, una
+   sola caja ------------------------------------------------------------
+   Antes cada advertencia era su propio .callout con <br><br> adentro: dos o
+   tres cajas idénticas seguidas se leen como una sola pared de "no". El
+   estudio de trece lectores lo nombró (RESULTADO.md §3.1, la cita de Andrés
+   sobre notas contables en fila) y lo repitió el control de cinco (§4.2,
+   "el 'no' asusta cuando llega en fila, no cuando llega solo"). La cura no
+   es sacar información: es la misma que ya usa el Acuerdo de datos (§11,
+   .pact) — una lista con filete, no una pila de cajas. */
+.notice-group {
+  border: 1.5px solid var(--rule);
+  background: var(--paper-2);
+  max-width: 62ch;
+}
+.notice-group__label {
+  display: block;
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--hair);
+}
+.notice-group__item {
+  padding: 14px 16px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  border-bottom: 1px solid var(--hair);
+}
+.notice-group__item:last-child { border-bottom: 0; }
+.notice-group__item b { display: block; margin-bottom: 3px; }
+/* Variante para cuando el grupo entero es de la clase de aviso que importa
+   más (mismo uso que .callout--warn): el filete izquierdo se tiñe en vez del
+   borde completo, para no competir en peso con el borde de la caja. */
+.notice-group--warn { border-left: 3px solid var(--orange-ink); }
+
 /* ---------- 10e. Cifra diaria: fuera del recuadro que replica la app ----- */
 .cifra-diaria {
   margin-top: clamp(20px, 2.4vw, 30px);
