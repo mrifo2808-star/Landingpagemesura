@@ -122,24 +122,30 @@ export function calcular(codigo, { dia = DIA, mes = MES, anio = ANIO } = {}) {
   const luz = movs[3].monto;
   const f = formatterFor(codigo);
 
-  let paceState, paceHeadline, paceDetail;
+  // La división en vez del adjetivo (mismo criterio que app/lib/home-context.ts
+  // en Mesura-app-source, verificado en vivo el 21-08-2026): el titular ya no
+  // es el juicio de valor ("vas por delante/por debajo") sino la cifra que se
+  // pidió sin conocerse entre usuarios — cuánto queda y para cuántos días. La
+  // comparación contra el ritmo esperado sigue existiendo, baja a detalle.
+  const paceDivisionText = RESTAN > 0
+    ? `${f(diario)} al día · ${RESTAN} día${RESTAN === 1 ? "" : "s"} más`
+    : "Hoy es el último día del mes";
+
+  let paceState, paceComparison;
   if (desvio > tolerancia) {
     paceState = "over";
-    paceHeadline = `Vas ${f(desvio)} por delante de tu ritmo`;
-    paceDetail = "Es lo que llevas de más respecto a lo que correspondería a esta altura del mes.";
+    paceComparison = `${f(desvio)} más de lo esperado a esta altura del mes`;
   } else if (desvio < -tolerancia) {
     paceState = "under";
-    paceHeadline = `Vas ${f(Math.abs(desvio))} por debajo de tu ritmo`;
-    paceDetail = "Si sigues así, cierras el mes con holgura sobre tu presupuesto.";
+    paceComparison = `${f(Math.abs(desvio))} menos de lo esperado a esta altura del mes`;
   } else {
     paceState = "";
-    paceHeadline = "Vas al día con tu presupuesto";
-    paceDetail = "Tu gasto va justo en lo que correspondería a esta altura del mes.";
+    paceComparison = "Justo en lo esperado a esta altura del mes";
   }
 
   return {
     codigo, mon, B, DIAS, dia, RESTAN, cats, gastado, esperado, desvio, queda, diario,
-    movs, paceState, paceHeadline, paceDetail,
+    movs, paceState, paceDivisionText, paceComparison,
     mitad: Math.round(luz / 2), sesenta: Math.round(luz * 0.6), cuarenta: luz - Math.round(luz * 0.6),
     tolerancia, f,
   };
