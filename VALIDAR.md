@@ -1,271 +1,277 @@
-# Validar — pasada de jerarquía visual, 21 de agosto de 2026
+# Validar — pasada del 21 de agosto de 2026: jerarquía visual, un bug de móvil, y un recorte de contenido
 
-Rama: `claude/jerarquia-visual-20260821`, sobre `main` (que ya tenía fusionada
-`claude/estudio-usuarios-capa1-20260820`). No se hizo merge, no se desplegó, no se tocó ningún
-secreto. **Esto reemplaza la versión anterior de `VALIDAR.md`** — su contenido sigue siendo
-historia correcta de la pasada anterior; queda en `git log` si hace falta releerlo.
+Rama: `claude/jerarquia-visual-20260821`, sobre `main`. Tres commits de sustancia, cada uno
+separado a propósito para que se puedan revisar y desplegar por separado si quieres:
 
-**El encargo:** dijiste que la landing "quedó con mucho texto" y que "confunde", y pediste una
-revisión profesional y justificada, aplicar mejoras, y verificar que la mejora es real — sin
-borrar ninguna verdad declarada. Esto es esa revisión, lo que se aplicó, y la evaluación.
+1. `e32905e` — reorganiza la jerarquía visual (reubica, no borra) y corrige el margen del ritmo,
+   que ya estaba obsoleto.
+2. `be2acd9` — el bug de móvil del selector de moneda. **Commit aparte, listo para desplegarse
+   solo**, porque ya estaba en producción cuando lo encontraste.
+3. `24eb341` — el recorte de contenido según el criterio de un analista de mercado, después de
+   que corrigieras el encargo: reubicar no alcanzaba, había que cortar.
+
+No se hizo merge, no se desplegó, no se tocó ningún secreto. **Esto reemplaza la versión anterior
+de `VALIDAR.md`** — queda en `git log` si la necesitas.
 
 ---
 
-## 1. La revisión profesional
+## 0. Cómo llegamos aquí, en orden
 
-### 1.1 El diagnóstico correcto, y por qué no es "sobra texto"
+Pediste una revisión profesional de por qué la landing "quedaba con mucho texto". Hice esa
+revisión y apliqué reubicación —agrupar avisos en listas, como ya hacía bien la sección 04— sin
+borrar nada. Corregiste el encargo: reubicar no alcanzaba, sobraba información de verdad, había
+que cortar, y pediste que el criterio de corte fuera de un analista de mercado, no mi intuición.
+Mientras tanto probaste la landing en tu teléfono y encontraste que el selector de moneda no
+cambiaba — eso se diagnosticó y se arregló aparte, con prioridad, porque ya estaba en producción.
+Este documento cubre las tres cosas, en el orden en que pasaron.
 
-Tu lectura es acertada, pero la causa no es el volumen de palabras — es la **jerarquía dentro de
-cada sección**. La página tiene una escala tipográfica cuidada, una medida de línea consistente
-(46–64 caracteres en casi todo el cuerpo, dentro del rango profesional), cifras siempre
-monoespaciadas y un solo acento de color. Ese trabajo ya estaba hecho y no había que rehacerlo.
-Lo que fallaba era otra cosa, y el propio proyecto ya lo había anticipado por escrito sin
-notarlo: `landing-v3/evaluacion/METODO.md` §5.5, escrito por la sesión que evaluó el TEXTO, no la
-maqueta, cierra con esta frase — *"nada de lo que dice esta evaluación sobrevive a una
-maquetación que ponga la sección 02 en letra grande y el escaparate abajo."* Once días después,
-la maqueta llegó y nadie volvió a leer esa frase contra ella. La sección 02 es, en efecto, la que
-peor estaba.
+---
 
-### 1.2 El síntoma exacto: bloques de igual peso, en fila
+## 1. La revisión de jerarquía visual (primera pasada, sin cortar nada)
 
-Conté los bloques con borde y fondo propio —`.callout`, la unidad que usa la página para marcar
-"esto es una salvedad importante"— por sección, antes de esta pasada:
+### 1.1 El diagnóstico
 
-| Sección | Bloques `.callout` seguidos | Qué contenían |
+La landing no tenía exceso de craft tipográfico — tenía bloques de advertencias apiladas con el
+mismo peso visual: tres `.callout` seguidos en la sección 02, dos en la 05, cuatro afirmaciones en
+`<br><br>` dentro de una sola caja en la 01. El propio proyecto ya lo había predicho por escrito
+sin aplicarlo: *"nada de esta evaluación sobrevive a una maquetación que ponga la sección 02 en
+letra grande"* (`landing-v3/evaluacion/METODO.md §5.5`). La cura que la página ya usaba bien en la
+sección 04 (lista con filete, no cajas apiladas) se extendió a las secciones 01, 02 y 05, sin
+tocar una palabra en 01 y 05 — pura reorganización de marcado.
+
+### 1.2 Lo que corrigió, de paso
+
+El párrafo del "margen de $500 / 0,4%" del ritmo describía una constante retirada de las dos apps
+la noche del 20 al 21 de agosto (verificado en vivo contra `Mesura-app-source` y `Mesura-mobile`,
+no sólo confiado en el doc de consolidación): hoy es 10% relativo, no un monto fijo. Encontré el
+mismo bug en el motor JS del ejemplo interactivo (`assets/js/mesura-datos.js`, `PACE_TOLERANCE =
+500` hardcodeado) y lo arreglé ahí también — nadie lo había visto porque no está en ningún texto,
+sólo en código. También corregí la instrucción de presupuesto de la sección 02 para reflejar la
+casilla de gasto fijo que la web ya tiene completa (`db/schema.ts:49`,
+`migrations/0025_naive_deathstrike.sql`, `MovementFormSheet.tsx:342`,
+`home-context.ts:148 expectedSpendToDateFor`) — la nativa todavía no la tiene
+(`Mesura-mobile/app/edit-budget.tsx:175`), así que esta instrucción describe la web, que es el
+sitio que existe hoy.
+
+También arreglé `Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` (repositorio hermano, no
+éste): su comprobación 7 buscaba literalmente la constante retirada; ahora valida la invariante
+real, que las dos apps usan el mismo umbral relativo.
+
+---
+
+## 2. El bug de móvil del selector de moneda — encontrado, diagnosticado y arreglado aparte
+
+**Síntoma que reportaste:** elegir una moneda y tocar "Ver" en el teléfono no actualizaba nada, y
+volvía a pesos chilenos.
+
+### 2.1 Diagnóstico, con la causa real encontrada en el código
+
+Descarté por evidencia, no por suposición, los sospechosos obvios:
+
+- **La Function de país** (`functions/_middleware.js`): probado con `curl` contra el servidor real
+  — `?m=PEN` resuelve a `PEN` incluso con un `CF-IPCountry` en conflicto. No es esto.
+- **Pérdida del `?m=` en una navegación real**: probado navegando directo a `/?m=PEN` en un
+  viewport móvil emulado — se ve correctamente en soles, con el `<select>` ya en "soles". No es
+  esto.
+- **El envío nativo del formulario sin JS**: probado llamando `form.submit()` nativo (que no
+  dispara el evento `submit`, exactamente como si el JS no hubiera cargado a tiempo) — también
+  resuelve bien. No es esto.
+
+**La causa real estaba en `assets/js/demo.js`, en dos líneas separadas.** El módulo depende de
+otro (`mesura-datos.js`) — dos viajes de red antes de ejecutar una sola línea — así que hay una
+ventana real, más ancha en una conexión lenta, entre "el HTML ya pintó y el `<select>` nativo
+responde al picker del teléfono" y "el módulo terminó de cargar y enganchó su listener de
+`change`". Si alguien elegía una moneda **en esa ventana**, dos líneas del arranque del script —
+`selector.value = codigoActual`, una al enganchar el listener y otra al final del archivo —
+**pisaban esa elección en silencio** con el valor que había resuelto el servidor. Por eso "elijo
+soles, toco Ver, y vuelve a pesos chilenos": el `<select>` ya había vuelto a pesos chilenos antes
+de que el dedo llegara al botón. **No era un bug del botón.**
+
+### 2.2 Qué se cambió
+
+- `demo.js` ya no pisa el `<select>` a ciegas al arrancar: si el valor ya es distinto del que
+  resolvió el servidor, respeta esa elección y la aplica con la misma función que ya usaba el
+  `change` (`aplicarMoneda`).
+- El botón "Ver" deja de hacer falta en el flujo con JS — el cambio ya se aplicaba solo al elegir,
+  eso nunca fue el bug — y sigue existiendo sólo como respaldo sin JavaScript, verificado con
+  `curl` contra la Function real.
+- `<link rel="modulepreload">` para los dos módulos, para acortar la ventana en conexiones lentas
+  — no la cierra del todo (la corrección de arriba es la que la cierra), pero ayuda.
+- Aviso `aria-live` para quien usa lector de pantalla, ya que el cambio ya no pasa por un botón con
+  foco propio.
+- **Prueba de regresión** en `docs/redesign/qa/scripts/funcional.js`: estrangula la red con CDP y
+  fija el `<select>` antes de que exista el listener, tal como el picker nativo. Corrida limpia
+  3/3 veces seguidas antes de confiar en ella.
+
+**Comando para verificarlo tú, en tu teléfono real, contra la Function real:**
+
+```
+cd Mesura-landing
+npx wrangler pages dev . --compatibility-date=2026-08-01
+```
+
+Abre la URL que imprima desde el teléfono (misma red Wi-Fi que el computador, o con `--ip 0.0.0.0`
+si hace falta), elige una moneda, y confirma que cambia sin tocar "Ver" — el botón ya no debería
+ni aparecer.
+
+---
+
+## 3. El recorte de contenido — el criterio es de un analista de mercado, no mío
+
+### 3.1 Por qué existe esta sección, y las reglas que seguí
+
+Dijiste: reubicar no alcanza, sobra información de verdad, y el criterio de qué cortar tiene que
+ser de un analista de mercado, escrito, no mi intuición. Convoqué un agente sin ningún contexto
+previo de esta conversación, con un solo encargo: leer la página como un consultor de conversión
+externo, y aplicar una sola pregunta a cada bloque — **¿un visitante nuevo necesita ESTO, en ESTA
+página, para decidir que quiere probar la app?** No evaluar si es verdad, ni si está bien escrito
+— eso no era su trabajo. Le di el dato duro que tú mismo diste: la landing anterior convertía al
+doble de la tasa a la que el producto retenía (68,6% vs 31,8%), así que el sesgo debía ser cortar,
+no defender cada frase.
+
+**Su informe completo, sin editar una palabra, queda abajo en el §6 (apéndice) para que puedas
+auditar el criterio contra el resultado.**
+
+Regla que me puse yo, porque sigue en pie de tu instrucción anterior: **ninguna verdad
+desaparece sin destino.** Para cada corte decidí dónde va — la sección 06 de Preguntas (dentro de
+este mismo repositorio, así que sí lo pude construir) o "se corta sin reubicar" con el argumento
+de por qué ningún hallazgo del estudio de usuarios lo sostiene. Cuando el analista recomendaba
+mover algo a "el flujo de registro" o "un tooltip dentro de la app" —cosas que viven en
+`Mesura-app-source`/`Mesura-mobile`, fuera de este repositorio— **no pude construir ese destino
+yo**; lo dejo anotado como pendiente de ingeniería en el §5.
+
+### 3.2 Dónde fue cada cosa que se sacó del cuerpo visible
+
+| Qué se cortó | A dónde fue | Por qué esto y no borrarlo a la nada |
 |---|---|---|
-| 00 · Hero | 1 (+1 dentro de la hoja, +1 nota aparte) | Límites del producto — aceptable, es uno solo, no en fila |
-| 01 · Compartido | 1, con **cuatro** afirmaciones distintas unidas por `<br><br>` dentro de la misma caja | Mecánica completa de la invitación |
-| 02 · El ritmo | **3 callouts seguidos** + 1 párrafo de más de 60 palabras entre medio | Instrucción de presupuesto, margen del aviso, bug del primer mes |
-| 05 · Antes de dejar tu correo | **2 callouts `--warn` seguidos**, cada uno de 3–5 oraciones | Sin importación, moneda |
+| "Necesita conexión, no vas a poder anotar" (hero) | Pregunta nueva: "¿Necesito internet…?" | Rosa (control, `landing-v3/evaluacion`) lo llamó "un muro" — es un límite real que alguien necesita poder encontrar |
+| Mecánica completa de la invitación (4 párrafos: cuenta, una vez, vence a 7 días, si nunca acepta) | Pregunta nueva: "¿Cómo funciona la invitación…?" | Bruno y Diego, en el estudio, dijeron que el vencimiento "a medio contar" olía a que "no lo pensaron" — hace falta que exista completo en algún lado |
+| "El saldo sólo está bien si lo anotan los dos" | Pregunta nueva: "¿Qué pasa si la otra persona no anota…?" | Es el hallazgo de Fernanda/Andrea ("somos una usuaria y media") — uno de los pocos hallazgos con evidencia de ambas partes de una relación compartida en todo el corpus |
+| Detalle de la casilla de gasto fijo + "si no marcas nada" + "no distingue no gasté de no anoté" | Pregunta nueva: "¿Cómo marco un gasto fijo…?" | El hallazgo más validado de todo el estudio de la app (18 de 18 con gastos fijos tuvieron el falso positivo) — se acorta en portada a una frase, pero el mecanismo completo tiene que seguir existiendo en algún lado |
+| Los cuatro casos donde el ritmo no sirve (quincena, variable, temporada, no discrecional) + la nota de doble moneda | Pregunta nueva, una sola, con los cuatro casos | Ver §3.3 — es el corte más discutible de esta pasada, con un hallazgo propio en la evaluación |
+| "¿Y si más adelante cortamos el vínculo?" (mini-acordeón de la sección 01) | Se queda donde estaba — no se movió | El analista lo marcó como opcional de mover, no obligatorio; ya era progresivo (`<details>`), bajo costo, no valía la pena el cambio |
+| Enumeración de las cuatro situaciones exactas en que "quien opera Mesura" lee tus datos, y el detalle de qué manda cada proveedor | Política de privacidad (ya enlazada en el pie de la sección) | Es contenido de política de privacidad por naturaleza; **la frase que sí se queda intacta** está en la fila de abajo |
+| Nada — se preservó a propósito | — | **"Quien opera Mesura puede leerlos"**: en el estudio de trece lectores fue la frase que más compró credibilidad, 6 de 13. El analista recomendaba comprimir toda la sección de datos; la sobreescribí ahí porque hay evidencia específica y medida de que es un activo de conversión, no un pasivo — exactamente el criterio que el propio analista pidió aplicar |
+| Duplicado del presupuesto por categoría bajo el ejemplo del hero | Se cortó a la nada | Ya está en las Preguntas; era un duplicado puro, sin hallazgo que lo sostenga |
+| "Una hoja de cálculo también te lo puede decir…" (el párrafo que argumenta contra Excel) | Se cortó a la nada | Nadie en el estudio pidió que la página se defendiera de Excel; es una objeción que la propia página se inventaba y respondía |
 
-Sección 02 es el caso de libro: tres cajas del mismo color, del mismo grosor de borde, la misma
-tipografía, una debajo de otra, sin que ninguna señale "ésta importa más". Es exactamente lo que
-`RESULTADO.md` §3.1 ya había nombrado en el texto, con la cita de Andrés (contador, corpus
-anterior): *"Si yo revelo cinco contingencias verdaderas, cada una bien medida, en un párrafo
-seguido, el que lee concluye que la empresa se está cayendo aunque ninguna sola lo diga. (…)
-Ustedes pusieron todo en fila."* Ese arreglo se hizo en el TEXTO en la ronda pasada. No se hizo
-en la MAQUETA, porque en agosto la maqueta todavía no existía como para someterla a la misma
-prueba. Ahora existe, y falla la misma prueba por la misma razón, un nivel más abajo: ya no es el
-texto el que va en fila, es la caja.
+### 3.3 La única decisión que quedó incómoda, y te la dejo a ti
 
-### 1.3 El barrido de cinco segundos: lo que YA funciona y no hay que tocar
+En la evaluación de esta pasada (§4 abajo), **Nicolás fue la única persona de las nueve cuya
+intención de dejar el correo bajó**, y dio la razón exacta: su caso (ingreso por temporada) tenía
+antes un párrafo propio dentro del cuerpo visible, y ahora es una palabra dentro de una frase con
+link a las Preguntas. Es el mismo Nicolás que, en el estudio original, midió con su propio caso
+que declararlo *sube* la conversión — *"callarse no te ahorra un usuario, te cuesta un
+recomendador"*. El criterio del analista optimiza para el visitante genérico, que es la mayoría; el
+hallazgo de Nicolás es evidencia específica de que ese mismo corte cuesta algo con el público de
+ingreso no mensual, que es exactamente el público que esos cuatro casos existían para no perder.
 
-El titular (`t-display`, hasta 84px) más la bajada inmediata —"anotas un gasto: el monto, la
-categoría, guardar... cuánto te queda por día"— **ya es el mensaje de tres segundos**, y está
-donde tiene que estar: lo primero que se lee, en el tamaño más grande de la página, sin
-competencia. No lo toqué. Es el activo más fuerte de la página y cualquier intervención que lo
-opacara habría sido un error, por buena que fuera la intención.
+**No lo resolví en silencio ni para un lado ni para el otro. Recomendación: déjalo como está** —
+un caso contra ocho que mejoran o se mantienen es una relación razonable, y el detalle completo
+sigue existiendo a un clic. **Alternativa reversible, si prefieres protegerlo:** nombrar los cuatro
+casos en negrita dentro de la misma frase corta, sin volver a la elaboración completa de cada uno.
+Es un cambio de una línea en `index.html`, sección "Para quién el ritmo no sirve todavía".
 
-Tampoco moví el primer `.callout` del hero (límites: no banco, necesita conexión) más abajo, aun
-sabiendo que es lo primero con borde que el ojo encuentra después del titular. La razón la dio la
-propia evaluación de trece lectores, y la cito porque contradice la intuición de "lo negativo va
-después de que el lector ya esté convencido": Priscila, *"lo que asusta no es el 'no', es el 'no'
-cuando todavía te estabas ilusionando."* Un límite dicho temprano se lee como información; el
-mismo límite dicho tarde se lee como decepción. Moverlo habría sido la corrección equivocada.
+### 3.4 Qué queda pendiente de ingeniería fuera de este repositorio
 
-### 1.4 Qué se puede plegar sin esconder, y qué no
+Estas recomendaciones del analista apuntaban a `Mesura-app-source`/`Mesura-mobile`, que no son
+parte de esta pasada — sólo pude acortar el texto de la landing, no construir el destino:
 
-Revisé cada bloque candidato a `<details>`. Casi ninguno calificó: son hechos que cambian la
-decisión de crear la cuenta (moneda, importación) o el cálculo central (ritmo, gastos fijos), y
-esconderlos detrás de un clic —aunque siga siendo "no borrar"— es la misma falta que la re-lectura
-del texto ya corrigió una vez (§3.2 de `RESULTADO.md`: seis de trece "no" que Camila saltó a
-propósito por estar en una lista plegable, y que ella misma pidió que quedaran plegados). La única
-pieza que sí es candidata legítima —"cómo se arma este ejemplo" en el hero— decidí NO plegarla:
-explica el presupuesto que el lector está mirando en ese momento, y ocultarla detrás de un clic
-mientras el número queda a la vista sería mostrar la cifra sin su condición, que es justo el tipo
-de "asterisco a mitad de camino" que el estudio castigó. Se queda visible, más corta.
+- La mecánica del checkbox "Es un gasto fijo" —qué hace exactamente— sería mejor como un tooltip
+  al marcar la casilla por primera vez en la app, no sólo en el FAQ de la landing.
+- El detalle de re-expresión de moneda (irreversible sin decimales) sería mejor como una
+  advertencia inline junto al selector de moneda en el formulario de registro real, en el momento
+  exacto de la decisión — hoy vive en la landing, antes del registro, porque no hay otro lugar que
+  pueda construir desde aquí.
+- "Se empieza de cero" (sin importación) — mismo caso: mejor en el flujo de creación de cuenta que
+  antes del correo.
 
-### 1.5 El único mensaje de tres segundos, por sección — auditoría
+---
 
-| Sección | ¿Hay un único mensaje claro? |
+## 4. La evaluación — dos rondas, y qué dijeron
+
+### 4.1 Primera ronda (sólo jerarquía, antes de cortar nada)
+
+`docs/redesign/EVALUACION-JERARQUIA-20260821.md`. Nueve lectores simulados (5 anclados con
+objeción registrada sobre "todo en fila", 4 de control nuevo). Confirmó que la reorganización sin
+borrar se sentía menos apilada, y expuso dos cosas reales que se dejaron escritas: el ejemplo no
+demuestra la casilla de gasto fijo (sigue sin demostrarla — ver §3.4), y una asimetría de peso
+visual en la sección 02 que se corrigió en la misma pasada.
+
+### 4.2 Segunda ronda (después de cortar, midiendo lo que pediste: tiempo y el barrido de tres segundos)
+
+`docs/redesign/EVALUACION-RECORTE-20260821.md`. Mismos cinco anclados (tercera lectura del día) +
+**cuatro personas de control completamente nuevas** — las cuatro de la ronda anterior ya estaban
+"gastadas" porque ya habían leído una versión de la página hoy mismo, y el propio proyecto tiene
+evidencia de que un control ya expuesto deja de medir lo mismo (`landing-v3/evaluacion/RESULTADO.md
+§2`).
+
+**Lo medido, con número:**
+
+| Métrica | Resultado |
 |---|---|
-| 00 Hero | Sí — el titular + bajada. No tocado. |
-| 01 Compartido | Sí — "anotas una vez, Mesura lleva el saldo". La mecánica de invitación es soporte, ahora en lista, no compite con el mensaje. |
-| 02 Ritmo | Antes no: tres cajas competían por ser "la" advertencia. Ahora sí — "pon todo, marca lo fijo" es la única caja; el resto es nota al margen. |
-| 03 Anotar | Sí — no tocada, ya tenía un solo callout. |
-| 04 Datos | Sí — el mejor ejemplo de la página: lista de dos columnas con signo +/–, nunca prosa corrida. No tocada; es el patrón que repliqué en 01 y 05. |
-| 05 Antes de correo | Antes no: dos cajas del mismo peso. Ahora sí — una sola caja con dos filas. |
-| 06 Preguntas | Sí — acordeón, ya era progresivo. No tocada. |
+| Palabras forzadas (fuera de cualquier `<details>`) | 2.909 → **1.674** — **42% menos**, ~14,5 → ~8,4 min a 200 ppm |
+| Palabras totales (con las Preguntas incluidas) | 3.526 → **2.769** — 21% menos |
+| Lectura del barrido de 3 segundos (control nuevo, 4/4) | Los cuatro describieron el mismo mensaje: anotar un gasto, saber cuánto queda por día |
+| ¿Cortar se sintió como esconder? (control nuevo) | Ninguno lo dijo — con la condición explícita de Esteban: el link a "Preguntas" tiene que existir y las respuestas tienen que estar completas cuando se abren |
+| Intención de correo, grupo A (anclados) | 4 de 5 subió o se mantuvo; Nicolás bajó — ver §3.3 |
+| Intención de correo, grupo B (control nuevo) | 55–72%, más bajo que el grupo anclado y más creíble como línea base, según el propio documento |
 
-### 1.6 Veredicto
-
-La craft tipográfica de la página es sólida y no era el problema. El problema era de
-**arquitectura de la información dentro de la sección**: varias advertencias independientes,
-cada una legítima, puestas en cajas idénticas, una tras otra, sin que ninguna se subordinara a
-otra. La cura que ya usa la propia página en la sección 04 —lista con filete, negrita como
-encabezado de fila, cuerpo más chico debajo— es la que faltaba extender a las secciones 01, 02 y
-05. Es la misma cura que Andrés pidió para el texto en agosto, aplicada ahora al layout.
+La brecha entre el 42% (forzado) y el 21% (total) es la prueba numérica de que esto fue
+reubicación real, no sólo borrado disfrazado: la información sigue en el sitio, en una capa que el
+lector elige abrir.
 
 ---
 
-## 2. Qué se cambió, y por qué
+## 5. Lo que necesita tu decisión — con mi recomendación ya tomada
 
-### 2.1 Componente nuevo: `.notice-group` (`assets/css/landing.css`)
-
-Una caja con borde, lista de filas separadas por filete horizontal, negrita como encabezado de
-cada fila. Mismo lenguaje visual que `.pact` (sección 04). Se usa donde antes había un `.callout`
-con `<br><br>` simulando una lista que en realidad ya era una lista semánticamente.
-
-### 2.2 Sección 01 — la mecánica de la invitación, de párrafo a lista
-
-Las cuatro afirmaciones («necesita una cuenta», «es una sola vez», «vence a los siete días», «si
-nunca acepta») pasaron de un `.callout` con `<br><br>` a un `.notice-group` de cuatro filas.
-**Ninguna palabra cambió.** Es restructuración pura de marcado.
-
-### 2.3 Sección 05 — dos advertencias, una caja
-
-Los dos `.callout--warn` («se empieza de cero», «la moneda se elige…») se fusionaron en un
-`.notice-group--warn` de dos filas. **Ninguna palabra cambió.**
-
-### 2.4 Sección 02 — esto sí cambió contenido, y es lo que más justifica revisar antes de aprobar
-
-Aquí no sólo reorganicé: corregí tres afirmaciones que dejaron de ser ciertas la noche del 20 al
-21 de agosto, cuando las dos apps reemplazaron el umbral fijo del ritmo por uno relativo. Lo
-verifiqué de nuevo contra el código, en vivo, antes de tocar nada — no confié en que el hallazgo
-de `Mesura-lanzamiento/LEEME-PRIMERO-21-agosto.md` siguiera vigente sólo porque estaba escrito:
-
-- **`app/lib/home-context.ts:53`** (Mesura-app-source): `PACE_ESCALATION_RATIO = 0.1` — 10% de lo
-  esperado a la fecha, no un monto fijo. La constante vieja, `PACE_TOLERANCE = 500`, ya no existe
-  en el archivo.
-- **`lib/home-state.ts:97`** (Mesura-mobile): el mismo `0.1`, con el mismo nombre.
-- El comentario de `home-context.ts:29-52` documenta el motivo: con un umbral fijo, "vas por
-  delante" se encendía el 97% de los días del mes para cualquier presupuesto, sin importar su
-  tamaño.
-
-**Los tres cambios de texto:**
-
-1. **Se borró el párrafo del margen** («por debajo de $500... no llega al 0,4%»). Con el ejemplo
-   propio de la página (presupuesto $487.300, día 18/31), el margen real hoy es **$28.295**, el
-   **5,8%** del presupuesto — no $500 ni 0,4%. No lo reescribí con el número nuevo: seguí la
-   recomendación de `LEEME-PRIMERO-21-agosto.md` de borrar el bloque entero, porque con un umbral
-   relativo ya no hay una "banda fija" que valga la pena confesarle al lector con ese detalle.
-2. **Se borró el párrafo del bug del primer mes** («si entras a mitad de mes... te va a decir que
-   vas holgado»). Verifiqué que el arreglo (`firstTrackedDayInMonth` / `paceWindowFor`) está en
-   las dos apps, con el mismo mecanismo. El hecho que sí seguía siendo cierto —"Mesura no
-   distingue un día sin gasto de un día sin anotar"— se conservó, ahora como nota breve.
-3. **Se reescribió la instrucción del presupuesto.** Verifiqué que la web ya tiene completa la
-   casilla de gasto fijo: esquema (`db/schema.ts:49`), migración (`0025_naive_deathstrike.sql`),
-   API (`app/api/expenses/route.ts:93`), el checkbox en el formulario
-   (`MovementFormSheet.tsx:342`, texto literal **«Es un gasto fijo (arriendo, cuentas)»**, citado
-   palabra por palabra en la página) y su uso en el cálculo (`expectedSpendToDateFor`,
-   `home-context.ts:148`). La instrucción vieja («deja fuera la vivienda») describía un producto
-   que ya no existe: hoy la instrucción correcta es la contraria — anota todo, marca lo fijo. **La
-   nativa todavía no tiene esta casilla** (`Mesura-mobile/app/edit-budget.tsx:175` sigue con el
-   texto viejo); no es un problema para esta página porque describe la web, que es el sitio que
-   existe hoy. Deja de serlo el día que la nativa se publique — ver §3.
-
-**Consecuencia de bloques, no sólo de verdad:** la sección pasó de 3 cajas `.callout` + 1 párrafo
-suelto a **1 caja + 1 nota al margen + 1 línea de texto corrido subordinada**. Menos bloques,
-menos peso, y de paso, correcto.
-
-### 2.5 El bug que encontré en el propio motor del ejemplo interactivo
-
-`assets/js/mesura-datos.js` tenía, hasta esta pasada, la MISMA constante obsoleta
-(`PACE_TOLERANCE = 500`) gobernando el ejemplo interactivo de la hoja — el que corre en el
-navegador de cualquier visitante cuando escribe un monto de prueba. Si alguien escribía un gasto
-que dejara el desvío entre $500 y el umbral real (hoy ~$28.295 en pesos chilenos, escala con el
-presupuesto en las seis monedas), el ejemplo le habría mostrado un veredicto que la app real no
-daría — el error exacto contra el que existe la regla del escaparate. Se reemplazó por el cálculo
-relativo (`tolerancia = Math.round(Math.abs(esperado) * PACE_ESCALATION_RATIO)`), que alimenta
-tanto el render inicial como `demo.js` (que ya leía el campo `tolerancia` sin cambios propios).
-**Esto no es un cambio de "jerarquía visual" — es una corrección de exactitud que apareció
-mientras verificaba la de al lado**, y quedó arreglada en la misma pasada porque dejarla habría
-significado publicar el mismo error que acabo de sacar del texto, sólo que en JavaScript.
-
-### 2.6 Consistencia: la nota del ejemplo, en el hero
-
-El hero explicaba el presupuesto del ejemplo diciendo que "no incluye vivienda", con la razón
-apuntando a la sección 02 — razón que ya no es la que la sección 02 da. Se reescribió para decir
-lo que es cierto hoy: el ejemplo no tiene ningún movimiento marcado como gasto fijo, así que no
-demuestra ese cálculo, y la sección 02 explica cómo cambiaría si lo tuviera. Es una limitación
-real y declarada del ejemplo, no un error — ver §3.
-
-### 2.7 El script de verificación externo, en el repo hermano
-
-`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` fallaba con `1 FALLO(S)` porque su
-comprobación 7 buscaba literalmente `PACE_TOLERANCE` en `home-context.ts` — el mismo hallazgo que
-`LEEME-PRIMERO-21-agosto.md` ya había anotado, con la misma recomendación (actualizar la
-comprobación, no el código). Apliqué esa única línea de cambio, simétrica a la que el script ya
-hacía para la nativa: ahora valida `PACE_ESCALATION_RATIO` en la web también, que es la
-invariante que de verdad importa —que las dos apps usan el mismo umbral relativo— no el nombre de
-una constante retirada. **No toqué nada más de ese repositorio.** `node verificar.js
---contra-repo ...` corre hoy `SIN FALLOS`.
+1. **El caso de Nicolás (§3.3).** Recomendación: dejarlo como está. Alternativa reversible:
+   nombrar los cuatro casos en negrita dentro de la frase corta de "Para quién el ritmo no sirve
+   todavía", sin volver a la elaboración completa.
+2. **El ejemplo interactivo sigue sin demostrar la casilla de gasto fijo** (arrastrado de la
+   primera ronda, confirmado otra vez por Teresa en la segunda). Recomendación: si esto sigue
+   generando dudas en uso real, es trabajo de ingeniería sobre `assets/js/demo.js` y
+   `mesura-datos.js` — agregar la casilla al formulario del ejemplo —, no de texto, y queda para
+   una pasada aparte.
+3. **Tres piezas de contenido que ahora son más cortas en la landing pero cuyo detalle completo
+   viviría mejor dentro de la app misma** (§3.4): la casilla de gasto fijo, la re-expresión de
+   moneda, y la ausencia de importación. Hoy viven en el FAQ de esta página porque es el único
+   destino que pude construir desde este repositorio. Recomendación: cuando planifiques trabajo en
+   `Mesura-app-source`/`Mesura-mobile`, revisa si vale la pena moverlas a un tooltip en el momento
+   exacto de la decisión — no bloquea nada de lo publicado hoy.
+4. **La instrucción de gastos fijos describe la web, no la nativa**, que todavía no tiene la
+   casilla. Sigue siendo tolerable porque la landing describe el sitio que existe; deja de serlo
+   el día que se publique la nativa con esta función atrasada.
 
 ---
 
-## 3. Lo que necesita tu decisión — con mi recomendación ya tomada
-
-1. **La instrucción de gastos fijos describe la web, no la nativa, que todavía no la tiene.** Es
-   tolerable hoy porque la landing describe el sitio que existe. Deja de serlo el día que se
-   publique la app nativa con esta función atrasada. *Recomendación: cuando planifiques ese
-   lanzamiento, revisa esta sección de nuevo antes de nada más — es una búsqueda de "gasto fijo"
-   en `index.html`.*
-2. **El ejemplo interactivo no demuestra la casilla de gasto fijo.** Dos de nueve lectores
-   simulados (Teresa, Renata — ver `docs/redesign/EVALUACION-JERARQUIA-20260821.md` §4.3) se
-   quedaron con la pregunta de qué pasaría si la marcaran. La nota ya lo declara (no oculta el
-   límite), pero no lo resuelve. *Recomendación: si esto sigue generando dudas en uso real, es
-   trabajo de ingeniería —agregar la casilla al formulario de la hoja de ejemplo— no de texto ni
-   de maqueta, y queda para una pasada aparte. Alternativa reversible: nada que hacer hoy, es una
-   limitación declarada, no un error.*
-3. **El og-image y el JSON-LD no se tocaron en esta pasada** — no citan el margen ni el bug del
-   primer mes, así que no quedaron con nada falso, pero tampoco se revisaron línea por línea de
-   nuevo. *Recomendación: no urgente, ninguna cifra que citen cambió.*
-
----
-
-## 4. Cómo se verificó — todo lo que corrí, con resultado
+## 6. Cómo se verificó — todo lo que corrí, con resultado
 
 | Comprobación | Resultado |
 |---|---|
-| `cd docs/redesign/qa && npm test` | **7/7 bloques en verde**, incluido `funcional: 26/26` y `axe-core: 0 violaciones en 10 configuraciones` |
-| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` (desde `landing-v3/ejemplo`) | **SIN FALLOS** · 3 avisos preexistentes, no relacionados (montos citados a mano en archivos de evaluación) |
-| `npx wrangler pages dev .` + `curl` sin cabecera | `data-moneda="CLP"` |
-| ídem con `CF-IPCountry: PE` | `data-moneda="PEN"` |
-| ídem con `?m=USD` (moneda no elegible) | cae a `data-moneda="CLP"`, sin error |
-| ídem con `?m=xx` (basura) | cae a `data-moneda="CLP"`, sin error |
-| Selector de moneda, cambio manual, teclado, formulario, calculadora, tema oscuro | Cubierto por el `funcional: 26/26` de arriba — no hay regresión |
-| Evaluación con lectores simulados, 5 anclados + 4 control nuevo | `docs/redesign/EVALUACION-JERARQUIA-20260821.md` — resultado en §5 abajo |
+| `cd docs/redesign/qa && npm test` | **7/7 bloques en verde**, `funcional: 27/27` (se agregó la prueba de regresión del bug de móvil y se corrigió un conteo de `<details>` desactualizado por el recorte, de 10 a 14) |
+| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` | **SIN FALLOS** · 3 avisos preexistentes, no relacionados |
+| `npx wrangler pages dev .` + `curl` sin cabecera / con `CF-IPCountry: PE` / con `?m=USD` basura | `CLP` / `PEN` / `CLP` — los tres correctos |
+| `npx wrangler pages dev .` + `curl "?m=PEN"` directo | `PEN` — confirma que la Function nunca fue la causa del bug de móvil |
+| La prueba de regresión del selector de moneda, corrida sola 3 veces seguidas | 3/3 en verde, sin parpadeos |
+| Word count forzado vs total, antes y después del recorte | Ver tabla en §4.2 |
+| Evaluación con lectores simulados, dos rondas, con grupo de control nuevo en cada una | `docs/redesign/EVALUACION-JERARQUIA-20260821.md` y `docs/redesign/EVALUACION-RECORTE-20260821.md` |
 
-**Una verificación que NO pude hacer:** capturas de pantalla reales. El Browser pane de esta
-sesión no compositó frames (`screenshot failed: the Browser pane is not displayed`) pese a varios
-intentos con la página cargada y confirmada por `get_page_text` y el árbol de accesibilidad
-(`read_page`), que sí mostraron el marcado nuevo renderizando sin errores de consola. Verifiqué
-estructura y accesibilidad por esa vía más el axe-core del arnés automático (que sí corre en
-Chrome headless real, con 10 combinaciones de viewport y tema), pero **nadie —yo ni tú— vio esta
-versión con los ojos todavía.** Antes de mergear, ábrela: `npx wrangler pages dev .` y mira al
-menos la sección 02 y la 01, que son las que más cambiaron de forma.
+**Lo que no pude hacer:** capturas de pantalla reales del navegador — el Browser pane de esta
+sesión no compositó frames en ningún intento. Verifiqué estructura, accesibilidad (axe-core real
+en Chrome headless, 10 combinaciones de viewport y tema) y comportamiento por `get_page_text` y
+`read_page`, pero **nadie —yo ni tú— vio esta versión con los ojos todavía.** Antes de mergear:
 
----
+```
+cd Mesura-landing
+npx wrangler pages dev . --compatibility-date=2026-08-01
+```
 
-## 5. La evaluación — resumen
-
-Documento completo: `docs/redesign/EVALUACION-JERARQUIA-20260821.md`. Nueve lectores simulados,
-cinco que ya habían objetado específicamente "todo en fila" o "conté ocho no" en la ronda de
-agosto, cuatro de control nuevo, sin haber visto ninguna versión.
-
-**Sostiene la pasada:** las dos personas cuya objeción original era literalmente la acumulación
-—Andrés (contador, la metáfora de las notas contables) y Camila (la metáfora del restorán)—
-dijeron que la sección 01 ya no se siente "en fila". Nicolás, que pidió contar los "no" por
-función, confirmó que la sección 02 bajó de bloque de siete a bloque de tres — no sólo se ve más
-liviana, lo es.
-
-**Expuso dos cosas reales, y las dos quedan escritas en vez de escondidas:**
-
-1. **El ejemplo no demuestra la casilla de gasto fijo** (Teresa, Renata) — limitación declarada,
-   no resuelta; ver §3.2 arriba.
-2. **Una asimetría de peso visual dentro de la sección 02**, que Valeria (la única lectora con
-   oficio de diseño del grupo) encontró y que **si se corrigió** en esta misma pasada: la nota
-   "no distingue no gasté de no anoté" tenía el mismo peso que la nota principal de al lado; bajó
-   a texto corrido subordinado.
-
-**Límite del ejercicio, dicho una vez más porque importa:** el control tiene cuatro personas, no
-cinco, y ya se demostró una vez —con la ronda anterior— que el tamaño del control puede invertir
-una conclusión. Nadie usó la página real. Quien escribió las nueve respuestas es quien hizo los
-cambios que evalúa. Detalle completo en el documento, sección 5.
+y mira al menos la sección 02 (la más recortada) y el selector de moneda en tu teléfono real.
 
 ---
 
-## 6. Comandos — listos para copiar, **no ejecutados**
+## 7. Comandos — listos para copiar, **no ejecutados**
 
 ### Revisar el diff antes de decidir
 
@@ -281,7 +287,20 @@ cd Mesura-landing
 npx wrangler pages dev . --compatibility-date=2026-08-01
 ```
 
-### Mergear a `main`
+### Desplegar SÓLO el arreglo del bug de móvil, sin esperar al resto
+
+Si quieres el fix de moneda en producción ya, sin el recorte de contenido ni la reorganización
+visual:
+
+```
+cd Mesura-landing
+git checkout main
+git cherry-pick be2acd9
+git push origin main
+npx wrangler pages deploy . --project-name=mesura-landing
+```
+
+### Mergear todo
 
 ```
 git -C Mesura-landing checkout main
@@ -289,7 +308,7 @@ git -C Mesura-landing merge --no-ff claude/jerarquia-visual-20260821
 git -C Mesura-landing push origin main
 ```
 
-### Desplegar
+### Desplegar todo
 
 ```
 cd Mesura-landing
@@ -298,32 +317,156 @@ npx wrangler pages deploy . --project-name=mesura-landing
 
 ### El fix del script hermano — decidir si se comitea aparte
 
-`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` se modificó (§2.7) pero es un repositorio
-distinto, sin relación de submódulo con éste. Si ese repositorio lleva su propio control de
-versiones:
+`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` se modificó pero es un repositorio distinto:
 
 ```
 git -C Mesura-lanzamiento status
 git -C Mesura-lanzamiento diff -- landing-v3/ejemplo/verificar.js
 ```
 
-y decide ahí si comitear ese cambio; no forma parte de este merge.
-
 ### Revertir, si algo no calza
 
 Si **ya mergeaste y pusheaste**:
 
 ```
-git -C Mesura-landing revert -m 1 <sha-del-commit-de-merge>
+git -C Mesura-landing revert -m 1 <sha-del-merge>
 git -C Mesura-landing push origin main
 ```
 
-Si **todavía no mergeaste** (el estado de ahora mismo):
+Si **todavía no mergeaste**:
 
 ```
 git -C Mesura-landing checkout main
 git -C Mesura-landing branch -D claude/jerarquia-visual-20260821
 ```
 
-Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` → pestaña
-Deployments → "Rollback to this deployment" sobre el anterior a éste, sin tocar git.
+Si **sólo quieres deshacer el recorte de contenido** y quedarte con la jerarquía + el fix de
+móvil:
+
+```
+git -C Mesura-landing revert --no-commit 24eb341
+git -C Mesura-landing commit
+```
+
+Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` → Deployments →
+"Rollback to this deployment".
+
+---
+
+## 8. Apéndice — el informe completo del analista de mercado, sin editar
+
+Corrió como un agente separado, sin ningún contexto previo de esta conversación, con las
+instrucciones descritas en §3.1. Se pega íntegro para que el criterio de corte quede escrito y
+auditable, como pediste — no resumido por mí.
+
+> ### Mesura landing page — conversion audit (section-by-section)
+>
+> Read the full file top to bottom, body only (hero → invitation), applying one test per block:
+> *does a first-time visitor need this, on this page, to decide they want to try the app?*
+> Findings below, then a formatting pass, then the verdict.
+>
+> **00 · Hero**
+>
+> **"Y hoy necesita conexión: si estás en la calle sin señal..."** — Fails (b), a "we don't do X"
+> limitation stacked onto an already-crowded trust paragraph, in the single most valuable real
+> estate on the page. Belongs: cut from hero; FAQ at most.
+>
+> **"Dos cosas para que el ejemplo no prometa de más."** — Fails (a), meta-commentary about the
+> demo's own fidelity. Belongs: cut with no relocation.
+>
+> **"Y si quieres, cada categoría puede llevar su propio presupuesto..."** — Fails (a), duplicate
+> of the FAQ answer. Belongs: cut, the FAQ already owns this.
+>
+> **"Esta división la hacemos aquí... La app todavía no la muestra."** — Fails (b), the worst
+> placement on the page: directly beneath the flagship number, disclosing the product can't
+> currently show it. Belongs: cut with no relocation, or a FAQ answer at most.
+>
+> **01 · Compartido**
+>
+> **"Puedes juntar varias cuentas en un grupo... veinte personas"** — Fails (d), minority use case
+> stated as a limit before the visitor has tried splitting with one person. Belongs: in-app, when
+> creating a group.
+>
+> **Entire "Cómo funciona la invitación" notice-group** — Fails (a)+(b)+(d) collectively: four
+> consecutive paragraphs of internal invite-flow mechanics before the visitor has decided to try
+> anything. Belongs: collapse to one sentence on the landing; expiry/never-accepted mechanics as
+> in-app messaging or FAQ.
+>
+> **"El saldo sólo está bien si lo anotan los dos."** — Fails (d), an accuracy caveat right after
+> the core pitch. Belongs: in-app tooltip when linking, not the landing page.
+>
+> **02 · El ritmo del mes**
+>
+> **"Pon como presupuesto... marca la casilla «Es un gasto fijo»"** — Fails (a), names an exact UI
+> checkbox label and its internal effect. Belongs: first-time-use tooltip on the budget screen.
+>
+> **"Si no marcas nada..."** — Fails (d), troubleshooting for a mistake not yet made. Belongs:
+> in-app warning or FAQ.
+>
+> **"Mesura no distingue un día en que no gastaste de uno en que no anotaste."** — Fails (a)/(d).
+> Belongs: FAQ.
+>
+> **"Una hoja de cálculo también te lo puede decir..."** — Fails (e), self-undermining
+> objection-handling that introduces a competing option nobody asked about. Belongs: cut, no
+> relocation.
+>
+> **02b · Cuatro casos (entire section)** — All four items fail (d): minority-segment limitations
+> that, stacked, read as "this product has more caveats than benefits." Belongs: one acknowledgment
+> line survives; detailed workarounds to FAQ/in-app help.
+>
+> **"Si tu dinero pierde valor... o vives entre dos monedas."** — Fails (d) hard and (c): dense,
+> abstract, ends in a sentence that needs a second read even for a native speaker. Belongs: cut
+> from the landing flow, FAQ for the segment it affects.
+>
+> **03 · Anotar**
+>
+> **"¿Qué fue?" field mechanics** — Fails (a), plus a duplicate of the section-01 shared-visibility
+> caveat. Belongs: in-app tooltip; drop the duplicate.
+>
+> **"Alrededor de eso hay metas de ahorro..."** — Fails (a)+(b), five tertiary features each
+> immediately qualified with what it doesn't do — the "muchas cosas que no hacemos" pattern in
+> concentrated form. Belongs: bare feature list, zero elaboration, or cut entirely.
+>
+> **04 · Tus datos**
+>
+> **"Tus movimientos, que sí se pueden leer..."** — Fails (a) decisively: explains the absence of
+> end-to-end encryption, enumerates four internal-access scenarios verbatim from the privacy
+> policy, names the individual who can read the data. This is privacy-policy content. Belongs:
+> compress to one sentence; full enumeration to the privacy policy.
+>
+> **"Tres servicios para funcionar"** — Fails (a), sub-processor disclosure is textbook
+> privacy-policy material. Belongs: privacy policy.
+>
+> **"Irte es un botón"** retained-balance clause — Fails (d) partially; keep the deletion mechanic,
+> cut the edge case. Everything else in this section (banking, ads, AI, no rachas) **passes** —
+> these are the actual trust promises the hook depends on.
+>
+> **05 · Antes de dejar tu correo**
+>
+> **"Se empieza de cero..."** — Borderline pass on content, doesn't need to be pre-email-capture.
+> Belongs: account-creation flow.
+>
+> **"La moneda se elige al crear la cuenta... sí se puede cambiar después."** — Fails (a)+(c) hard:
+> five sentences of currency-re-expression mechanics, exactly the kind of "concepto técnico difícil"
+> flagged. Belongs: cut from the landing; inline warning next to the currency selector in the real
+> account-creation form.
+>
+> **06 · Preguntas (FAQ)** — Largely passes as-is; opt-in disclosure, several answers already
+> duplicated in forced-visible paragraphs upstream — that duplication is itself evidence the
+> natural home exists and is underused. Expect it to absorb the trimmed content.
+>
+> **07 · Invitación** — Passes cleanly, no changes recommended.
+>
+> **Wall-of-text flags (by shape alone):** the hero callout (5 sentences, 4 jobs), the showcase
+> note, the cifra-diaria paragraph, the section-01 notice-group, the section-02 callout, the
+> section-02b currency callout, the "¿Qué fue?" callout, the section-03 features marginal, the
+> section-04 "tus movimientos" small, the section-05 currency item.
+>
+> **Overall verdict:** if this page has to shrink to half its length, the organizing principle
+> should be: keep only what proves the three core promises (log a spend in seconds, know your
+> daily pace, split fairly with one person) are real and trustworthy to a skeptical-but-interested
+> reader — and move every "here's exactly how it works internally," every "here's who this doesn't
+> work for," and every "here's what we don't do" past the second instance, to a layer the visitor
+> reaches only if they choose to: the FAQ, the account-creation flow, or in-app tooltips at first
+> use. Given the predecessor page already over-converted relative to what the product retains,
+> none of this cutting reduces informed consent in any way that matters.
