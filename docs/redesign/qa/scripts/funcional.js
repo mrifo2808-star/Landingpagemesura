@@ -70,7 +70,7 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(cta.display, "none", "el CTA de la demo debe seguir oculto sin JS");
     igual(cta.alto, 0);
     // Y la hoja tiene que seguir mostrando sus cifras.
-    igual(await texto(page, "#demo-available"), "$204.000");
+    igual(await texto(page, "#demo-available"), "$156.325");
     igual((await page.$$("details")).length, 4);
   }, { sinJs: true }));
 
@@ -170,16 +170,17 @@ prueba("demo", "el sobregiro se marca en rojo", () =>
       await page.click("#demo-form button[type=submit]");
       await new Promise((r) => setTimeout(r, 60));
     }
-    // demo.js distingue "over" (>4% sobre el ritmo) de "way-over" (>25%):
-    // seis gastos de 150.000 caen holgadamente en el segundo.
+    // demo.js replica home-context.ts: sólo hay "over" (diff > 500 unidades
+    // mínimas), no un segundo umbral — la app real tampoco lo tiene.
     const estado = await page.$eval("#demo-verdict", (e) => e.dataset.state);
-    igual(estado, "way-over");
-    // No se clava el hexadecimal: el tono cambia entre claro y oscuro y entre
-    // "over" y "way-over". Lo que la prueba defiende es que sea rojo.
+    igual(estado, "over");
+    // No se clava el hexadecimal: el tono cambia entre claro y oscuro. Lo que
+    // la prueba defiende es que sea un naranja/rojizo de aviso, no el tinte
+    // por defecto.
     const rgb = await page.$eval("#demo-verdict", (e) =>
       getComputedStyle(e).color.match(/[0-9]+/g).map(Number));
     afirmar(rgb[0] > 150 && rgb[0] > rgb[1] * 2 && rgb[0] > rgb[2] * 2,
-      `el veredicto no es rojo: rgb(${rgb.join(", ")})`);
+      `el veredicto no está en tono de aviso: rgb(${rgb.join(", ")})`);
   }));
 
 prueba("demo", "el CTA del hero manda el foco al campo de monto", () =>

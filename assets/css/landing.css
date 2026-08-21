@@ -607,7 +607,6 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   line-height: 1.2;
 }
 .pace__verdict[data-state="over"] { color: var(--orange-ink); }
-.pace__verdict[data-state="way-over"] { color: var(--red); }
 .pace__axis {
   position: relative;
   height: 10px;
@@ -621,9 +620,8 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   transition: width .5s cubic-bezier(.22, .9, .3, 1);
 }
 .pace__fill[data-state="over"] { background: var(--orange); }
-.pace__fill[data-state="way-over"] { background: var(--red); }
 /* La marca de "esperado a hoy" cae encima del relleno, así que lleva un halo
-   del color de la hoja para seguir leyéndose sobre naranjo o sobre rojo. */
+   del color de la hoja para seguir leyéndose sobre naranjo. */
 .pace__tick {
   position: absolute;
   top: -9px;

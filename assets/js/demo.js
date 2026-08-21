@@ -15,8 +15,11 @@
   var NUM = new Intl.NumberFormat("es-CL");
 
   /* El ejemplo: un mes cualquiera, a mitad de camino. El día 18 de 31 hace
-     que el "ritmo" tenga algo que decir desde el primer segundo. */
-  var REFERENCE = 620000;
+     que el "ritmo" tenga algo que decir desde el primer segundo.
+     Presupuesto de gasto variable (no incluye arriendo ni cuentas fijas),
+     y no es un múltiplo redondo de los días del mes — ver
+     Mesura-lanzamiento/landing-v3/ejemplo/verificar.js, que audita esto. */
+  var REFERENCE = 487300;
   var DAY = 18;
   var DAYS_IN_MONTH = 31;
 
@@ -28,12 +31,12 @@
   ];
 
   var SEED = {
-    cats: { super: 164900, transporte: 58400, carrete: 74200, casa: 118500 },
+    cats: { super: 136785, transporte: 46245, carrete: 61790, casa: 86155 },
     entries: [
-      { label: "Feria de la Vega",     meta: "Supermercado · sáb 16", amount: 23400, cat: "super" },
-      { label: "Bencina",              meta: "Transporte · vie 15",   amount: 32000, cat: "transporte" },
-      { label: "Cumpleaños de la Javi", meta: "Salidas · jue 14",     amount: 18500, cat: "carrete" },
-      { label: "Cuenta de la luz",     meta: "Casa · mié 13",         amount: 41200, cat: "casa" }
+      { label: "Feria de la Vega",     meta: "Supermercado · dom 16", amount: 20125, cat: "super" },
+      { label: "Cumpleaños de la Javi", meta: "Salidas · sáb 15",     amount: 18079, cat: "carrete" },
+      { label: "Bencina",              meta: "Transporte · vie 14",   amount: 7504,  cat: "transporte" },
+      { label: "Cuenta de la luz",     meta: "Casa · jue 13",         amount: 33478, cat: "casa" }
     ]
   };
 
@@ -47,7 +50,7 @@
     verdict:    document.getElementById("demo-verdict"),
     fill:       document.getElementById("demo-fill"),
     tick:       document.getElementById("demo-tick"),
-    expected:   document.getElementById("demo-expected"),
+    detail:     document.getElementById("demo-detail"),
     entries:    document.getElementById("demo-entries"),
     cats:       document.getElementById("demo-cats"),
     form:       document.getElementById("demo-form"),
@@ -73,26 +76,33 @@
     return CATEGORIES[0];
   }
 
-  /* ---- Ritmo ------------------------------------------------------------
-     El dato no es "cuánto llevas gastado", es "cuánto llevas gastado
-     comparado con lo que corresponde al día del mes en que vas". Esa
-     diferencia es la única razón por la que alguien mira la app un martes. */
+  /* ---- Ritmo -------------------------------------------------------------
+     Replica lo que hace hoy app/lib/home-context.ts en la app real: no un
+     porcentaje, sino la diferencia en dinero entre lo gastado y lo que
+     correspondería a esta altura del mes, con una banda muerta de 500
+     unidades mínimas de la moneda (PACE_TOLERANCE) para que el indicador no
+     alterne de estado con cada peso. Si la app cambia esta regla, este
+     ejemplo tiene que cambiar con ella — no antes. */
+  var PACE_TOLERANCE = 500;
+
   function pace(spent) {
     var expected = Math.round(REFERENCE * (DAY / DAYS_IN_MONTH));
-    var ratio = expected > 0 ? spent / expected : 0;
-    var deltaPct = Math.round((ratio - 1) * 100);
-    var stateName = deltaPct > 25 ? "way-over" : deltaPct > 4 ? "over" : "";
-    var text;
-    if (spent > REFERENCE) {
-      text = "Ya pasaste el presupuesto del mes.";
-    } else if (deltaPct > 4) {
-      text = "Vas " + deltaPct + "% por sobre el ritmo del mes.";
-    } else if (deltaPct < -4) {
-      text = "Vas " + Math.abs(deltaPct) + "% por debajo del ritmo del mes.";
+    var diff = spent - expected;
+    var stateName, text, detail;
+    if (diff > PACE_TOLERANCE) {
+      stateName = "over";
+      text = "Vas " + CLP.format(diff) + " por delante de tu ritmo.";
+      detail = "Es lo que llevas de más respecto a lo que correspondería a esta altura del mes.";
+    } else if (diff < -PACE_TOLERANCE) {
+      stateName = "under";
+      text = "Vas " + CLP.format(Math.abs(diff)) + " por debajo de tu ritmo.";
+      detail = "Si sigues así, cierras el mes con holgura sobre tu presupuesto.";
     } else {
-      text = "Vas justo en el ritmo del mes.";
+      stateName = "";
+      text = "Vas al día con tu presupuesto.";
+      detail = "Tu gasto va justo en lo que correspondería a esta altura del mes.";
     }
-    return { expected: expected, deltaPct: deltaPct, state: stateName, text: text };
+    return { expected: expected, diff: diff, state: stateName, text: text, detail: detail };
   }
 
   /* ---- Render ---------------------------------------------------------- */
@@ -122,7 +132,7 @@
 
     var tickPct = Math.min(100, (p.expected / REFERENCE) * 100);
     el.tick.style.left = tickPct.toFixed(1) + "%";
-    el.expected.textContent = "Esperado al día " + DAY + ": " + CLP.format(p.expected);
+    el.detail.textContent = p.detail;
   }
 
   function renderEntries(freshIndex) {
