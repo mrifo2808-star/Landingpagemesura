@@ -213,6 +213,58 @@ prueba("moneda", "una entrada basura en ?m= no deja la página sin ejemplo", () 
     afirmar((await texto(page, "#demo-available")).startsWith("$"), "no cayó al valor por defecto");
   }));
 
+// Regresión del bug de móvil del 21 de agosto: demo.js depende de otro módulo
+// (mesura-datos.js), así que hay una ventana real, más ancha en una conexión
+// lenta, entre "el HTML ya pintó y el <select> nativo responde al picker" y
+// "demo.js terminó de cargar y enganchó su listener de 'change'". Si alguien
+// elegía una moneda AHÍ, el arranque del script pisaba esa elección en
+// silencio con el valor que había resuelto el servidor — "elijo soles, toco
+// Ver, y vuelve a pesos chilenos", sin que el botón tuviera nada que ver.
+// Esta prueba estrangula la red a propósito para abrir esa misma ventana y
+// fija el <select> por fuera, antes de que la clase "js" aparezca en <html>
+// —la señal de que demo.js ya corrió su primera línea—, tal como lo haría el
+// picker nativo de un teléfono sin que ningún listener estuviera escuchando.
+prueba("moneda", "una eleccion hecha antes de que demo.js cargue no se pierde", async () => {
+  const page = await pagina(browser, { width: 390, height: 844 }, "light");
+  try {
+    const cliente = await page.target().createCDPSession();
+    await cliente.send("Network.enable");
+    await cliente.send("Network.emulateNetworkConditions", {
+      offline: false, latency: 300,
+      downloadThroughput: (60 * 1024) / 8, uploadThroughput: (20 * 1024) / 8,
+    });
+
+    const navegacion = page.goto(s.url + "/", { waitUntil: "load" });
+
+    let fijado = false;
+    for (let i = 0; i < 200 && !fijado; i++) {
+      try {
+        const puedeFijar = await page.evaluate(() => {
+          var sel = document.getElementById("moneda-select");
+          var yaEnganchado = document.documentElement.classList.contains("js");
+          if (sel && !yaEnganchado) { sel.value = "PEN"; return true; }
+          return false;
+        });
+        if (puedeFijar) fijado = true;
+      } catch (_) { /* el documento todavía no existe — reintenta */ }
+      if (!fijado) await new Promise((r) => setTimeout(r, 5));
+    }
+    afirmar(fijado, "la ventana se cerró antes de poder fijar el <select> — sube el estrangulamiento de red");
+
+    await navegacion;
+    await page.waitForSelector("#estado-mes[data-ready]", { timeout: 15000 });
+    await new Promise((r) => setTimeout(r, 100));
+
+    igual(await page.$eval("html", (e) => e.getAttribute("data-moneda")), "PEN",
+      "el arranque de demo.js pisó la elección hecha antes de que cargara");
+    afirmar((await texto(page, "#demo-available")).startsWith("S/"), "la hoja volvió a pesos chilenos");
+    igual(await page.evaluate(() => new URL(location.href).searchParams.get("m")), "PEN",
+      "la URL no quedó reflejando la elección");
+  } finally {
+    await page.close();
+  }
+});
+
 /* ═══════════ Calculadora ═══════════ */
 
 prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>

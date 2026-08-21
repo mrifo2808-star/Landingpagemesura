@@ -36,6 +36,16 @@
 <link rel="preload" href="/assets/fonts/jetbrainsmono-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/landing.css">
 
+<!-- El selector de moneda depende de dos módulos (demo.js → mesura-datos.js):
+     sin este adelanto, el HTML queda pintado e interactivo un instante antes
+     de que cualquiera de los dos termine de llegar, y en ese instante el
+     <select> nativo ya responde al picker del teléfono sin que haya ningún
+     listener escuchando. Es la ventana donde apareció el bug de móvil del
+     21 de agosto (ver el comentario en assets/js/demo.js, sección "Arranque"):
+     no lo cierra del todo, pero lo acorta en la conexión donde más importa. -->
+<link rel="modulepreload" href="/assets/js/mesura-datos.js">
+<link rel="modulepreload" href="/assets/js/demo.js">
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -190,6 +200,7 @@
         <button type="submit">Ver</button>
       </form>
       <p class="moneda-nota">Cambia el ejemplo de esta página. Tu cuenta la eliges al crearla.</p>
+      <p class="sr-only" id="moneda-live" role="status" aria-live="polite"></p>
 
       <p class="showcase-label">
         <b>Esto es la pantalla de Inicio de Mesura, con datos inventados.</b>

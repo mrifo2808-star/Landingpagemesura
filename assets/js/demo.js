@@ -341,6 +341,7 @@ document.querySelectorAll("[data-demo-focus]").forEach(function (btn) {
    avisa a calculator.js. No toca el servidor ni guarda nada del lector. */
 var selectorForm = document.getElementById("moneda-form");
 var selector = document.getElementById("moneda-select");
+var selectorLive = document.getElementById("moneda-live");
 
 function aplicarMoneda(codigo, origen) {
   if (!MONEDAS[codigo]) codigo = "CLP";
@@ -351,6 +352,10 @@ function aplicarMoneda(codigo, origen) {
   if (selector) selector.value = codigo;
   renderAll(-1);
   if (el) { el.reset.hidden = true; el.amount.value = ""; }
+  // El cambio ya no depende de un clic en "Ver": pasa solo al elegir. Sin
+  // este aviso, quien usa lector de pantalla no tendría cómo enterarse de
+  // que la página entera acaba de recalcularse.
+  if (selectorLive) selectorLive.textContent = "Ejemplo mostrado en " + (MONEDAS[codigo] ? MONEDAS[codigo].nombre : codigo) + ".";
 
   if (origen === "eleccion" || origen === "manual") {
     var u = new URL(window.location.href);
@@ -362,7 +367,11 @@ function aplicarMoneda(codigo, origen) {
 }
 
 if (selector) {
-  selector.value = codigoActual;
+  // OJO: no se hace `selector.value = codigoActual` aquí. Hacerlo era la
+  // otra mitad del bug de móvil (ver el comentario largo en "Arranque", más
+  // abajo): esta línea corría ANTES que esa sección, así que pisaba la
+  // elección nativa del lector todavía más temprano. El valor correcto del
+  // <select> se resuelve una sola vez, al final del archivo.
   selector.addEventListener("change", function () {
     aplicarMoneda(selector.value, "manual");
     document.dispatchEvent(new CustomEvent("mesura:event", {
@@ -376,9 +385,26 @@ if (selectorForm) {
   selectorForm.addEventListener("submit", function (ev) { ev.preventDefault(); });
 }
 
-/* ---- Arranque --------------------------------------------------------- */
-state = clone(seedFromCalculo(e));
-renderAll(-1);
+/* ---- Arranque -----------------------------------------------------------
+   EL BUG DE MÓVIL (2026-08-21): este módulo depende de otro (mesura-datos.js)
+   — dos viajes de red antes de que corra la primera línea, y con eso el HTML
+   ya está pintado e interactivo mientras el JS todavía carga. En una conexión
+   lenta hay una ventana real en la que el <select> nativo ya responde al
+   picker del teléfono pero ningún listener de este archivo existe todavía
+   para escucharlo. Si la persona elegía una moneda AHÍ, esta línea —tal como
+   estaba— hacía `selector.value = codigoActual` con el valor que resolvió el
+   servidor y LE BORRABA LA ELECCIÓN EN SILENCIO: por eso "elijo soles, toco
+   Ver, y vuelve a pesos chilenos" — el <select> ya había vuelto a pesos
+   chilenos antes de que el dedo llegara al botón. No era un bug del botón:
+   el botón sólo hacía visible un valor que este arranque ya había pisado.
+   La corrección: si el <select> muestra algo distinto de lo que resolvió el
+   servidor, es que la persona ya actuó — se respeta eso en vez de pisarlo. */
+if (selector && MONEDAS[selector.value] && selector.value !== codigoActual) {
+  aplicarMoneda(selector.value, "manual");
+} else {
+  state = clone(seedFromCalculo(e));
+  renderAll(-1);
+  if (selector) selector.value = codigoActual;
+}
 if (el) el.reset.hidden = true;
-if (selector) selector.value = codigoActual;
 if (root) root.setAttribute("data-ready", "true");
