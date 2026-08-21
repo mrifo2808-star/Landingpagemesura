@@ -10,9 +10,10 @@
  * omisión que convenga "mejorar": es la promesa escrita en la sección "El trato
  * con tus datos".
  *
- * El contrato con el frontend no cambia: POST { email, website }, honeypot,
+ * Contrato con el frontend: POST { email, website, ingreso? }, honeypot,
  * idempotencia por correo, respuestas { ok } o { error } con el mensaje en
- * español.
+ * español. `ingreso` ("fijas" | "saltos") es la respuesta a "¿Cómo te entra
+ * la plata?" del formulario — opcional, y cualquier otro valor se ignora.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -80,6 +81,13 @@ export async function onRequestPost({ request, env, waitUntil }) {
     return json({ error: "Correo inválido" }, 400);
   }
 
+  // "¿Cómo te entra la plata?" del formulario — sirve para priorizar a quién
+  // conviene invitar primero, no para nada más. Cualquier valor que no sea
+  // uno de los dos se descarta en silencio: no es un campo que pueda romper
+  // el registro.
+  const ingresoCrudo = String(body.ingreso || "");
+  const ingreso = ingresoCrudo === "fijas" || ingresoCrudo === "saltos" ? ingresoCrudo : null;
+
   if (!env.WAITLIST) {
     // Sin binding configurado el frontend muestra su mensaje de error genérico
     // en vez de fingir que el correo quedó guardado.
@@ -89,7 +97,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
   // Clave por correo: reinscribirse es idempotente, no duplica entradas.
   const key = "email:" + email;
   const alreadyRegistered = await env.WAITLIST.get(key);
-  await env.WAITLIST.put(key, JSON.stringify({ at: new Date().toISOString() }));
+  await env.WAITLIST.put(key, JSON.stringify({ at: new Date().toISOString(), ingreso }));
 
   // Notificación al dueño vía el Apps Script de lista de espera
   // (google-apps-script/MesuraWaitlist.gs). Solo para correos NUEVOS — una

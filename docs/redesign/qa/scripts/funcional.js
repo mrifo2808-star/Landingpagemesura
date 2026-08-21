@@ -70,8 +70,9 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(cta.display, "none", "el CTA de la demo debe seguir oculto sin JS");
     igual(cta.alto, 0);
     // Y la hoja tiene que seguir mostrando sus cifras.
-    igual(await texto(page, "#demo-available"), "$204.000");
-    igual((await page.$$("details")).length, 4);
+    igual(await texto(page, "#demo-available"), "$156.325");
+    // 3 en "01 · Lo compartido" + 7 en "06 · Preguntas".
+    igual((await page.$$("details")).length, 10);
   }, { sinJs: true }));
 
 prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
@@ -170,16 +171,17 @@ prueba("demo", "el sobregiro se marca en rojo", () =>
       await page.click("#demo-form button[type=submit]");
       await new Promise((r) => setTimeout(r, 60));
     }
-    // demo.js distingue "over" (>4% sobre el ritmo) de "way-over" (>25%):
-    // seis gastos de 150.000 caen holgadamente en el segundo.
+    // demo.js replica home-context.ts: sólo hay "over" (diff > 500 unidades
+    // mínimas), no un segundo umbral — la app real tampoco lo tiene.
     const estado = await page.$eval("#demo-verdict", (e) => e.dataset.state);
-    igual(estado, "way-over");
-    // No se clava el hexadecimal: el tono cambia entre claro y oscuro y entre
-    // "over" y "way-over". Lo que la prueba defiende es que sea rojo.
+    igual(estado, "over");
+    // No se clava el hexadecimal: el tono cambia entre claro y oscuro. Lo que
+    // la prueba defiende es que sea un naranja/rojizo de aviso, no el tinte
+    // por defecto.
     const rgb = await page.$eval("#demo-verdict", (e) =>
       getComputedStyle(e).color.match(/[0-9]+/g).map(Number));
     afirmar(rgb[0] > 150 && rgb[0] > rgb[1] * 2 && rgb[0] > rgb[2] * 2,
-      `el veredicto no es rojo: rgb(${rgb.join(", ")})`);
+      `el veredicto no está en tono de aviso: rgb(${rgb.join(", ")})`);
   }));
 
 prueba("demo", "el CTA del hero manda el foco al campo de monto", () =>
@@ -189,9 +191,31 @@ prueba("demo", "el CTA del hero manda el foco al campo de monto", () =>
     igual(await page.evaluate(() => document.activeElement.id), "demo-amount");
   }));
 
+/* ═══════════ Selector de moneda — un solo sitio, una sola fuente ═══════════ */
+
+prueba("moneda", "cambiar el selector recalcula la hoja y actualiza la URL", () =>
+  conPagina(async (page) => {
+    await page.select("#moneda-select", "PEN");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await page.$eval("html", (e) => e.getAttribute("data-moneda")), "PEN");
+    afirmar((await texto(page, "#demo-available")).startsWith("S/"), "la hoja no cambió a soles");
+    afirmar((await texto(page, "#demo-verdict")).startsWith("Vas S/"), "el veredicto no cambió a soles");
+    igual(await page.evaluate(() => new URL(location.href).searchParams.get("m")), "PEN");
+    // El símbolo de la calculadora, más abajo en la página, tiene que seguir a
+    // la misma moneda: es el mismo token, un solo punto de configuración.
+    igual(await page.$eval('[data-tok="simbolo"]', (e) => e.textContent), "S/");
+  }));
+
+prueba("moneda", "una entrada basura en ?m= no deja la página sin ejemplo", () =>
+  conPagina(async (page) => {
+    await page.goto(s.url + "/?m=USD", { waitUntil: "networkidle0" });
+    igual(await page.$eval("html", (e) => e.getAttribute("data-moneda")), "CLP");
+    afirmar((await texto(page, "#demo-available")).startsWith("$"), "no cayó al valor por defecto");
+  }));
+
 /* ═══════════ Calculadora ═══════════ */
 
-prueba("calculadora", "800.000 / 95.000 da 11,9% y cita la mediana", () =>
+prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
   conPagina(async (page) => {
     await page.click("#calc-income");
     await page.type("#calc-income", "800000");
@@ -200,7 +224,8 @@ prueba("calculadora", "800.000 / 95.000 da 11,9% y cita la mediana", () =>
     await page.click("#calc-form button[type=submit]");
     await new Promise((r) => setTimeout(r, 120));
     igual(await texto(page, "#calc-pct"), "11,9%");
-    afirmar((await texto(page, "#calc-text")).toLowerCase().includes("mediana"), "el texto no menciona la mediana");
+    afirmar((await texto(page, "#calc-text")).includes("Te quedan"), "el texto no dice cuánto queda");
+    afirmar((await texto(page, "#calc-text")).includes("705.000"), "el resto no cuadra con 800.000 − 95.000");
     igual(await page.$eval("#calc-result", (e) => e.getAttribute("aria-live")), "polite");
   }));
 
@@ -216,7 +241,7 @@ prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
     igual((await visible(page, "#calc-result")).visible, false, "el resultado no debería verse");
   }));
 
-prueba("calculadora", "deuda mayor que el ingreso deriva a orientación formal", () =>
+prueba("calculadora", "deuda mayor que el ingreso no promete un 'te queda' negativo", () =>
   conPagina(async (page) => {
     await page.click("#calc-income");
     await page.type("#calc-income", "400000");
@@ -225,8 +250,8 @@ prueba("calculadora", "deuda mayor que el ingreso deriva a orientación formal",
     await page.click("#calc-form button[type=submit]");
     await new Promise((r) => setTimeout(r, 120));
     igual(await texto(page, "#calc-pct"), "225,0%");
-    const fill = await page.$eval("#calc-fill", (e) => e.style.width);
-    igual(parseFloat(fill), 100, "la barra debería saturarse");
+    afirmar((await texto(page, "#calc-text")).includes("superan"), "no avisa que las cuotas superan el ingreso");
+    afirmar(!(await texto(page, "#calc-text")).includes("-$"), "no debería mostrar un 'te queda' negativo");
   }));
 
 prueba("calculadora", "doce dígitos no rompen el formato", () =>

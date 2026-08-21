@@ -64,11 +64,16 @@
     msg.textContent = "";
 
     var honeypot = form.querySelector('input[name="website"]');
+    var ingresoChecked = form.querySelector('input[name="ingreso"]:checked');
 
     fetch("/api/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: value, website: honeypot ? honeypot.value : "" })
+      body: JSON.stringify({
+        email: value,
+        website: honeypot ? honeypot.value : "",
+        ingreso: ingresoChecked ? ingresoChecked.value : ""
+      })
     }).then(function (res) {
       if (!res.ok) throw new Error("waitlist " + res.status);
       return res.json().catch(function () { return {}; });

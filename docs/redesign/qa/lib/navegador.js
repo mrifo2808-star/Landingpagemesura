@@ -56,7 +56,7 @@ export async function pagina(browser, { width, height, isMobile = false }, tema 
   return page;
 }
 
-/** Los seis destinos de ancla que la cabecera y los CTA usan. */
-export const ANCLAS = ["#contenido", "#como-funciona", "#calculadora", "#datos", "#preguntas", "#acceso"];
+/** Los destinos de ancla que la cabecera y los CTA usan. */
+export const ANCLAS = ["#contenido", "#compartido", "#ritmo", "#anotar", "#datos", "#preguntas", "#acceso", "#calculadora"];
 
 export const RAIZ_QA = path.resolve(AQUI, "..");
