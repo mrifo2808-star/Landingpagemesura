@@ -64,21 +64,20 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(await page.$eval("#estado-mes", (e) => e.hasAttribute("data-ready")), false);
     const jot = await visible(page, ".jot");
     igual(jot.visible, false, "la .jot no debe verse sin JS");
-    // El CTA del hero nace con [hidden] y solo demo.js lo destapa: si una regla
-    // de clase le gana a [hidden], se pinta un botón que no hace nada.
-    const cta = await visible(page, "[data-demo-focus]");
-    igual(cta.display, "none", "el CTA de la demo debe seguir oculto sin JS");
-    igual(cta.alto, 0);
     // Y la hoja tiene que seguir mostrando sus cifras.
     igual(await texto(page, "#demo-available"), "$156.325");
     // 2 en "01 · Lo compartido" + 9 en "06 · Preguntas" + 1 en "En qué se ha
-    // ido" (categorías del ejemplo) + 1 en "Una herramienta suelta"
-    // (calculadora) — bajó desde 14 en la pasada del recorte de contenido del
-    // 21 de agosto: la del upgrade real de esa misma fecha fusionó preguntas
-    // redundantes del FAQ (de 12 a 9) y colapsó dos bloques que antes se
-    // mostraban siempre para bajar el scroll móvil de 13,6 a un rango objetivo
-    // de 7-9 pantallas, sin borrar ese contenido.
-    igual((await page.$$("details")).length, 13);
+    // ido" (categorías del ejemplo) — la calculadora (que aportaba 1) se
+    // borró entera en la pasada de minimalismo real del 21 de agosto: el
+    // panel de "qué pasa si esto no está" concluyó que no aportaba nada al
+    // argumento central y competía por atención después del CTA principal.
+    // El FAQ ganó una pregunta sobre ingreso no mensual (antes vivía en "El
+    // ritmo del mes", también borrada) y perdió "¿Qué pasa con mis datos?":
+    // el grupo de control encontró, dos rondas seguidas, que era pura
+    // repetición de "Lo compartido" y "Tus datos" — su único hecho propio
+    // (qué ve la otra persona en un gasto compartido) ya vivía completo en
+    // el acordeón de "Lo compartido".
+    igual((await page.$$("details")).length, 12);
   }, { sinJs: true }));
 
 prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
@@ -190,13 +189,6 @@ prueba("demo", "el sobregiro se marca en rojo", () =>
       `el veredicto no está en tono de aviso: rgb(${rgb.join(", ")})`);
   }));
 
-prueba("demo", "el CTA del hero manda el foco al campo de monto", () =>
-  conPagina(async (page) => {
-    await page.click("[data-demo-focus]");
-    await new Promise((r) => setTimeout(r, 200));
-    igual(await page.evaluate(() => document.activeElement.id), "demo-amount");
-  }));
-
 /* ═══════════ Selector de moneda — un solo sitio, una sola fuente ═══════════ */
 
 prueba("moneda", "cambiar el selector recalcula la hoja y actualiza la URL", () =>
@@ -207,8 +199,8 @@ prueba("moneda", "cambiar el selector recalcula la hoja y actualiza la URL", () 
     afirmar((await texto(page, "#demo-available")).startsWith("S/"), "la hoja no cambió a soles");
     afirmar((await texto(page, "#demo-verdict")).startsWith("S/"), "el veredicto no cambió a soles");
     igual(await page.evaluate(() => new URL(location.href).searchParams.get("m")), "PEN");
-    // El símbolo de la calculadora, más abajo en la página, tiene que seguir a
-    // la misma moneda: es el mismo token, un solo punto de configuración.
+    // El símbolo del campo de monto del ejemplo tiene que seguir a la misma
+    // moneda: es el mismo token, un solo punto de configuración.
     igual(await page.$eval('[data-tok="simbolo"]', (e) => e.textContent), "S/");
   }));
 
@@ -270,84 +262,6 @@ prueba("moneda", "una eleccion hecha antes de que demo.js cargue no se pierde", 
     await page.close();
   }
 });
-
-/* ═══════════ Calculadora ═══════════ */
-// La calculadora vive colapsada detrás de un <details> (recorte de scroll
-// móvil del 21 de agosto): hay que abrirlo antes de que Puppeteer pueda
-// hacer clic en sus campos, que si no cuentan como no visibles.
-const abrirCalculadora = (page) =>
-  page.evaluate(() => { document.querySelector("#calculadora details").open = true; });
-
-prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
-  conPagina(async (page) => {
-    await abrirCalculadora(page);
-    await page.click("#calc-income");
-    await page.type("#calc-income", "800000");
-    await page.click("#calc-debt");
-    await page.type("#calc-debt", "95000");
-    await page.click("#calc-form button[type=submit]");
-    await new Promise((r) => setTimeout(r, 120));
-    igual(await texto(page, "#calc-pct"), "11,9%");
-    afirmar((await texto(page, "#calc-text")).includes("Te quedan"), "el texto no dice cuánto queda");
-    afirmar((await texto(page, "#calc-text")).includes("705.000"), "el resto no cuadra con 800.000 − 95.000");
-    igual(await page.$eval("#calc-result", (e) => e.getAttribute("aria-live")), "polite");
-  }));
-
-prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
-  conPagina(async (page) => {
-    await abrirCalculadora(page);
-    await page.click("#calc-income");
-    await page.type("#calc-income", "0");
-    await page.click("#calc-debt");
-    await page.type("#calc-debt", "95000");
-    await page.click("#calc-form button[type=submit]");
-    await new Promise((r) => setTimeout(r, 120));
-    afirmar((await texto(page, "#calc-income-error")).length > 0, "sin mensaje de error");
-    igual((await visible(page, "#calc-result")).visible, false, "el resultado no debería verse");
-  }));
-
-prueba("calculadora", "deuda mayor que el ingreso no promete un 'te queda' negativo", () =>
-  conPagina(async (page) => {
-    await abrirCalculadora(page);
-    await page.click("#calc-income");
-    await page.type("#calc-income", "400000");
-    await page.click("#calc-debt");
-    await page.type("#calc-debt", "900000");
-    await page.click("#calc-form button[type=submit]");
-    await new Promise((r) => setTimeout(r, 120));
-    igual(await texto(page, "#calc-pct"), "225,0%");
-    afirmar((await texto(page, "#calc-text")).includes("superan"), "no avisa que las cuotas superan el ingreso");
-    afirmar(!(await texto(page, "#calc-text")).includes("-$"), "no debería mostrar un 'te queda' negativo");
-  }));
-
-prueba("calculadora", "doce dígitos no rompen el formato", () =>
-  conPagina(async (page) => {
-    await abrirCalculadora(page);
-    await page.click("#calc-income");
-    await page.type("#calc-income", "999999999999");
-    await page.click("#calc-debt");
-    await page.type("#calc-debt", "1000");
-    await page.click("#calc-form button[type=submit]");
-    await new Promise((r) => setTimeout(r, 120));
-    afirmar((await texto(page, "#calc-pct")).includes("%"), "el porcentaje se rompió");
-  }));
-
-prueba("calculadora", "limpiar oculta el resultado y vacía los campos", () =>
-  conPagina(async (page) => {
-    await abrirCalculadora(page);
-    igual((await visible(page, "#calc-reset")).display, "none", "limpiar no debería verse al cargar");
-    await page.click("#calc-income");
-    await page.type("#calc-income", "800000");
-    await page.click("#calc-debt");
-    await page.type("#calc-debt", "95000");
-    await page.click("#calc-form button[type=submit]");
-    await new Promise((r) => setTimeout(r, 120));
-    await page.click("#calc-reset");
-    await new Promise((r) => setTimeout(r, 120));
-    igual((await visible(page, "#calc-result")).visible, false);
-    igual(await page.$eval("#calc-income", (e) => e.value), "");
-    igual(await page.$eval("#calc-debt", (e) => e.value), "");
-  }));
 
 /* ═══════════ Formulario de lista de espera (contra el mock) ═══════════ */
 
