@@ -113,6 +113,31 @@
           "@type": "Question",
           "name": "¿Qué pasa con mis datos?",
           "acceptedAnswer": { "@type": "Answer", "text": "Tu cuenta ve solo lo tuyo. Tus movimientos están guardados en un servidor y quien opera Mesura puede leerlos; tu contraseña no la puede leer nadie. Descargas todo cuando quieras y eliminas la cuenta desde tu perfil." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Necesito internet para usar Mesura?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí, hoy Mesura necesita conexión para guardar lo que anotas. Es la limitación más incómoda que tiene, porque el momento de anotar suele ser justo cuando no hay señal." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo funciona la invitación para dividir un gasto?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Escribes su correo al dividir el gasto: si ya usa Mesura le llega una solicitud para vincularse, si no, una invitación para crear cuenta. Vincularse es una sola vez. Si no acepta en siete días la invitación vence y puedes reenviarla; si nunca acepta, el gasto se queda como tu registro completo, sin saldo ni deuda." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué pasa si la otra persona no anota lo que puso?",
+          "acceptedAnswer": { "@type": "Answer", "text": "El saldo sólo está bien si lo anotan los dos. Mesura cuadra bien lo que se anota; no sabe lo que no se anotó." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo marco un gasto fijo, y qué pasa si no lo hago?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Marca la casilla «Es un gasto fijo» al anotar un pago que igual tenías que hacer: Mesura lo da por pagado y no lo reparte entre los días que quedan. Si no marcas nada, el ritmo va a decir que vas por delante buena parte del mes." }
+        },
+        {
+          "@type": "Question",
+          "name": "Cobro por quincena, a diario, por temporada, o mi plata no la decido yo — ¿me sirve el ritmo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Todavía no del todo: el ritmo asume un ingreso mensual y estable. El registro y los gastos compartidos sirven igual en cualquiera de estos casos." }
         }
       ]
     }
@@ -176,12 +201,9 @@
       </div>
 
       <div class="callout">
-        En <span data-tok="monedaNombre">pesos chilenos</span>. Sin publicidad y sin
-        vender datos. Los gastos los anotas tú: Mesura no se conecta a tu banco ni te
-        pide sus claves — por eso funciona igual si cobras en efectivo o no tienes
-        cuenta bancaria. Y hoy necesita conexión: si estás en la calle sin señal, en
-        ese momento no vas a poder anotar. Es la limitación más incómoda que tiene,
-        porque el momento de anotar suele ser justo ése.
+        En <span data-tok="monedaNombre">pesos chilenos</span>. Sin publicidad ni venta
+        de datos, y sin conectar tu banco: los gastos los anotas tú, así que funciona
+        igual si cobras en efectivo o no tienes cuenta bancaria.
       </div>
 
       <!-- ═══════════ 00b · EL EJEMPLO ═══════════ -->
@@ -208,14 +230,9 @@
         Las frases son las de la app, palabra por palabra.
       </p>
       <p class="showcase-note">
-        Dos cosas para que el ejemplo no prometa de más. El presupuesto de
-        <span data-tok="presupuesto">$487.300</span> y sus cuatro movimientos
-        —mercado, transporte, salidas, cuentas de la casa— son gasto del día a
-        día: ninguno está marcado como gasto fijo, así que este ejemplo no
-        muestra ese cálculo; en la sección <a href="#ritmo">02</a> está cómo
-        cambia si marcas uno. Y el ritmo y el bloque de categorías aparecen
-        desde tu quinto movimiento del mes: antes de eso Inicio te muestra el
-        resumen y la lista, y nada más.
+        Ejemplo simplificado: ningún movimiento está marcado como gasto fijo, y
+        el ritmo aparece recién desde tu quinto movimiento del mes, igual que
+        en la app.
       </p>
 
       <!-- La hoja: estado del mes. Ejemplo interactivo, sin cuenta y sin backend. -->
@@ -324,11 +341,6 @@
                 <div class="cats__bar"><span style="width:26%;background:#0f9d58"></span></div>
               </li>
             </ul>
-            <p class="fig-sub" style="margin-top:12px;">
-              Y si quieres, cada categoría puede llevar su propio presupuesto
-              además del general. Se configura en la pantalla de Presupuesto, y
-              Mesura avisa si la suma de los de categoría se pasa del general.
-            </p>
           </div>
         </div>
 
@@ -377,12 +389,7 @@
 
       <div class="cifra-diaria">
         <p class="cifra-diaria__num"><span data-tok="diario">$12.025</span> al día para llegar al <span data-tok="dias">31</span>.</p>
-        <p>
-          <b>Esta división la hacemos aquí, en esta página. La app todavía no la
-          muestra:</b> tiene los dos números —lo que te queda y los días que
-          faltan— y te entrega la frase. Es lo primero que pidió la gente que la
-          está usando, y es lo próximo que se construye.
-        </p>
+        <p><b>Esta división la hacemos aquí; la app todavía no la muestra.</b></p>
       </div>
     </div>
   </section>
@@ -407,41 +414,15 @@
       </p>
 
       <p class="marginal">
-        Puedes juntar varias cuentas en un <b>grupo</b> —«Depto», «Casa de mi
-        mamá», «Viaje»— con hasta veinte personas, y ver de una sola vez quién
-        puso qué y quién le debe a quién. Cada cuenta sigue siendo entre dos, pero
-        el grupo te las muestra juntas y te da el resumen.
+        Puedes juntar varias cuentas en un <b>grupo</b> de hasta veinte personas
+        y ver de una vez quién le debe a quién.
       </p>
 
-      <div class="notice-group">
-        <span class="notice-group__label">Cómo funciona la invitación</span>
-        <p class="notice-group__item">
-          <b>La otra persona necesita una cuenta en Mesura.</b> No hay modo invitado.
-          Escribes su correo cuando divides el gasto y pasa una de dos cosas: si ya
-          usa Mesura, le llega una solicitud para vincularse contigo; si no la usa,
-          le llega una invitación que sirve para entrar.
-        </p>
-        <p class="notice-group__item">
-          <b>Es una sola vez.</b> Cuando acepta, quedan vinculados: los gastos que
-          dividas con ella después ya no piden permiso de nuevo.
-        </p>
-        <p class="notice-group__item">
-          <b>Si no acepta en siete días, la invitación vence</b> y ese gasto se
-          queda sin dividir. Lo ves en tu lista de invitaciones, con la fecha, y
-          puedes volver a enviarla.
-        </p>
-        <p class="notice-group__item">
-          <b>Y si nunca acepta, esa parte no existe en la app.</b> Tú te quedas con
-          tu registro del gasto completo y nada más. No hay saldo, no hay deuda.
-          Mesura no cobra: lleva la cuenta.
-        </p>
-      </div>
-
-      <p class="marginal">
-        El saldo sólo está bien si lo anotan los dos. Si tú registras el mercado
-        y la otra persona no registra lo que puso ella, el saldo va a decir que
-        te debe cuando a lo mejor están casi iguales. Mesura cuadra bien lo que
-        se anota; no sabe lo que no se anotó.
+      <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
+        <b>La otra persona necesita una cuenta en Mesura.</b> Si no la tiene, le
+        mandamos una invitación para crear una. El detalle de cómo funciona la
+        invitación y qué pasa si la plata no la anotan los dos está en las
+        <a href="#preguntas">preguntas</a>.
       </p>
 
       <div class="qa" style="margin-top: var(--space-block);">
@@ -470,16 +451,6 @@
               ve tu presupuesto, no ve tus categorías.
             </p>
             <p>Como el título viaja con el gasto, escríbelo pensando en que ella lo va a leer.</p>
-          </div>
-        </details>
-        <details>
-          <summary>¿Y si más adelante cortamos el vínculo?</summary>
-          <div class="qa__body">
-            <p>
-              Los gastos nuevos dejan de compartirse y las cuentas que ya estaban
-              abiertas no se borran: nadie puede anular por su cuenta una deuda
-              que los dos reconocieron.
-            </p>
           </div>
         </details>
       </div>
@@ -514,100 +485,30 @@
         cálculo: no hay nada más detrás.
       </p>
 
-      <div class="callout" style="margin-top: var(--space-group);">
-        <b>Pon como presupuesto lo que quieres que te dure el mes, todo
-        incluido.</b> Cuando anotes la vivienda, la luz o cualquier pago que
-        igual tenías que hacer, marca la casilla <b>«Es un gasto fijo
-        (arriendo, cuentas)»</b>: Mesura lo da por pagado y no lo reparte entre
-        los días que quedan. El resto del presupuesto sí se reparte parejo, y
-        es eso —no el total— lo que se compara con lo que llevas gastado.
-      </div>
-
-      <p class="marginal" style="margin-top: var(--space-group);">
-        <b>Si no marcas nada:</b> el ritmo te va a decir que vas por delante
-        buena parte del mes, sobre todo si pagas tus fijos al principio. No es
-        un mal día que se pasa: es que un presupuesto sin marcar reparte
-        también lo que ya estaba pagado.
-      </p>
-
-      <p style="margin-top: var(--space-near); font-size: 14px; color: var(--muted); max-width: 60ch;">
-        Y algo aparte, que vale se marque o no la casilla: Mesura no distingue
-        un día en que no gastaste de uno en que no anotaste. Los dos se ven
-        vacíos, así que si te atrasas varios días, el «vas al día» de esos
-        días no significa nada.
-      </p>
-
       <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
-        Una hoja de cálculo también te lo puede decir, y con una fórmula. La
-        diferencia de Mesura no es la fórmula: es que el cálculo ya está hecho
-        cada vez que anotas algo, desde el teléfono, en la calle. Anotar en el
-        momento es mejor en la app; consultar sigue siendo mejor en una hoja, y
-        si ya tienes una que funciona, Mesura exporta a Excel y puedes pegarlo ahí.
+        <b>Si tienes pagos fijos —arriendo, cuentas—, márcalos como tal al
+        anotarlos:</b> así no distorsionan el cálculo de arriba. Cómo funciona
+        exactamente y qué pasa si no los marcas, en las
+        <a href="#preguntas">preguntas</a>.
       </p>
     </div>
   </section>
 
-  <!-- ═══════════ 02b · CUATRO CASOS ═══════════ -->
+  <!-- ═══════════ 02b · PARA QUIÉN EL RITMO NO SIRVE TODAVÍA ═══════════ -->
   <section class="section">
     <div class="wrap">
       <div class="section__head">
-        <p class="tag">Cuatro casos en los que hoy te va a quedar corta</p>
+        <p class="tag">Para quién el ritmo no sirve todavía</p>
       </div>
 
-      <div class="casos">
-        <p class="lead">
-          Mesura no te pregunta cuánto ganas. Te pregunta cuánto quieres que te
-          dure el mes. Ese número lo pones tú y lo cambias cuando quieras. Aun
-          así hay cuatro situaciones en las que hoy el ritmo del mes no te va a servir:
-        </p>
-
-        <ul class="casos__list">
-          <li>
-            <b>Si cobras por quincena:</b> pon el presupuesto del mes completo.
-            El ritmo lo reparte por día, no por quincena — hoy Mesura no sabe
-            partir el mes en dos, y los días siguientes a cada pago vas a
-            aparecer disparado.
-          </li>
-          <li>
-            <b>Si tu plata entra distinta cada día o cada semana</b> —taxi,
-            delivery, un puesto, trabajo por día—: Mesura cuenta por mes de
-            calendario. Si quieres probarla igual, pon como presupuesto lo que
-            quieres que te dure una semana multiplicado por cuatro, y mira la
-            cifra diaria en vez del ritmo: ése es el número que se parece a
-            cómo vives.
-          </li>
-          <li>
-            <b>Si tu año tiene meses buenos y meses flacos</b> —cosecha,
-            temporada, obra—: Mesura razona de a un mes y no sabe llevar la
-            plata de uno al siguiente.
-          </li>
-          <li>
-            <b>Si buena parte de tu plata no la decides tú</b> —un remedio, una
-            urgencia, alguien a quien cuidas—: Mesura no distingue eso de una
-            salida a comer, es un monto y entra al mismo cálculo. Puedes darle
-            su propia categoría y su propio presupuesto y verlo aparte; lo que
-            no va a hacer es saber que no era opcional.
-          </li>
-        </ul>
-
-        <p class="casos__cierre">
-          Si tu caso está en esta lista, el registro y los gastos compartidos te
-          sirven igual, sin ninguna diferencia. Lo que hoy no te va a servir es
-          el ritmo del mes.
-        </p>
-      </div>
-
-      <div class="callout callout--warn" style="margin-top: var(--space-block);">
-        <b>Si tu dinero pierde valor mes a mes, o vives entre dos monedas.</b> Una
-        cuenta de Mesura tiene una sola moneda y nunca convierte de una a otra ni
-        consulta un tipo de cambio. Eso significa dos cosas: que el presupuesto
-        que pongas hoy te va a quedar corto en unos meses —lo cambias tú cuando
-        quieras, y cambiarlo no es hacer trampa: es que la vida salió más cara,
-        no que gastaste peor— y que si tu economía vive en dos monedas vas a
-        tener que elegir una y dejar la otra fuera del registro. Eso no es que
-        una función te quede corta: es que tu propio historial va a decirte
-        menos. Preferimos decirlo aquí.
-      </div>
+      <p class="lead" style="max-width: 62ch;">
+        El ritmo asume un ingreso mensual y más o menos estable. Si cobras por
+        quincena, a diario, por temporada, o buena parte de tu plata no la
+        decides tú, hoy te va a quedar corto — el registro y los gastos
+        compartidos te sirven igual. El detalle de cada caso, y el de manejar
+        dos monedas o una que pierde valor rápido, está en las
+        <a href="#preguntas">preguntas</a>.
+      </p>
     </div>
   </section>
 
@@ -626,17 +527,11 @@
         registro y lo compartido funcionan igual.
       </p>
 
-      <div class="callout" style="margin-top: var(--space-group);">
-        Hay un cuarto campo, <b>«¿Qué fue?», y es opcional</b>. Escríbelo igual:
-        es lo que te va a hacer reconocer ese movimiento dentro de un mes,
-        porque en la lista de Inicio aparece lo que escribiste tú y no el
-        nombre de la categoría. «Feria del sábado» dentro de Supermercado dice
-        mucho más que «Supermercado». Si lo dejas en blanco, el movimiento se
-        queda con el nombre de la categoría.
-        <br><br>
-        Y una cosa que conviene tener presente al escribirlo: si ese gasto lo
-        divides con alguien, esa persona va a leer ese título.
-      </div>
+      <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
+        Hay un cuarto campo opcional, <b>«¿Qué fue?»</b>, para que reconozcas
+        el movimiento después — «Feria del sábado» dice más que «Supermercado»
+        — y si compartes ese gasto, la otra persona lo lee.
+      </p>
 
       <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
         <b>Lo que compras siempre, guardado.</b> El camión, el café de la tarde,
@@ -646,18 +541,9 @@
       </p>
 
       <p class="marginal" style="margin-top: var(--space-group);">
-        Las categorías son tuyas: les cambias el nombre, el color y el ícono, o
-        creas las que te falten.
-      </p>
-
-      <p class="marginal">
         Alrededor de eso hay metas de ahorro, calendario, presupuesto por
         categoría, recordatorios de pagos fijos y un resumen semanal por
-        correo. Los recordatorios avisan; no anotan solos. Las metas de ahorro
-        son una alcancía: pones un número, cargas los aportes a mano y se llena
-        una barra — no calculan cuánto apartar. El resumen semanal llega
-        activado y se apaga en un clic, y es lo único de Mesura que te busca a
-        ti en vez de esperar a que te acuerdes.
+        correo.
       </p>
     </div>
   </section>
@@ -681,28 +567,19 @@
             </li>
             <li>
               Tus movimientos, que sí se pueden leer desde el servidor
-              <small>Mesura calcula tus totales en su servidor, así que no hay
-              cifrado de extremo a extremo: tus movimientos quedan guardados en
-              texto legible y quien opera Mesura puede leerlos. Eso incluye lo
-              que escribas en «¿Qué fue?», que es texto tuyo, con tus palabras.
-              Se hace en cuatro situaciones, escritas una por una en la
-              política de privacidad: mantener el servicio andando, resolver
-              un fallo que alguien reportó, recuperar datos después de un
-              borrado, y completar una eliminación de cuenta que no se pudo
-              hacer desde la app. No se usa para desarrollo, ni para pruebas,
-              ni para demostraciones. Quien puede leerlos es una persona, no
-              un equipo: Matías Rifo — el mismo correo de contacto de esta
-              página.</small>
+              <small>Mesura calcula tus totales en su servidor, así que
+              quedan guardados en texto legible y quien opera Mesura puede
+              leerlos — nunca para desarrollo, pruebas ni demostraciones; el
+              detalle de cuándo está en la política de privacidad. Quien puede
+              leerlos es una persona, no un equipo: Matías Rifo — el mismo
+              correo de contacto de esta página.</small>
             </li>
             <li>
               Tres servicios para funcionar
-              <small>Cloudflare mantiene la app y la base de datos en internet.
-              Google manda los correos que Mesura te envía —confirmación,
-              recuperación de contraseña, invitaciones y el resumen semanal,
-              que lleva totales tuyos dentro—; no recibe tus movimientos uno
-              por uno. Anthropic sólo aparece si enciendes el comentario con
-              inteligencia artificial, y sólo recibe un resumen de tu semana.
-              Esa función viene apagada.</small>
+              <small>Cloudflare aloja la app, Google manda los correos, y
+              Anthropic sólo aparece si enciendes el comentario con
+              inteligencia artificial —viene apagada—. El detalle de cada uno
+              está en la política de privacidad.</small>
             </li>
             <li>
               Tu respaldo, cuando lo pidas — sin pedirle permiso a nadie
@@ -744,9 +621,7 @@
             <li>
               Irte es un botón
               <small>Eliminas tu cuenta desde tu perfil, sin escribirle a
-              nadie, y se borra de verdad. Lo único que queda, ya sin tu
-              nombre, es el saldo de los gastos que dividiste con alguien: la
-              otra persona lo necesita para que su cuenta no quede a medias.</small>
+              nadie, y se borra de verdad.</small>
             </li>
           </ul>
         </div>
@@ -770,22 +645,15 @@
 
       <div class="notice-group notice-group--warn">
         <p class="notice-group__item">
-          <b>Se empieza de cero.</b> No se puede importar lo que tengas en otra
-          app ni en una hoja de cálculo: hoy Mesura sólo exporta. Si quieres
-          traer tu historial, la única vía es escribirlo a mano. Es la primera
-          hora de trabajo que Mesura te va a costar, y preferimos que la sepas
-          antes de crear la cuenta, no después.
+          <b>Se empieza de cero.</b> Hoy Mesura no importa desde otra app ni
+          desde una hoja de cálculo — si quieres tu historial, hay que
+          escribirlo a mano.
         </p>
         <p class="notice-group__item">
-          <b>La moneda se elige al crear la cuenta, y sí se puede cambiar
-          después.</b> Eliges entre peso chileno, sol, peso argentino, peso
-          mexicano, peso colombiano y bolívar. Una cuenta, una moneda: Mesura
-          nunca convierte de una a otra ni consulta un tipo de cambio. Si te
-          equivocaste, hay una salida: se pueden re-expresar todos tus montos en
-          otra unidad, pidiéndote la contraseña. Pero re-expresar no es
-          convertir — un gasto de 12.500 pasa a leerse 12.500 en la moneda
-          nueva, no su equivalente al cambio — y si la moneda nueva no usa
-          decimales, no se puede deshacer. Elige la moneda con la que vives.
+          <b>La moneda se elige al crear la cuenta.</b> Se puede cambiar
+          después, pero no es convertir: re-expresa los montos tal cual, sin
+          tipo de cambio, y si la moneda nueva no usa decimales no se puede
+          deshacer. Elige la moneda con la que vives.
         </p>
       </div>
     </div>
@@ -892,6 +760,94 @@
                 está en qué situaciones. Tu contraseña no la puede leer nadie.
                 Descargas todo lo tuyo cuando quieras y eliminas la cuenta
                 desde tu perfil, sin escribirle a nadie.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Necesito internet para usar Mesura?</summary>
+            <div class="qa__body">
+              <p>
+                Sí, hoy Mesura necesita conexión para guardar lo que anotas.
+                Es la limitación más incómoda que tiene, porque el momento de
+                anotar suele ser justo cuando no hay señal — si te pasa, anota
+                aparte y pásalo después.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Cómo funciona la invitación para dividir un gasto?</summary>
+            <div class="qa__body">
+              <p>
+                Escribes su correo al dividir el gasto: si ya usa Mesura le
+                llega una solicitud para vincularse contigo, si no, una
+                invitación para crear una cuenta. Vincularse es una sola vez —
+                los gastos que dividas después ya no piden permiso de nuevo.
+              </p>
+              <p>
+                Si no acepta en siete días, la invitación vence y puedes
+                volver a enviarla. Si nunca acepta, ese gasto se queda como tu
+                registro completo y nada más: no hay saldo, no hay deuda.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Qué pasa si la otra persona no anota lo que puso?</summary>
+            <div class="qa__body">
+              <p>
+                El saldo sólo está bien si lo anotan los dos. Si tú registras
+                el mercado y ella no registra lo que puso, el saldo va a decir
+                que te debe cuando a lo mejor están casi iguales. Mesura
+                cuadra bien lo que se anota; no sabe lo que no se anotó.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Cómo marco un gasto fijo, y qué pasa si no lo hago?</summary>
+            <div class="qa__body">
+              <p>
+                Al anotar un pago que igual tenías que hacer —arriendo,
+                cuentas— marca la casilla «Es un gasto fijo»: Mesura lo da por
+                pagado y no lo reparte entre los días que quedan. El resto del
+                presupuesto sí se reparte parejo, y es eso lo que se compara
+                con lo que llevas gastado.
+              </p>
+              <p>
+                Si no marcas nada, el ritmo te va a decir que vas por delante
+                buena parte del mes, sobre todo si pagas tus fijos al
+                principio. Y aparte de eso: Mesura no distingue un día en que
+                no gastaste de uno en que no anotaste, así que si te atrasas
+                varios días seguidos, el «vas al día» de esos días no
+                significa nada.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Cobro por quincena, a diario, por temporada, o mi plata no la decido yo — ¿me sirve el ritmo?</summary>
+            <div class="qa__body">
+              <p>
+                Todavía no del todo. Si cobras por quincena, pon el
+                presupuesto del mes completo — el ritmo lo reparte por día, no
+                por quincena, así que vas a aparecer disparado los días
+                después de cada pago. Si tu plata entra distinto cada día o
+                semana, prueba con lo que quieres que te dure una semana
+                multiplicado por cuatro, y mira la cifra diaria en vez del
+                ritmo. Si tu año tiene meses buenos y flacos, Mesura no lleva
+                la plata de uno al siguiente. Y si buena parte de tu plata no
+                la decides tú —un remedio, una urgencia—, entra al mismo
+                cálculo que cualquier otro gasto; puedes darle su propia
+                categoría para verlo aparte.
+              </p>
+              <p>
+                En los cuatro casos, el registro y los gastos compartidos te
+                sirven igual. Y si tu moneda pierde valor rápido o vives entre
+                dos: una cuenta de Mesura es de una sola moneda y no convierte,
+                así que el presupuesto te va a quedar corto con el tiempo, y si
+                usas dos monedas vas a tener que dejar una fuera del registro.
               </p>
             </div>
           </details>

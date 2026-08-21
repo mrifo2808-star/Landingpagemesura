@@ -71,8 +71,10 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(cta.alto, 0);
     // Y la hoja tiene que seguir mostrando sus cifras.
     igual(await texto(page, "#demo-available"), "$156.325");
-    // 3 en "01 · Lo compartido" + 7 en "06 · Preguntas".
-    igual((await page.$$("details")).length, 10);
+    // 2 en "01 · Lo compartido" + 12 en "06 · Preguntas" — subió desde 10 en la
+    // pasada del 21 de agosto que movió el detalle de invitación, gastos fijos
+    // y los cuatro casos del cuerpo visible al FAQ, que es opt-in.
+    igual((await page.$$("details")).length, 14);
   }, { sinJs: true }));
 
 prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
