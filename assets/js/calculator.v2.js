@@ -8,7 +8,7 @@
    fijo en pesos chilenos cuando alguien elige soles. Sin ese evento —si esta
    sección se usara sola, sin demo.js— cae en CLP.
    ========================================================================= */
-import { MONEDAS, SIMBOLOS } from "./mesura-datos.js";
+import { MONEDAS, SIMBOLOS } from "./mesura-datos.v2.js";
 
 var form = document.getElementById("calc-form");
 if (form) {

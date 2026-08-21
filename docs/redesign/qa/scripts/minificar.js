@@ -22,7 +22,7 @@ import { abrir } from "../lib/navegador.js";
 import { RAIZ, levantar } from "../lib/server.js";
 import { RAIZ_QA } from "../lib/navegador.js";
 
-const ORIGEN = path.join(RAIZ, "assets/css/landing.css");
+const ORIGEN = path.join(RAIZ, "assets/css/landing.v2.css");
 const css = readFileSync(ORIGEN, "utf8");
 
 /**
@@ -127,7 +127,7 @@ for (const [nombre, texto] of Object.entries(variantes)) {
 
 // Se reutiliza el servidor del arnés —headers reales, gzip, mock— y solo se
 // sustituye el CSS: así la única variable entre corridas es la hoja.
-const servir = (cssTexto) => levantar({ sustituir: { "/assets/css/landing.css": cssTexto } });
+const servir = (cssTexto) => levantar({ sustituir: { "/assets/css/landing.v2.css": cssTexto } });
 
 const browser = await abrir();
 const puerto = Number(new URL(browser.wsEndpoint().replace("ws:", "http:")).port);

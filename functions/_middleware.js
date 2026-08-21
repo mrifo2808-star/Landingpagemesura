@@ -3,7 +3,7 @@
  * escaparate no parpadee: el primer bloque de la página es el que se juega la
  * credibilidad y no puede pintarse dos veces (primero en una moneda, después en otra).
  *
- * Orden de resolución — igual que assets/js/mesura-datos.js:resolverMoneda:
+ * Orden de resolución — igual que assets/js/mesura-datos.v2.js:resolverMoneda:
  *   1. ?m=<código o país>  → gana siempre, y viaja en la URL si el lector comparte el link
  *   2. CF-IPCountry        → valor por defecto
  *   3. CLP                 → si los dos anteriores fallan
@@ -12,7 +12,7 @@
  * atributo y se descarta — igual que functions/api/waitlist.js no guarda IP ni
  * user-agent. Esa no es una omisión mejorable: es la promesa de la sección 04.
  */
-import { MONEDAS, PAIS_A_MONEDA, MONEDA_POR_DEFECTO, calcular } from "../assets/js/mesura-datos.js";
+import { MONEDAS, PAIS_A_MONEDA, MONEDA_POR_DEFECTO, calcular } from "../assets/js/mesura-datos.v2.js";
 
 export async function onRequest(context) {
   const res = await context.next();

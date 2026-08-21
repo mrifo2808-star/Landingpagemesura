@@ -10,7 +10,7 @@
    selector. assets/js/calculator.js escucha el evento "mesura:moneda-changed"
    para formatear con la misma moneda.
    ========================================================================= */
-import { MONEDAS, SIMBOLOS, calcular, resolverMoneda } from "./mesura-datos.js";
+import { MONEDAS, SIMBOLOS, calcular, resolverMoneda } from "./mesura-datos.v2.js";
 
 document.documentElement.classList.add("js");
 

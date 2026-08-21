@@ -34,17 +34,29 @@
      tercero. Coherencia con lo que promete la sección "Tus datos". -->
 <link rel="preload" href="/assets/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrainsmono-var-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/landing.css">
+<link rel="stylesheet" href="/assets/css/landing.v2.css">
 
-<!-- El selector de moneda depende de dos módulos (demo.js → mesura-datos.js):
-     sin este adelanto, el HTML queda pintado e interactivo un instante antes
-     de que cualquiera de los dos termine de llegar, y en ese instante el
-     <select> nativo ya responde al picker del teléfono sin que haya ningún
-     listener escuchando. Es la ventana donde apareció el bug de móvil del
-     21 de agosto (ver el comentario en assets/js/demo.js, sección "Arranque"):
-     no lo cierra del todo, pero lo acorta en la conexión donde más importa. -->
-<link rel="modulepreload" href="/assets/js/mesura-datos.js">
-<link rel="modulepreload" href="/assets/js/demo.js">
+<!-- Los nombres de archivo llevan ".v2" desde el 21 de agosto, a propósito:
+     /assets/* se sirvió durante semanas con Cache-Control: immutable
+     (max-age de un año), así que cualquier navegador que hubiera visitado la
+     página una sola vez antes de esa fecha se quedó con el JS/CSS viejo
+     cacheado para siempre, sin volver a pedirlo nunca — ni con un refresh
+     normal. Cambiar el Cache-Control a futuro (ver _headers) no alcanza para
+     lo que ya está cacheado: sólo un cambio de URL fuerza a esos navegadores
+     a pedir el archivo de nuevo. Ésa es la única razón del ".v2"; no es un
+     esquema de versionado que haya que mantener — la próxima vez que estos
+     archivos cambien de contenido, el nuevo Cache-Control ya revalida solo.
+
+     El selector de moneda depende de dos módulos (demo.v2.js → mesura-
+     datos.v2.js): sin este adelanto, el HTML queda pintado e interactivo un
+     instante antes de que cualquiera de los dos termine de llegar, y en ese
+     instante el <select> nativo ya responde al picker del teléfono sin que
+     haya ningún listener escuchando. Es la ventana donde apareció el bug de
+     móvil del 21 de agosto (ver el comentario en assets/js/demo.v2.js,
+     sección "Arranque"): no lo cierra del todo, pero lo acorta en la
+     conexión donde más importa. -->
+<link rel="modulepreload" href="/assets/js/mesura-datos.v2.js">
+<link rel="modulepreload" href="/assets/js/demo.v2.js">
 
 <script type="application/ld+json">
 {
@@ -690,9 +702,9 @@
   </div>
 </footer>
 
-<script type="module" src="/assets/js/demo.js"></script>
-<script type="module" src="/assets/js/calculator.js"></script>
-<script src="/assets/js/landing.js" defer></script>
+<script type="module" src="/assets/js/demo.v2.js"></script>
+<script type="module" src="/assets/js/calculator.v2.js"></script>
+<script src="/assets/js/landing.v2.js" defer></script>
 
 </body>
 </html>

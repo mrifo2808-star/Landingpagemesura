@@ -12,7 +12,7 @@ import path from "node:path";
 import { abrir } from "../lib/navegador.js";
 import { RAIZ } from "../lib/server.js";
 
-const CSS = readFileSync(path.join(RAIZ, "assets/css/landing.css"), "utf8");
+const CSS = readFileSync(path.join(RAIZ, "assets/css/landing.v2.css"), "utf8");
 
 /** Lee el primer color hexadecimal declarado para un token de :root. */
 function token(nombre) {
