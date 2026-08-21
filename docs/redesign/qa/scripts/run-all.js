@@ -18,7 +18,7 @@ const BATERIA = [
   ["anclas", "Los seis destinos de ancla bajo la cabecera fija"],
   ["red", "Cero peticiones a terceros y cabeceras de seguridad"],
   ["axe", "axe-core en la matriz, claro y oscuro"],
-  ["funcional", "Demo, formulario, teclado, tema"],
+  ["funcional", "Demo, calculadora, formulario, teclado, tema"],
   ["perf", "Fluidez del scroll"],
 ];
 

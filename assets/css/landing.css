@@ -504,7 +504,8 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
    salen de la escala: un solo valor para "bloque relacionado dentro de una
    columna", en vez de 34/26/24 escritos a mano en cinco sitios distintos. */
 .section__head + * > .lead,
-.evidence .lead { margin-top: var(--space-item); }
+.evidence .lead,
+.calc .lead { margin-top: var(--space-item); }
 .pact + .fineprint { margin-top: var(--space-group); }
 
 /* ---------- 7. Hero: el estado del mes ----------------------------------- */
@@ -676,18 +677,18 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   color: var(--muted);
 }
 
-/* Cuerpo de la hoja: movimientos a la izquierda, categorías al margen. */
+/* Cuerpo de la hoja: una sola columna. Era dos —movimientos + categorías al
+   margen— hasta que "En qué se ha ido" se quitó el 21 de agosto ("se ve
+   molesto y no aporta"); dejar el grid de dos columnas habría abierto un
+   hueco vacío a la derecha en escritorio, justo el defecto que se está
+   corrigiendo en otras partes de la página. */
 .sheet__body {
   display: grid;
   grid-template-columns: 1fr;
   border-top: 1px solid var(--rule);
 }
-@media (min-width: 900px) {
-  .sheet__body { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
-  .sheet__ledger { border-right: 1px solid var(--hair); }
-}
-.sheet__ledger, .sheet__aside { padding: 20px 18px 24px; }
-@media (min-width: 768px) { .sheet__ledger, .sheet__aside { padding: 24px; } }
+.sheet__ledger { padding: 20px 18px 24px; }
+@media (min-width: 768px) { .sheet__ledger { padding: 24px; } }
 
 .block-title {
   font-family: var(--mono);
@@ -736,27 +737,6 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   to   { opacity: 1; transform: none; background: transparent; }
 }
 
-/* Categorías: filete + barra fina, sin caja. */
-.cats { list-style: none; }
-.cats li { padding: 12px 0; border-bottom: 1px solid var(--hair-soft); }
-.cats li:last-child { border-bottom: 0; }
-.cats__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 14px;
-}
-.cats__name { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
-.cats__dot { width: 9px; height: 9px; flex: none; border: 1px solid var(--ink); }
-.cats__amount {
-  font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 13.5px;
-  font-weight: 700;
-}
-.cats__bar { height: 4px; margin-top: 8px; background: var(--hair-soft); }
-.cats__bar span { display: block; height: 100%; transition: width .5s cubic-bezier(.22, .9, .3, 1); }
 
 /* Control de "anotar gasto": la pieza que convierte la hoja en demostración. */
 .jot {
@@ -904,6 +884,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 /* El apunte: una fila de cartola que ilustra el momento del que habla. */
 .jotting {
   margin-top: 4px;
+  max-width: 46ch;
   border-left: 2px solid var(--ink);
   padding: 12px 0 12px 16px;
   font-family: var(--mono);
@@ -945,7 +926,12 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   border-top: 2px solid var(--rule);
   padding-top: var(--space-block);
 }
-@media (min-width: 900px) { .evidence { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } }
+@media (min-width: 900px) {
+  .evidence { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+  /* El ancho lo fija la columna del grid, no el límite de 78ch pensado para
+     cuando .qa vive solo en una página angosta. */
+  .evidence .qa { max-width: none; }
+}
 
 /* Dos cifras enfrentadas en la misma escala: la brecha es el mensaje. */
 .gap-figure { border-top: 0; }
@@ -983,6 +969,52 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .source a { color: inherit; text-underline-offset: 3px; }
 .source a:hover { color: var(--ink); }
 
+/* ---------- 10. Calculadora ----------------------------------------------
+   Restaurada el 21 de agosto: se había borrado entera en la pasada de
+   minimalismo real ("no demuestra ninguna función real de Mesura"), pero
+   Matías pidió recuperarla -- "creo que la calculadora de monto algo
+   aportaba ese apartado". Vive colapsada detrás de su propio acordeón, sin
+   competir con la demo principal. */
+.calc {
+  display: grid;
+  gap: clamp(26px, 4vw, 44px);
+  grid-template-columns: 1fr;
+  align-items: start;
+  border-top: 2px solid var(--rule);
+  padding-top: var(--space-block);
+}
+@media (min-width: 900px) { .calc { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
+
+/* La calculadora vive dentro del lenguaje de un estado financiero: filete
+   arriba, filas regladas, resultado alineado a la derecha. */
+.statement { border-top: 0; }
+.statement__row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hair);
+  align-items: center;
+}
+@media (min-width: 640px) {
+  .statement__row { grid-template-columns: minmax(0, 1fr) minmax(190px, 240px); gap: 20px; }
+}
+.statement__label { font-size: 15px; line-height: 1.4; }
+.statement__label small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .03em;
+}
+.statement__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding-top: 20px;
+}
 .field-error {
   font-family: var(--mono);
   font-size: 11.5px;
@@ -991,6 +1023,52 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   margin-top: 6px;
 }
 .field-error:empty { display: none; }
+
+.result { margin-top: var(--space-block); padding-top: var(--space-group); border-top: 2px solid var(--rule); }
+.result[hidden] { display: none; }
+.result__pct {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(46px, 8vw, 76px);
+  font-weight: 700;
+  letter-spacing: -.05em;
+  line-height: .9;
+}
+.result__pct[data-level="warn"] { color: var(--orange-ink); }
+.result__pct[data-level="high"] { color: var(--red); }
+.result__caption {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.result__axis {
+  position: relative;
+  height: 10px;
+  margin-top: var(--space-group);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+}
+.result__fill { height: 100%; background: var(--ink); transition: width .5s cubic-bezier(.22,.9,.3,1); }
+.result__fill[data-level="warn"] { background: var(--orange); }
+.result__fill[data-level="high"] { background: var(--red); }
+.result__ref { position: absolute; top: -8px; bottom: -8px; width: 2px; background: var(--ink); }
+.result__ref span {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.result__text { margin-top: var(--space-group); font-size: 16px; line-height: 1.6; max-width: 54ch; color: var(--ink-2); }
+.result__cta { margin-top: var(--space-group); }
 
 .fineprint {
   margin-top: var(--space-group);

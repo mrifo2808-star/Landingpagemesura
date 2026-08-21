@@ -66,27 +66,16 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(jot.visible, false, "la .jot no debe verse sin JS");
     // Y la hoja tiene que seguir mostrando sus cifras.
     igual(await texto(page, "#demo-available"), "$156.325");
-    // 2 en "01 · Lo compartido" + 9 en "06 · Preguntas" + 1 en "En qué se ha
-    // ido" (categorías del ejemplo) — la calculadora (que aportaba 1) se
-    // borró entera en la pasada de minimalismo real del 21 de agosto: el
-    // panel de "qué pasa si esto no está" concluyó que no aportaba nada al
-    // argumento central y competía por atención después del CTA principal.
-    // El FAQ ganó una pregunta sobre ingreso no mensual (antes vivía en "El
-    // ritmo del mes", también borrada) y perdió "¿Qué pasa con mis datos?":
-    // el grupo de control encontró, dos rondas seguidas, que era pura
-    // repetición de "Lo compartido" y "Tus datos" — su único hecho propio
-    // (qué ve la otra persona en un gasto compartido) ya vivía completo en
-    // el acordeón de "Lo compartido".
-    igual((await page.$$("details")).length, 12);
+    // Pasada del 21 de agosto (correcciones tras revisión de Matías): 2 en
+    // "01 · Lo compartido" + 5 en "06 · Preguntas" (bajó de 9: se sacaron las
+    // preguntas que sólo catalogaban vacíos de la app — "necesito internet",
+    // "me sirve el ritmo si..." — la landing deja de ser el lugar donde se
+    // enumeran las carencias) + 1 en la calculadora, que volvió ("algo
+    // aportaba ese apartado"). "En qué se ha ido" (categorías del ejemplo)
+    // se borró del todo, sin acordeón de reemplazo — "se ve molesto y no
+    // aporta".
+    igual((await page.$$("details")).length, 8);
   }, { sinJs: true }));
-
-prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
-  conPagina(async (page) => {
-    const gastado = await texto(page, "#demo-spent");
-    const cats = await page.$$eval(".cats__amount", (ns) =>
-      ns.reduce((t, n) => t + Number(n.textContent.replace(/[^0-9]/g, "")), 0));
-    igual(Number(gastado.replace(/[^0-9]/g, "")), cats, "gastado vs suma de categorías");
-  }));
 
 prueba("demo", "el monto se formatea en CLP mientras se escribe", () =>
   conPagina(async (page) => {
@@ -262,6 +251,86 @@ prueba("moneda", "una eleccion hecha antes de que demo.js cargue no se pierde", 
     await page.close();
   }
 });
+
+/* ═══════════ Calculadora ═══════════
+   Restaurada el 21 de agosto: Matías pidió que volviera tras haberse
+   borrado en la pasada de minimalismo real ("algo aportaba ese apartado").
+   Vive colapsada detrás de un <details>: hay que abrirlo antes de que
+   Puppeteer pueda hacer clic en sus campos, que si no cuentan como no
+   visibles. */
+const abrirCalculadora = (page) =>
+  page.evaluate(() => { document.querySelector("#calculadora details").open = true; });
+
+prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
+  conPagina(async (page) => {
+    await abrirCalculadora(page);
+    await page.click("#calc-income");
+    await page.type("#calc-income", "800000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await texto(page, "#calc-pct"), "11,9%");
+    afirmar((await texto(page, "#calc-text")).includes("Te quedan"), "el texto no dice cuánto queda");
+    afirmar((await texto(page, "#calc-text")).includes("705.000"), "el resto no cuadra con 800.000 − 95.000");
+    igual(await page.$eval("#calc-result", (e) => e.getAttribute("aria-live")), "polite");
+  }));
+
+prueba("calculadora", "ingreso en cero da error y no muestra resultado", () =>
+  conPagina(async (page) => {
+    await abrirCalculadora(page);
+    await page.click("#calc-income");
+    await page.type("#calc-income", "0");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await texto(page, "#calc-income-error")).length > 0, "sin mensaje de error");
+    igual((await visible(page, "#calc-result")).visible, false, "el resultado no debería verse");
+  }));
+
+prueba("calculadora", "deuda mayor que el ingreso no promete un 'te queda' negativo", () =>
+  conPagina(async (page) => {
+    await abrirCalculadora(page);
+    await page.click("#calc-income");
+    await page.type("#calc-income", "400000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "900000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    igual(await texto(page, "#calc-pct"), "225,0%");
+    afirmar((await texto(page, "#calc-text")).includes("superan"), "no avisa que las cuotas superan el ingreso");
+    afirmar(!(await texto(page, "#calc-text")).includes("-$"), "no debería mostrar un 'te queda' negativo");
+  }));
+
+prueba("calculadora", "doce dígitos no rompen el formato", () =>
+  conPagina(async (page) => {
+    await abrirCalculadora(page);
+    await page.click("#calc-income");
+    await page.type("#calc-income", "999999999999");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "1000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    afirmar((await texto(page, "#calc-pct")).includes("%"), "el porcentaje se rompió");
+  }));
+
+prueba("calculadora", "limpiar oculta el resultado y vacía los campos", () =>
+  conPagina(async (page) => {
+    await abrirCalculadora(page);
+    igual((await visible(page, "#calc-reset")).display, "none", "limpiar no debería verse al cargar");
+    await page.click("#calc-income");
+    await page.type("#calc-income", "800000");
+    await page.click("#calc-debt");
+    await page.type("#calc-debt", "95000");
+    await page.click("#calc-form button[type=submit]");
+    await new Promise((r) => setTimeout(r, 120));
+    await page.click("#calc-reset");
+    await new Promise((r) => setTimeout(r, 120));
+    igual((await visible(page, "#calc-result")).visible, false);
+    igual(await page.$eval("#calc-income", (e) => e.value), "");
+    igual(await page.$eval("#calc-debt", (e) => e.value), "");
+  }));
 
 /* ═══════════ Formulario de lista de espera (contra el mock) ═══════════ */
 
