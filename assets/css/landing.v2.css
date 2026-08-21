@@ -1283,6 +1283,17 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   color: var(--muted);
   max-width: 64ch;
 }
+/* Diagnóstico, no contenido: por eso va más chico y sin el borde/espaciado
+   de los .foot__note reales. Ver el comentario junto a #foot-build. */
+.foot__build {
+  width: 100%;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .03em;
+  color: var(--muted);
+  opacity: .6;
+}
 
 /* ---------- 10b. Selector de moneda -------------------------------------
    Pegado al ejemplo, siempre visible: la detección por país puede

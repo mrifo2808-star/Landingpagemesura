@@ -699,6 +699,14 @@
       Los montos y las funciones de los ejemplos de esta página son inventados
       y sirven para mostrar cómo se ve la app.
     </p>
+    <!-- La reescribe functions/_middleware.js con el commit real del deploy
+         (Cloudflare Pages expone CF_PAGES_COMMIT_SHA solo). Sirve para
+         distinguir "está roto" de "estás viendo una versión vieja" sin abrir
+         una investigación cada vez — nació de un reporte del 21 de agosto
+         que resultó ser caché del navegador. El texto de abajo es lo que se
+         ve si esto se abre sin pasar por la Function (un servidor estático
+         cualquiera, o wrangler pages dev en local). -->
+    <p class="foot__build" id="foot-build">Compilación local</p>
   </div>
 </footer>
 
