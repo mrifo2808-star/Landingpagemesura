@@ -13,6 +13,11 @@ landing") terminó y dejó su decisión de moneda escrita en
 una reescritura completa de la página según esa especificación. La Capa 1
 original queda incorporada adentro; no hace falta revisarla aparte.
 
+**Tercera ronda, misma noche:** llegó `landing-v3/VALIDAR.md` (el de la
+sesión paralela, no este) y tu respuesta al hueco de la sección 08. Eso se
+resume en el §8 nuevo, al final — léelo si sólo vas a leer una parte de
+este documento además de §2, porque cambia lo que dice §3.3 más abajo.
+
 ---
 
 ## 0. Qué encontré cuando fui a buscar la decisión de moneda
@@ -81,6 +86,10 @@ especificación hacía, porque son las que sostienen toda la arquitectura:
    (fechas fijas / a los saltos) — es sólo para priorizar a quién conviene
    invitar primero; no bloquea el envío. `functions/api/waitlist.js` lo
    guarda como campo opcional, sin tocar el contrato existente.
+7. **No hay ninguna sección dedicada a "quién hace Mesura", y no se anuncia
+   ningún plazo de aviso por cierre.** Esto llegó después de la reescritura
+   inicial, en tu ronda de comentarios sobre el tono — detalle completo,
+   con el argumento y la alternativa, en §8.
 
 ---
 
@@ -113,6 +122,10 @@ Abre la URL que imprima y mira:
 - **Que `/api/waitlist` siga funcionando**: llena el formulario del final
   con un correo cualquiera — no lo va a mandar a producción si no
   configuraste el KV, pero no debería tirar un error de servidor.
+- **Que no exista ninguna sección "Quién hace esto"** ni ninguna mención a
+  un plazo de aviso por cierre — busca "Matías Rifo" en la página: sólo
+  debería aparecer dos veces, en la sección 04 (junto a "quien opera Mesura
+  puede leerlos") y en el pie. Ver §8 si quieres el argumento completo.
 
 Y la batería automática (no ejecuta la Function, pero cubre todo lo demás:
 teclado, contraste, formulario, la demo con JS y sin JS):
@@ -159,12 +172,12 @@ Debe imprimir `SIN FALLOS`.
    el plazo** — es una frase, en `index.html`, sección 07, dentro de
    `.signup__consent`. *Alternativa: dejarlo como está.*
 
-3. **La sección 08 ("Quién hace esto") no lleva la frase sobre qué pasa si
-   cierras Mesura.** `TEXTO.md` la marca como "PENDIENTE — no publicar hasta
-   que Matías ponga el número" (los días de aviso antes de cerrar). La dejé
-   completamente afuera, tal como pide la nota — nada de placeholder.
-   **Necesita tu número.** Cuando lo tengas, la frase exacta está en
-   `Mesura-lanzamiento/landing-v3/TEXTO.md`, sección 08.
+3. ~~La sección 08 ("Quién hace esto") no lleva la frase sobre qué pasa si
+   cierras Mesura.~~ **Resuelto — ver §8.** Diste 30 días "por decir algo" y
+   después dijiste algo más importante: que no querías plantar la idea de
+   un cierre en la página. Apliqué eso: no hay plazo de aviso, no hay
+   escenario de cierre, y la sección 08 completa se sacó de la página — el
+   argumento y qué queda en su lugar está en §8.
 
 4. **El `og-mesura.png` no se tocó en esta pasada** — ya lo había regenerado
    en el commit `3a2ec58` con las cifras correctas ($156.325 / $330.975 /
@@ -308,3 +321,66 @@ por defecto según el país.
 - Grep manual en `Mesura-app-source` y `Mesura-mobile` para las citas de
   código de §0 y §4 — no confié en que `TEXTO.md` las tuviera bien sólo
   porque traía la ruta del archivo.
+
+---
+
+## 8. La sección "Quién hace esto" — resuelta, y distinta de lo que pedía `TEXTO.md`
+
+`Mesura-lanzamiento/landing-v3/TEXTO.md` traía la sección 08 completa, con
+un hueco `[PENDIENTE]` para tus días de aviso antes de un eventual cierre.
+Le diste 30 días "por decir algo", incómodo, y después dijiste algo más
+importante: que no ves por qué habría que plantar la idea de un cierre en
+la propia página, ni por qué habría que anunciar que la hace una sola
+persona. Apliqué eso, no lo que traía `TEXTO.md` — por eso esta sección
+queda como una desviación explícita de la especificación, marcada como tal.
+
+**Lo que hice:**
+
+1. **Saqué el escenario de cierre por completo.** No hay plazo de aviso, no
+   se nombra la posibilidad de que Mesura cierre. `TEXTO.md` §08 quedó sin
+   usarse en esa parte.
+2. **En su lugar, verifiqué si el mecanismo que de verdad responde el
+   miedo —quedarte sin tus datos de un día para otro— existe.** Sí existe:
+   `Mesura-app-source/app/api/account/export/route.ts` genera, al pedirlo,
+   un archivo con **todo** tu historial (JSON o Excel), sin guardar copia
+   en ningún lado más que en tu disco. **Un matiz que hay que decir bien:**
+   no es "sin pedir permiso a nadie" en el sentido de que no pide nada —
+   **sí vuelve a pedirte tu contraseña**, igual que cambiar de moneda o
+   borrar la cuenta. Lo que no pide es el permiso de Mesura ni de un
+   tercero: es un botón tuyo, disponible siempre. Así quedó escrito
+   (sección 04, "Tu respaldo, cuando lo pidas — sin pedirle permiso a
+   nadie"). **El móvil no genera el archivo — abre la página web para
+   hacerlo** (`Mesura-mobile/app/(tabs)/profile.tsx:352` + `lib/account-api.ts`
+   `webRoutes`), así que la frase es cierta también para quien usa la app
+   de teléfono, con el matiz de que la pantalla de descarga es la web.
+3. **Quité la sección 08 completa** — no sólo el hueco pendiente — y con
+   ella la nota de la primera pantalla que decía "La hace una persona:
+   Matías Rifo… Más abajo, quién es." Esa nota, arriba de todo y sin que
+   nada en pantalla la pidiera, era exactamente "liderar con eso".
+4. **El hecho no desapareció: cambié dónde vive.** Sección 04, dentro de la
+   frase que el estudio de trece lectores señaló como la que más
+   credibilidad compró («quien opera Mesura puede leerlos»), le agregué:
+   *"Quien puede leerlos es una persona, no un equipo: Matías Rifo — el
+   mismo correo de contacto de esta página."* Es el mismo hecho, dicho en
+   el momento exacto en que importa —estás leyendo quién puede ver tus
+   datos— y no como apertura. El pie de página sigue diciendo, como
+   siempre, "Hecha en Chile por Matías Rifo": un crédito de una línea, del
+   mismo tipo que cualquier sitio pequeño lleva en el pie, no una revelación.
+
+**Decisión que tomé sin preguntarte primero, y que te dejo explícita para
+que la apruebes a sabiendas:** el nombre ya no tiene una sección propia ni
+un momento dedicado. Aparece dos veces: una funcional (§04, junto al hecho
+que ya generaba confianza) y una protocolar (el pie). Si prefieres que
+tenga más presencia que eso —por ejemplo, que "¿quién hace esto?" vuelva
+como una entrada más del FAQ de la sección 06, en vez de una sección
+aparte—, es un cambio de diez minutos: agregar un `<details>` a la lista
+de `#preguntas`.
+
+**Lo que no toqué, y por qué:** `Mesura-lanzamiento/landing-v3/CONTRAPARTES.md`
+§4 tiene una recomendación de altísimo valor —cuatro frases que le faltan
+al correo de invitación automático (`app/lib/account-links/email.ts:79-95`
+en `Mesura-app-source`), entre ellas que la invitación vence en siete días
+y cuánto es la parte que le toca a quien la recibe—. **No es de este
+repositorio**: vive en el código de la app, no en la landing. Queda
+anotado aquí porque es barato de hacer y porque nadie más lo va a ver si
+no lo dejo escrito en algún lado que revises.
