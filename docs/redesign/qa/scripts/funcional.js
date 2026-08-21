@@ -66,26 +66,15 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     igual(jot.visible, false, "la .jot no debe verse sin JS");
     // Y la hoja tiene que seguir mostrando sus cifras.
     igual(await texto(page, "#demo-available"), "$156.325");
-    // 2 en "01 · Lo compartido" + 5 en "06 · Preguntas" (bajó de 9 el 21 de
-    // agosto: se sacaron las preguntas que sólo catalogaban vacíos de la
-    // app) + 1 en la calculadora. "En qué se ha ido" (categorías del
-    // ejemplo) volvió esa misma tarde, pero SIEMPRE VISIBLE, sin acordeón:
-    // a Matías no le molestaban las categorías, le molestaba que fueran un
-    // desplegable — así que no suma a este conteo.
+    // Pasada del 21 de agosto (correcciones tras revisión de Matías): 2 en
+    // "01 · Lo compartido" + 5 en "06 · Preguntas" (bajó de 9: se sacaron las
+    // preguntas que sólo catalogaban vacíos de la app — "necesito internet",
+    // "me sirve el ritmo si..." — la landing deja de ser el lugar donde se
+    // enumeran las carencias) + 1 en la calculadora, que volvió ("algo
+    // aportaba ese apartado"). "En qué se ha ido" (categorías del ejemplo)
+    // se borró del todo, sin acordeón de reemplazo — "se ve molesto y no
+    // aporta".
     igual((await page.$$("details")).length, 8);
-  }, { sinJs: true }));
-
-prueba("demo", "el saldo inicial cuadra con la suma de categorías", () =>
-  conPagina(async (page) => {
-    const gastado = await texto(page, "#demo-spent");
-    const cats = await page.$$eval(".cats__amount", (ns) =>
-      ns.reduce((t, n) => t + Number(n.textContent.replace(/[^0-9]/g, "")), 0));
-    igual(Number(gastado.replace(/[^0-9]/g, "")), cats, "gastado vs suma de categorías");
-  }));
-
-prueba("demo", "«en qué se ha ido» se ve sin tocar nada, sin JavaScript", () =>
-  conPagina(async (page) => {
-    afirmar((await visible(page, "#demo-cats")).visible, "las categorías deberían verse sin abrir nada");
   }, { sinJs: true }));
 
 prueba("demo", "el monto se formatea en CLP mientras se escribe", () =>
