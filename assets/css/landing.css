@@ -1281,6 +1281,106 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   max-width: 64ch;
 }
 
+/* ---------- 10b. Selector de moneda -------------------------------------
+   Pegado al ejemplo, siempre visible: la detección por país puede
+   equivocarse y quien lo nota tiene que poder corregirlo sin buscar. Ver
+   Mesura-lanzamiento/landing-v3/ESPECIFICACION-MONEDA.md §4. */
+.moneda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 14px;
+  margin-bottom: 14px;
+}
+.moneda__campo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.moneda select {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border: 1.5px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink);
+}
+.moneda select:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.moneda button {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 8px 12px;
+  border: 1.5px solid var(--rule);
+  background: transparent;
+  cursor: pointer;
+}
+/* Con JS el botón "Ver" no hace falta: el cambio se aplica solo. */
+.js .moneda button { display: none; }
+.moneda-nota {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  max-width: 46ch;
+}
+
+/* ---------- 10c. Rótulo y nota del escaparate ---------------------------- */
+.showcase-label {
+  font-size: 15.5px;
+  line-height: 1.55;
+  max-width: 62ch;
+  margin-bottom: 6px;
+}
+.showcase-note {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin-bottom: var(--space-item);
+}
+
+/* ---------- 10d. Avisos de "esto no se guarda" --------------------------
+   Mismo cuerpo de letra que el texto normal a propósito: si va en letra
+   chica, la corrección de la primera pasada deja de existir. */
+.callout {
+  padding: 12px 16px;
+  border-left: 3px solid var(--ink);
+  background: var(--paper-2);
+  font-size: 14.5px;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+.callout--warn { border-left-color: var(--orange-ink); }
+.callout + .callout { margin-top: 12px; }
+
+/* ---------- 10e. Cifra diaria: fuera del recuadro que replica la app ----- */
+.cifra-diaria {
+  margin-top: clamp(20px, 2.4vw, 30px);
+  padding: clamp(18px, 2.4vw, 28px);
+  border: 2px dashed var(--rule);
+}
+.cifra-diaria__num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(26px, 3.6vw, 36px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+}
+.cifra-diaria p { margin-top: 10px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); max-width: 58ch; }
+
+/* ---------- 10f. Cuatro casos (02b) --------------------------------------
+   Bloque con marco propio para que se pueda saltar entero: quien no está en
+   ninguno de los casos pasa de largo, quien sí está lo encuentra rápido. */
+.casos { border-top: 2px solid var(--rule); padding-top: var(--space-block); }
+.casos__list { margin-top: var(--space-group); display: grid; gap: 16px; }
+.casos__list li { font-size: 15.5px; line-height: 1.55; max-width: 62ch; }
+.casos__cierre { margin-top: var(--space-group); font-size: 15.5px; font-weight: 700; max-width: 60ch; }
+
 /* ---------- 16. Preferencias de movimiento ------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

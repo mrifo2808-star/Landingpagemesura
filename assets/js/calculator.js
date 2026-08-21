@@ -1,49 +1,56 @@
 /* =========================================================================
-   Calculadora de carga financiera.
+   Cuánto de lo que entra ya está comprometido.
    Todo el cálculo ocurre en este archivo, en el navegador. No hay fetch, no
    hay almacenamiento, no sale un solo byte del equipo de quien la usa.
 
-   Referencia: mediana de carga financiera de los deudores bancarios en Chile
-   = 11,9% del ingreso mensual. CMF, Informe de Endeudamiento, datos a junio
-   de 2025 (publicado enero de 2026). Es una referencia estadística sobre
-   deudores bancarios, no un diagnóstico ni una recomendación.
+   Formatea con la moneda que el lector eligió en el ejemplo de más arriba
+   (assets/js/demo.js): escucha "mesura:moneda-changed" para no quedarse
+   fijo en pesos chilenos cuando alguien elige soles. Sin ese evento —si esta
+   sección se usara sola, sin demo.js— cae en CLP.
    ========================================================================= */
-(function () {
-  "use strict";
+import { MONEDAS, SIMBOLOS } from "./mesura-datos.js";
 
-  var form = document.getElementById("calc-form");
-  if (!form) return;
+var form = document.getElementById("calc-form");
+if (form) {
+  var moneda = document.documentElement.getAttribute("data-moneda") || "CLP";
+  if (!MONEDAS[moneda]) moneda = "CLP";
 
-  var NUM = new Intl.NumberFormat("es-CL");
-  var CLP = new Intl.NumberFormat("es-CL", {
-    style: "currency", currency: "CLP", maximumFractionDigits: 0
+  document.addEventListener("mesura:moneda-changed", function (ev) {
+    moneda = ev.detail && MONEDAS[ev.detail.codigo] ? ev.detail.codigo : "CLP";
+    reformatearCampos();
   });
-
-  var CMF_MEDIAN = 11.9;
-  var AXIS_MAX = 40;   // escala visual del eje: 0–40% del ingreso
 
   var income = document.getElementById("calc-income");
   var debt = document.getElementById("calc-debt");
   var incomeError = document.getElementById("calc-income-error");
   var result = document.getElementById("calc-result");
   var pct = document.getElementById("calc-pct");
-  var fill = document.getElementById("calc-fill");
-  var ref = document.getElementById("calc-ref");
   var text = document.getElementById("calc-text");
   var reset = document.getElementById("calc-reset");
 
-  function parseCLP(value) {
+  function numFmt() { return new Intl.NumberFormat(MONEDAS[moneda].locale); }
+  function moneyFmt() {
+    var m = MONEDAS[moneda];
+    var f = new Intl.NumberFormat(m.locale, { style: "currency", currency: moneda, maximumFractionDigits: m.exp, minimumFractionDigits: m.exp });
+    return function (x) { return f.format(x).replace("Bs.S", "Bs."); };
+  }
+
+  function parseMonto(value) {
     var digits = String(value == null ? "" : value).replace(/\D/g, "");
     return digits ? parseInt(digits.slice(0, 12), 10) : 0;
   }
 
   function formatField(input) {
     var caretAtEnd = input.selectionStart === input.value.length;
-    var n = parseCLP(input.value);
-    input.value = n ? NUM.format(n) : "";
+    var n = parseMonto(input.value);
+    input.value = n ? numFmt().format(n) : "";
     if (caretAtEnd) {
-      try { input.setSelectionRange(input.value.length, input.value.length); } catch (e) { /* noop */ }
+      try { input.setSelectionRange(input.value.length, input.value.length); } catch (err) { /* noop */ }
     }
+  }
+
+  function reformatearCampos() {
+    [income, debt].forEach(function (input) { if (input.value) formatField(input); });
   }
 
   [income, debt].forEach(function (input) {
@@ -56,15 +63,13 @@
     });
   });
 
-  function decimal(n) {
-    return n.toFixed(1).replace(".", ",");
-  }
+  function decimal(n) { return n.toFixed(1).replace(".", ","); }
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
 
-    var inc = parseCLP(income.value);
-    var deb = parseCLP(debt.value);
+    var inc = parseMonto(income.value);
+    var deb = parseMonto(debt.value);
 
     if (inc <= 0) {
       incomeError.textContent = "Escribe cuánto te llega al mes para poder calcular el porcentaje.";
@@ -76,55 +81,19 @@
     incomeError.textContent = "";
     income.removeAttribute("aria-invalid");
 
-    /* Se redondea a un decimal ANTES de comparar, para que nunca aparezca
-       "11,9%" junto a "estás bajo la referencia de 11,9%". */
     var value = Math.round((deb / inc) * 1000) / 10;
-    var label = decimal(value) + "%";
-    var level = value < CMF_MEDIAN ? "" : value <= 25 ? "warn" : "high";
+    var f = moneyFmt();
 
-    pct.textContent = label;
-    if (level) { pct.setAttribute("data-level", level); fill.setAttribute("data-level", level); }
-    else { pct.removeAttribute("data-level"); fill.removeAttribute("data-level"); }
+    pct.textContent = decimal(value) + "%";
+    text.textContent = value > 100
+      ? "Tus cuotas (" + f(deb) + ") superan lo que te llega (" + f(inc) + "). Antes de mirar el resto del mes, conviene revisar esas cifras."
+      : "Te quedan " + f(inc - deb) + " para todo lo demás.";
 
-    fill.style.width = Math.min(100, (value / AXIS_MAX) * 100).toFixed(1) + "%";
-    ref.style.left = ((CMF_MEDIAN / AXIS_MAX) * 100).toFixed(1) + "%";
-
-    var median = decimal(CMF_MEDIAN);
-    var body;
-
-    if (deb <= 0) {
-      body = "Hoy no destinas nada de tu ingreso a pagar deudas. El resto de tu sueldo — " +
-             CLP.format(inc) + " — se reparte entre gastos del mes y lo que alcances a guardar. " +
-             "Saber en qué se reparte es justamente lo que hace Mesura.";
-    } else if (value > 100) {
-      body = "Tus cuotas mensuales (" + CLP.format(deb) + ") superan el ingreso que escribiste (" +
-             CLP.format(inc) + "). Revisa las cifras: si son correctas, conviene buscar orientación " +
-             "más allá de cualquier app — en Chile, el SERNAC o la institución donde tomaste el " +
-             "crédito; fuera de Chile, el organismo que defiende al consumidor en tu país.";
-    } else if (value === CMF_MEDIAN) {
-      body = "Tu carga financiera coincide con la mediana de " + median + "% de los deudores " +
-             "bancarios en Chile. " +
-             "El otro " + decimal(100 - value) + "% de tu ingreso es el que se reparte mes a mes " +
-             "sin que casi nadie lo mire de cerca.";
-    } else if (value < CMF_MEDIAN) {
-      body = "Está por debajo de la mediana de " + median + "% de los deudores bancarios en Chile. " +
-             "Con ese margen, la pregunta útil ya no son las cuotas: es en qué se va el resto del mes.";
-    } else if (value <= 25) {
-      body = "Está por sobre la mediana de " + median + "% de los deudores bancarios en Chile. " +
-             "No es un veredicto — depende de tu situación —, pero sí significa que te queda menos " +
-             "margen para imprevistos, y por lo mismo ver el mes a tiempo pesa más.";
-    } else {
-      body = "Está bastante por sobre la mediana de " + median + "% de los deudores bancarios en Chile. " +
-             "Un registro claro de cuotas y gastos ayuda a ver el mapa completo, aunque una carga así " +
-             "suele necesitar más que una app: vale la pena buscar orientación formal.";
-    }
-
-    text.textContent = body;
     result.hidden = false;
     reset.hidden = false;
 
     document.dispatchEvent(new CustomEvent("mesura:event", {
-      detail: { name: "calculator_completed", nivel: level || "bajo-mediana" }
+      detail: { name: "calculator_completed", moneda: moneda },
     }));
   });
 
@@ -139,4 +108,4 @@
   });
 
   reset.hidden = true;
-})();
+}

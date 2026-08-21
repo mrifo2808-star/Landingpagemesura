@@ -66,11 +66,22 @@ prueba("sin binding responde 503 y no finge exito", async () => {
   igual((await r.json()).error, "Lista de espera no configurada");
 });
 
-prueba("no guarda IP ni user-agent: solo la fecha", async () => {
+prueba("no guarda IP ni user-agent: solo la fecha y la preferencia de ingreso", async () => {
   const WAITLIST = kvFalso();
   await llamar(peticion(JSON.stringify({ email: "ana@ejemplo.cl" })), { WAITLIST });
   const guardado = JSON.parse([...WAITLIST.datos.values()][0]);
-  igual(JSON.stringify(Object.keys(guardado)), JSON.stringify(["at"]));
+  igual(JSON.stringify(Object.keys(guardado)), JSON.stringify(["at", "ingreso"]));
+  igual(guardado.ingreso, null, "sin 'ingreso' en el cuerpo debería guardarse null, no inventado");
+});
+
+prueba("'ingreso' sólo se guarda si es uno de los dos valores válidos", async () => {
+  const WAITLIST = kvFalso();
+  await llamar(peticion(JSON.stringify({ email: "ana@ejemplo.cl", ingreso: "fijas" })), { WAITLIST });
+  igual(JSON.parse([...WAITLIST.datos.values()][0]).ingreso, "fijas");
+
+  const WAITLIST2 = kvFalso();
+  await llamar(peticion(JSON.stringify({ email: "bruno@ejemplo.cl", ingreso: "<script>" })), { WAITLIST: WAITLIST2 });
+  igual(JSON.parse([...WAITLIST2.datos.values()][0]).ingreso, null, "un valor fuera de la lista blanca debería descartarse en silencio");
 });
 
 /* ---- Endurecimiento de esta rama ---------------------------------------- */

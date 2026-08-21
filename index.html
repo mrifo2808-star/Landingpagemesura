@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es-CL">
+<html lang="es" data-moneda="CLP">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mesura — Tu mes, antes de que se te vaya</title>
-<meta name="description" content="Mesura es una app chilena de finanzas personales: anota un gasto, mira si vas al ritmo del mes y ordena lo que compartes. En pesos chilenos, sin anuncios y sin conectarte al banco.">
+<meta name="description" content="Anotas lo que gastas, ves cuánto te queda por día para llegar a fin de mes, y llevas la cuenta de lo que pagas a medias con alguien. En pesos chilenos. Sin conectar tu banco, sin publicidad y sin vender datos.">
 <link rel="canonical" href="https://mesura-landing.pages.dev/">
 
 <meta property="og:type" content="website">
@@ -12,14 +12,14 @@
 <meta property="og:locale" content="es_CL">
 <meta property="og:url" content="https://mesura-landing.pages.dev/">
 <meta property="og:title" content="Mesura — Tu mes, antes de que se te vaya">
-<meta property="og:description" content="Anota un gasto, mira si vas al ritmo del mes y ordena lo que compartes. En pesos chilenos, sin anuncios y sin conectarte al banco.">
+<meta property="og:description" content="Anotas lo que gastas, ves cuánto te queda por día para llegar a fin de mes, y llevas la cuenta de lo que pagas a medias con alguien. En pesos chilenos. Sin conectar tu banco, sin publicidad y sin vender datos.">
 <meta property="og:image" content="https://mesura-landing.pages.dev/assets/img/og-mesura.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Estado del mes de Mesura: disponible $156.325 y el aviso de que vas por delante de tu ritmo.">
+<meta property="og:image:alt" content="Pantalla de Inicio de Mesura: quedan $156.325 del presupuesto del mes y el aviso de que vas $48.027 por delante del ritmo.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Mesura — Tu mes, antes de que se te vaya">
-<meta name="twitter:description" content="Anota un gasto, mira si vas al ritmo del mes y ordena lo que compartes. En pesos chilenos, sin anuncios y sin conectarte al banco.">
+<meta name="twitter:description" content="Anotas lo que gastas, ves cuánto te queda por día para llegar a fin de mes, y llevas la cuenta de lo que pagas a medias con alguien. En pesos chilenos. Sin conectar tu banco, sin publicidad y sin vender datos.">
 <meta name="twitter:image" content="https://mesura-landing.pages.dev/assets/img/og-mesura.png">
 
 <meta name="theme-color" content="#f1ece0" media="(prefers-color-scheme: light)">
@@ -45,8 +45,8 @@
       "@id": "https://mesura-landing.pages.dev/#website",
       "url": "https://mesura-landing.pages.dev/",
       "name": "Mesura",
-      "inLanguage": "es-CL",
-      "description": "App chilena de finanzas personales en pesos: registro de gastos, ritmo del mes y gastos compartidos."
+      "inLanguage": "es",
+      "description": "Finanzas personales: anota un gasto, mira cuánto te queda por día para llegar a fin de mes y ordena lo que compartes. Sin conectar tu banco."
     },
     {
       "@type": "SoftwareApplication",
@@ -55,9 +55,9 @@
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Web",
       "url": "https://mesura-landing.pages.dev/",
-      "inLanguage": "es-CL",
+      "inLanguage": "es",
       "isPartOf": { "@id": "https://mesura-landing.pages.dev/#website" },
-      "description": "App chilena de finanzas personales en pesos: registro de gastos, ritmo del mes y gastos compartidos. Sin anuncios y sin conexión con bancos.",
+      "description": "Registro de gastos, ritmo del mes y gastos compartidos. Disponible en peso chileno, sol, peso argentino, peso mexicano, peso colombiano y bolívar. Sin anuncios y sin conexión con bancos.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -71,35 +71,38 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Cuánto cuesta actualmente?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Nada. Hoy Mesura no tiene ningún cobro: sin planes de pago, sin compras dentro de la app, sin tarjeta. Si algún día existe una versión pagada, te avisaremos antes — y primero a quienes estén en la lista."
-          }
+          "name": "¿Qué es esto de que está «en pruebas»?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Mesura funciona y se usa todos los días, pero es una versión temprana: hay cosas que van a cambiar, cosas que faltan y alguna que se va a caer. Tus datos no se caen: hay respaldo y puedes descargar una copia completa cuando quieras." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto cuesta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Hoy nada: no hay planes de pago, ni compras dentro de la app, ni tarjeta de por medio. Si algún día hay una versión pagada, avisamos antes — y primero a quienes estén en esta lista." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo se instala? ¿Está en Google Play?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Todavía no está en Google Play ni en App Store. Hoy Mesura se abre en el navegador y se puede dejar con su propio ícono en la pantalla del teléfono, en iPhone, Android o computador." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto trabajo es de verdad?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Todos los días: Mesura hace el cálculo, anotar lo sigues haciendo tú. Si pierdes tres o cuatro días seguidos, ponerte al día deja de ser anotar y pasa a ser reconstruir." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo ponerle presupuesto a cada categoría?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Hay un presupuesto general del mes y además puedes darle el suyo a cada categoría; si la suma de los de categoría supera al general, Mesura avisa." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué pasa cuando termina el mes?",
+          "acceptedAnswer": { "@type": "Answer", "text": "El presupuesto se puede copiar al mes siguiente. Lo que no pasa es el resultado: si sobró, no se acumula; si se gastó de más, no se arrastra. Cada mes empieza en cero." }
         },
         {
           "@type": "Question",
           "name": "¿Qué pasa con mis datos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Tu cuenta ve solo sus propios datos y tu contraseña se guarda de forma que nadie puede leerla. Puedes descargar tus movimientos en Excel o un respaldo completo de tu cuenta, y eliminarla desde tu propio perfil sin escribirle a nadie. No hay publicidad, ni venta de datos, ni cookies de seguimiento."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Debo conectar mi banco?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No, y tampoco puedes: Mesura no tiene conexión con bancos. No pide claves bancarias, no lee tus estados de cuenta y no usa servicios que entren al banco por ti. Todo lo que aparece en tu mes lo anotaste tú."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo se instala?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Mesura funciona hoy en el navegador y se agrega a la pantalla de inicio desde el menú del propio navegador, en iPhone, Android o computador. No está en App Store ni en Google Play, y necesita conexión a internet para funcionar."
-          }
+          "acceptedAnswer": { "@type": "Answer", "text": "Tu cuenta ve solo lo tuyo. Tus movimientos están guardados en un servidor y quien opera Mesura puede leerlos; tu contraseña no la puede leer nadie. Descargas todo cuando quieras y eliminas la cuenta desde tu perfil." }
         }
       ]
     }
@@ -120,70 +123,127 @@
         <span>MESURA</span>
       </a>
       <nav class="masthead__nav" aria-label="Secciones">
-        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#compartido">Lo compartido</a>
+        <a href="#ritmo">El ritmo del mes</a>
+        <a href="#anotar">Anotar</a>
         <a href="#datos">Tus datos</a>
-        <a href="#preguntas">Preguntas</a>
-        <a class="masthead__cta" href="#acceso">Pedir acceso</a>
+        <a class="masthead__cta" href="#acceso">Pedir invitación</a>
       </nav>
     </div>
     <nav class="masthead__strip" aria-label="Secciones">
-      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#compartido">Lo compartido</a>
+      <a href="#ritmo">El ritmo</a>
+      <a href="#anotar">Anotar</a>
       <a href="#datos">Tus datos</a>
-      <a href="#preguntas">Preguntas</a>
     </nav>
   </div>
 </header>
 
 <main id="contenido">
 
-  <!-- ═══════════ HERO — EL MES A LA VISTA ═══════════ -->
+  <!-- ═══════════ 00 · PRIMERA PANTALLA ═══════════ -->
   <section class="hero">
     <div class="wrap">
       <div class="hero__top">
         <div>
-          <p class="hero__eyebrow">Mesura · App chilena de finanzas personales</p>
+          <p class="hero__eyebrow">Mesura · Finanzas personales · Hoy sólo se entra con invitación</p>
           <h1 class="t-display">Tu mes, <span class="mark">antes</span> de que se te vaya.</h1>
         </div>
         <div class="hero__side">
           <p class="lead">
-            Anota lo que pasa, mira si vas al ritmo y ordena lo que compartes.
-            En pesos chilenos, sin anuncios y sin conectarte al banco.
+            Anotas un gasto: el monto, la categoría, guardar. Mesura te dice
+            cuánto te queda <b>por día</b> para llegar a fin de mes, mientras
+            todavía puedes hacer algo. Y lleva sola el saldo de lo que pagas a
+            medias con alguien, hasta que queda en cero.
+          </p>
+          <p class="marginal">
+            La hace una persona: <b>Matías Rifo</b>, desde Chile. El correo de
+            contacto llega a él. <a href="#quien">Más abajo, quién es.</a>
           </p>
           <div class="hero__ctas">
             <button type="button" class="btn btn--primary" data-demo-focus hidden>
               Probar con un gasto
             </button>
-            <a class="btn btn--ghost" href="#acceso">Pedir acceso</a>
+            <a class="btn btn--ghost" href="#acceso">Pedir una invitación</a>
           </div>
         </div>
       </div>
 
+      <div class="callout">
+        En <span data-tok="monedaNombre">pesos chilenos</span>. Sin publicidad y sin
+        vender datos. Los gastos los anotas tú: Mesura no se conecta a tu banco ni te
+        pide sus claves — por eso funciona igual si cobras en efectivo o no tienes
+        cuenta bancaria. Y hoy necesita conexión: si estás en la calle sin señal, en
+        ese momento no vas a poder anotar. Es la limitación más incómoda que tiene,
+        porque el momento de anotar suele ser justo ése.
+      </div>
+
+      <!-- ═══════════ 00b · EL EJEMPLO ═══════════ -->
+      <form class="moneda" id="moneda-form" method="get">
+        <label class="moneda__campo">
+          <span>Ejemplo en</span>
+          <select id="moneda-select" name="m">
+            <option value="CLP">pesos chilenos</option>
+            <option value="PEN">soles</option>
+            <option value="ARS">pesos argentinos</option>
+            <option value="MXN">pesos mexicanos</option>
+            <option value="COP">pesos colombianos</option>
+            <option value="VES">bolívares</option>
+          </select>
+        </label>
+        <button type="submit">Ver</button>
+      </form>
+      <p class="moneda-nota">Cambia el ejemplo de esta página. Tu cuenta la eliges al crearla.</p>
+
+      <p class="showcase-label">
+        <b>Esto es la pantalla de Inicio de Mesura, con datos inventados.</b>
+        Funciona de verdad: escribe un monto abajo y mira cómo se mueve todo.
+        Las frases son las de la app, palabra por palabra.
+      </p>
+      <p class="showcase-note">
+        Dos cosas para que el ejemplo no prometa de más. El presupuesto de
+        <span data-tok="presupuesto">$487.300</span> es de gastos variables del
+        mes —mercado, transporte, salidas, cuentas de la casa— y no incluye
+        vivienda; en la sección <a href="#ritmo">02</a> está por qué. Y el
+        ritmo y el bloque de categorías aparecen desde tu quinto movimiento del
+        mes: antes de eso Inicio te muestra el resumen y la lista, y nada más.
+      </p>
+
       <!-- La hoja: estado del mes. Ejemplo interactivo, sin cuenta y sin backend. -->
       <article class="sheet" id="estado-mes" aria-labelledby="estado-mes-titulo">
         <div class="sheet__head">
-          <h2 id="estado-mes-titulo" class="sheet__title">Estado del mes · Agosto</h2>
+          <h2 id="estado-mes-titulo" class="sheet__title">
+            Agosto · día <span data-tok="dia">18</span> de <span data-tok="dias">31</span>
+          </h2>
           <span>Ejemplo · nada de esto se guarda</span>
         </div>
 
+        <p class="callout" style="margin:16px 18px 0;">
+          <b>Nada de lo que escribas aquí se guarda.</b> El cálculo pasa dentro de
+          tu navegador, no se envía a ninguna parte y no necesitas cuenta.
+        </p>
+
         <dl class="figures">
           <div>
-            <dt>Disponible</dt>
+            <dt>Te queda</dt>
             <dd>
               <p class="fig-amount" id="demo-available">$156.325</p>
-              <p class="fig-sub" id="demo-available-sub">De un presupuesto de $487.300 para el mes.</p>
+              <p class="fig-sub" id="demo-available-sub">
+                De un presupuesto de <span data-tok="presupuesto">$487.300</span> para el mes.
+              </p>
             </dd>
           </div>
           <div>
             <dt>Van gastados</dt>
             <dd>
               <p class="fig-amount fig-amount--mid" id="demo-spent">$330.975</p>
-              <p class="fig-sub">Suma de lo anotado entre el 1 y el 18 de agosto.</p>
+              <p class="fig-sub">Suma de lo anotado entre el 1 y el <span data-tok="dia">18</span> de agosto.</p>
             </dd>
           </div>
           <div>
             <dt>Ritmo</dt>
             <dd class="pace">
-              <p class="pace__verdict" id="demo-verdict" data-state="over">Vas $48.027 por delante de tu ritmo.</p>
+              <p class="pace__verdict" id="demo-verdict" data-state="over">Vas $48.027 por delante de tu ritmo</p>
               <div class="pace__axis">
                 <div class="pace__fill" id="demo-fill" data-state="over" style="width:67.9%"></div>
                 <div class="pace__tick" id="demo-tick" style="left:58.1%"></div>
@@ -255,6 +315,11 @@
                 <div class="cats__bar"><span style="width:26%;background:#0f9d58"></span></div>
               </li>
             </ul>
+            <p class="fig-sub" style="margin-top:12px;">
+              Y si quieres, cada categoría puede llevar su propio presupuesto
+              además del general. Se configura en la pantalla de Presupuesto, y
+              Mesura avisa si la suma de los de categoría se pasa del general.
+            </p>
           </div>
         </div>
 
@@ -264,7 +329,7 @@
             <div class="field">
               <label class="field__label" for="demo-amount">Monto del gasto</label>
               <span class="money-input">
-                <span aria-hidden="true">$</span>
+                <span aria-hidden="true" data-tok="simbolo">$</span>
                 <input id="demo-amount" name="demo-amount" type="text" inputmode="numeric"
                        autocomplete="off" placeholder="12.000"
                        aria-describedby="demo-error">
@@ -300,135 +365,640 @@
           <p class="sr-only" id="demo-live" role="status" aria-live="polite"></p>
         </form>
       </article>
+
+      <div class="cifra-diaria">
+        <p class="cifra-diaria__num"><span data-tok="diario">$12.025</span> al día para llegar al <span data-tok="dias">31</span>.</p>
+        <p>
+          <b>Esta división la hacemos aquí, en esta página. La app todavía no la
+          muestra:</b> tiene los dos números —lo que te queda y los días que
+          faltan— y te entrega la frase. Es lo primero que pidió la gente que la
+          está usando, y es lo próximo que se construye.
+        </p>
+      </div>
     </div>
   </section>
 
-  <!-- ═══════════ UN MES REAL ═══════════ -->
-  <section class="section" id="como-funciona">
+  <!-- ═══════════ 01 · LO COMPARTIDO ═══════════ -->
+  <section class="section" id="compartido">
     <div class="wrap">
       <div class="section__head">
-        <p class="tag"><b>01</b> Un mes real, no uno ideal</p>
-        <h2 class="t-h2">Nadie abre una app de finanzas para hacer un presupuesto. La abre <span class="editorial">porque acaba de pasar algo.</span></h2>
+        <p class="tag"><b>01</b> Cuando el gasto no es sólo tuyo</p>
+        <h2 class="t-h2">Lo que pagaste tú, lo que puso el otro, y <span class="editorial">cuánto queda.</span></h2>
       </div>
 
-      <ol class="moments">
-        <li class="moment">
-          <p class="moment__n" aria-hidden="true"></p>
-          <div>
-            <h3 class="t-h3">Acaba de pasar: lo anotas y sigues</h3>
-            <p>
-              Escribes el monto, tocas la categoría, guardas — y de paso anotas qué
-              fue, en tus palabras, no en las de una planilla. Las categorías son
-              tuyas — les cambias el nombre, el color y el ícono, o creas las que te
-              falten.
-            </p>
-          </div>
-          <p class="jotting">
-            <b><span>Feria de la Vega</span><span>−$20.125</span></b>
-            <em>Supermercado · dom 16</em>
-          </p>
-        </li>
+      <p class="lead">
+        Anotas el gasto una vez, dices con quién lo divides, y Mesura lleva el
+        saldo de las dos partes. Cada abono que te pasan lo descuenta. Cuando
+        llega a cero, se cierra.
+      </p>
 
-        <li class="moment">
-          <p class="moment__n" aria-hidden="true"></p>
-          <div>
-            <h3 class="t-h3">A media semana: ¿voy muy rápido?</h3>
-            <p>
-              Esa es la pregunta que casi ninguna planilla responde. Mesura compara
-              lo que llevas gastado con lo que corresponde al día del mes en que vas,
-              y te lo dice antes de que el mes termine — no después.
-            </p>
-          </div>
-          <p class="jotting">
-            <b><span>Esperado al día 18</span><span>$282.948</span></b>
-            <b><span>Llevas gastado</span><span class="up">$330.975</span></b>
-            <em>$48.027 por delante de tu ritmo · quedan 13 días</em>
-          </p>
-        </li>
-
-        <li class="moment">
-          <p class="moment__n" aria-hidden="true"></p>
-          <div>
-            <h3 class="t-h3">Cuando el gasto no es solo tuyo</h3>
-            <p>
-              El arriendo a medias, el asado que pagaste tú, la plata que te deben
-              desde marzo. Divides la cuenta, registras abonos parciales y ves el
-              saldo por persona hasta que queda en cero.
-            </p>
-          </div>
-          <p class="jotting">
-            <b><span>Cuenta de la luz · a medias</span><span>$41.200</span></b>
-            <b><span>Te deben</span><span class="up">$20.600</span></b>
-            <em>Saldo por persona, con abonos parciales</em>
-          </p>
-        </li>
-      </ol>
+      <p class="jotting">
+        <b><span data-tok="mov4_titulo">Cuenta de la luz</span><span data-tok="mov4_monto">$33.478</span></b>
+        <em>A medias → te deben <span data-tok="mitad">$16.739</span></em>
+      </p>
 
       <p class="marginal">
-        Alrededor de esos tres momentos hay metas de ahorro, calendario, favoritos,
-        recordatorios de pagos fijos, presupuesto por categoría además del presupuesto
-        general, y un resumen semanal por correo, que llega activado y se apaga en un
-        clic.
+        Puedes juntar varias cuentas en un <b>grupo</b> —«Depto», «Casa de mi
+        mamá», «Viaje»— con hasta veinte personas, y ver de una sola vez quién
+        puso qué y quién le debe a quién. Cada cuenta sigue siendo entre dos, pero
+        el grupo te las muestra juntas y te da el resumen.
+      </p>
+
+      <div class="callout">
+        <b>La otra persona necesita una cuenta en Mesura.</b> No hay modo invitado.
+        Escribes su correo cuando divides el gasto y pasa una de dos cosas: si ya
+        usa Mesura, le llega una solicitud para vincularse contigo; si no la usa,
+        le llega una invitación que sirve para entrar.
+        <br><br>
+        <b>Es una sola vez.</b> Cuando acepta, quedan vinculados: los gastos que
+        dividas con ella después ya no piden permiso de nuevo.
+        <br><br>
+        <b>Si no acepta en siete días, la invitación vence</b> y ese gasto se
+        queda sin dividir. Lo ves en tu lista de invitaciones, con la fecha, y
+        puedes volver a enviarla.
+        <br><br>
+        <b>Y si nunca acepta, esa parte no existe en la app.</b> Tú te quedas con
+        tu registro del gasto completo y nada más. No hay saldo, no hay deuda.
+        Mesura no cobra: lleva la cuenta.
+      </div>
+
+      <p class="marginal">
+        El saldo sólo está bien si lo anotan los dos. Si tú registras el mercado
+        y la otra persona no registra lo que puso ella, el saldo va a decir que
+        te debe cuando a lo mejor están casi iguales. Mesura cuadra bien lo que
+        se anota; no sabe lo que no se anotó.
+      </p>
+
+      <div class="qa" style="margin-top: var(--space-block);">
+        <details>
+          <summary>¿Se puede dividir de otra forma que no sea a medias?</summary>
+          <div class="qa__body">
+            <p>
+              Sí, de dos maneras: moviendo un control de porcentaje, entre 1% y
+              99%, o escribiendo el monto exacto que le toca a la otra persona.
+              Por defecto va a medias.
+            </p>
+            <p>
+              <span data-tok="mov4_titulo">Cuenta de la luz</span> repartido 60/40
+              queda <b data-tok="sesenta">$20.087</b> de la otra persona y
+              <b data-tok="cuarenta">$13.391</b> tuyo.
+            </p>
+          </div>
+        </details>
+        <details>
+          <summary>¿Qué ve la otra persona?</summary>
+          <div class="qa__body">
+            <p>
+              De ese gasto y de nada más: el título que le pusiste, la categoría,
+              la fecha, el monto que le toca a ella —no el total—, cuánto lleva
+              pagado, cuánto queda, y tu correo. No ve tus otros movimientos, no
+              ve tu presupuesto, no ve tus categorías.
+            </p>
+            <p>Como el título viaja con el gasto, escríbelo pensando en que ella lo va a leer.</p>
+          </div>
+        </details>
+        <details>
+          <summary>¿Y si más adelante cortamos el vínculo?</summary>
+          <div class="qa__body">
+            <p>
+              Los gastos nuevos dejan de compartirse y las cuentas que ya estaban
+              abiertas no se borran: nadie puede anular por su cuenta una deuda
+              que los dos reconocieron.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 · EL RITMO DEL MES ═══════════ -->
+  <section class="section section--band" id="ritmo">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag"><b>02</b> A mitad de mes</p>
+        <h2 class="t-h2">¿Voy muy rápido?</h2>
+      </div>
+
+      <p class="lead">
+        Le dices a Mesura cuánto quieres que te dure el mes. A medida que
+        anotas, compara lo que llevas gastado con lo que correspondería al día
+        en que vas, y te lo dice <b>antes</b> de que el mes termine.
+      </p>
+
+      <p class="jotting">
+        <b><span>Al día <span data-tok="dia">18</span> de <span data-tok="dias">31</span> correspondería</span><span data-tok="esperado">$282.948</span></b>
+        <b><span>Llevas gastado</span><span class="up" data-tok="gastado">$330.975</span></b>
+        <em data-tok="fraseRitmo">Vas $48.027 por delante de tu ritmo</em>
+      </p>
+
+      <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
+        <b>Mesura reparte tu presupuesto en partes iguales, día por día.</b> Si tu
+        presupuesto es <span data-tok="presupuesto">$487.300</span>, al día
+        <span data-tok="dia">18</span> de un mes de <span data-tok="dias">31</span>
+        le corresponden <span data-tok="esperado">$282.948</span>. Eso es todo el
+        cálculo: no hay nada más detrás.
+      </p>
+
+      <div class="callout" style="margin-top: var(--space-group);">
+        <b>Pon sólo lo que gastas del día a día</b> —mercado, transporte, salidas,
+        cuentas del mes— <b>y deja fuera la vivienda y los pagos fijos grandes.</b>
+        Es lo que hace la gente a la que el ritmo le termina sirviendo, y es lo
+        único que hace que la cifra de arriba signifique algo.
+        <br><br>
+        <b>Y esto cuesta algo, dicho antes y no después:</b> la cifra grande de
+        «te queda» y la hoja de cálculo que exportes no van a ser todo tu gasto
+        del mes, sino sólo el del día a día. Si necesitas el registro completo,
+        hoy tienes que llevarlo aparte. Mesura no puede darte las dos cosas a la vez.
+      </div>
+
+      <p class="marginal" style="margin-top: var(--space-group);">
+        <b>Si no lo haces así:</b> Mesura no separa los gastos fijos del resto. Si
+        metes la vivienda dentro del presupuesto y la pagas a principio de mes, el
+        ritmo va a decirte que vas por delante casi todos los días del mes, no
+        sólo los primeros. No es un mal día que se pasa.
+      </p>
+
+      <p style="margin-top: var(--space-group); font-size: 15.5px; color: var(--ink-2); max-width: 60ch;">
+        Hay un margen: por debajo de <b data-tok="tolerancia">$500</b> de
+        diferencia, Mesura dice «vas al día» en vez de avisar, para que el
+        número no se mueva con cada gasto. Es una cifra fija, no un porcentaje,
+        y sobre un presupuesto mensual no llega al 0,4%. O sea: el ritmo te dice
+        la cifra desde el primer día. No se guarda nada esperando a que sea grave.
+      </p>
+
+      <div class="callout" style="margin-top: var(--space-group);">
+        <b>Si entras a mitad de mes, el primer mes el ritmo te va a decir que vas
+        holgado, y no es verdad.</b> Mesura compara lo que anotaste desde que
+        entraste contra lo que correspondería desde el día 1 del calendario, así
+        que los días anteriores a tu registro cuentan como si no hubieras
+        gastado nada. El ritmo empieza a servirte el mes siguiente, el primero
+        que empiezas completo. Mientras tanto, el registro y los gastos
+        compartidos funcionan igual de bien.
+        <br><br>
+        <b>Y por lo mismo: Mesura no distingue un día en que no gastaste de uno
+        en que no anotaste.</b> Los dos se ven vacíos. Si te atrasas varios días,
+        el «vas al día» de esos días no significa nada.
+      </div>
+
+      <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
+        Una hoja de cálculo también te lo puede decir, y con una fórmula. La
+        diferencia de Mesura no es la fórmula: es que el cálculo ya está hecho
+        cada vez que anotas algo, desde el teléfono, en la calle. Anotar en el
+        momento es mejor en la app; consultar sigue siendo mejor en una hoja, y
+        si ya tienes una que funciona, Mesura exporta a Excel y puedes pegarlo ahí.
       </p>
     </div>
   </section>
 
-  <!-- ═══════════ LA BRECHA ═══════════ -->
+  <!-- ═══════════ 02b · CUATRO CASOS ═══════════ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag">Cuatro casos en los que hoy te va a quedar corta</p>
+      </div>
+
+      <div class="casos">
+        <p class="lead">
+          Mesura no te pregunta cuánto ganas. Te pregunta cuánto quieres que te
+          dure el mes. Ese número lo pones tú y lo cambias cuando quieras. Aun
+          así hay cuatro situaciones en las que hoy el ritmo del mes no te va a servir:
+        </p>
+
+        <ul class="casos__list">
+          <li>
+            <b>Si cobras por quincena:</b> pon el presupuesto del mes completo.
+            El ritmo lo reparte por día, no por quincena — hoy Mesura no sabe
+            partir el mes en dos, y los días siguientes a cada pago vas a
+            aparecer disparado.
+          </li>
+          <li>
+            <b>Si tu plata entra distinta cada día o cada semana</b> —taxi,
+            delivery, un puesto, trabajo por día—: Mesura cuenta por mes de
+            calendario. Si quieres probarla igual, pon como presupuesto lo que
+            quieres que te dure una semana multiplicado por cuatro, y mira la
+            cifra diaria en vez del ritmo: ése es el número que se parece a
+            cómo vives.
+          </li>
+          <li>
+            <b>Si tu año tiene meses buenos y meses flacos</b> —cosecha,
+            temporada, obra—: Mesura razona de a un mes y no sabe llevar la
+            plata de uno al siguiente.
+          </li>
+          <li>
+            <b>Si buena parte de tu plata no la decides tú</b> —un remedio, una
+            urgencia, alguien a quien cuidas—: Mesura no distingue eso de una
+            salida a comer, es un monto y entra al mismo cálculo. Puedes darle
+            su propia categoría y su propio presupuesto y verlo aparte; lo que
+            no va a hacer es saber que no era opcional.
+          </li>
+        </ul>
+
+        <p class="casos__cierre">
+          Si tu caso está en esta lista, el registro y los gastos compartidos te
+          sirven igual, sin ninguna diferencia. Lo que hoy no te va a servir es
+          el ritmo del mes.
+        </p>
+      </div>
+
+      <div class="callout callout--warn" style="margin-top: var(--space-block);">
+        <b>Si tu dinero pierde valor mes a mes, o vives entre dos monedas.</b> Una
+        cuenta de Mesura tiene una sola moneda y nunca convierte de una a otra ni
+        consulta un tipo de cambio. Eso significa dos cosas: que el presupuesto
+        que pongas hoy te va a quedar corto en unos meses —lo cambias tú cuando
+        quieras, y cambiarlo no es hacer trampa: es que la vida salió más cara,
+        no que gastaste peor— y que si tu economía vive en dos monedas vas a
+        tener que elegir una y dejar la otra fuera del registro. Eso no es que
+        una función te quede corta: es que tu propio historial va a decirte
+        menos. Preferimos decirlo aquí.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 03 · ANOTAR ═══════════ -->
+  <section class="section section--band" id="anotar">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag"><b>03</b> En el momento</p>
+        <h2 class="t-h2">Mesura no te pide armar un presupuesto para empezar.</h2>
+      </div>
+
+      <p class="lead">
+        Anotas un gasto y ya sirve: escribes el monto, tocas la categoría y
+        guardas — la fecha viene con el día de hoy. El presupuesto puedes
+        ponerlo después, o nunca: sin él pierdes el ritmo del mes, pero el
+        registro y lo compartido funcionan igual.
+      </p>
+
+      <div class="callout" style="margin-top: var(--space-group);">
+        Hay un cuarto campo, <b>«¿Qué fue?», y es opcional</b>. Escríbelo igual:
+        es lo que te va a hacer reconocer ese movimiento dentro de un mes,
+        porque en la lista de Inicio aparece lo que escribiste tú y no el
+        nombre de la categoría. «Feria del sábado» dentro de Supermercado dice
+        mucho más que «Supermercado». Si lo dejas en blanco, el movimiento se
+        queda con el nombre de la categoría.
+        <br><br>
+        Y una cosa que conviene tener presente al escribirlo: si ese gasto lo
+        divides con alguien, esa persona va a leer ese título.
+      </div>
+
+      <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
+        <b>Lo que compras siempre, guardado.</b> El camión, el café de la tarde,
+        el almuerzo de siempre: los guardas una vez y después los anotas de un
+        toque, sin escribir nada. Puedes dejar el monto guardado también, si es
+        siempre el mismo, o dejarlo en blanco y ponerlo cada vez.
+      </p>
+
+      <p class="marginal" style="margin-top: var(--space-group);">
+        Las categorías son tuyas: les cambias el nombre, el color y el ícono, o
+        creas las que te falten.
+      </p>
+
+      <p class="marginal">
+        Alrededor de eso hay metas de ahorro, calendario, presupuesto por
+        categoría, recordatorios de pagos fijos y un resumen semanal por
+        correo. Los recordatorios avisan; no anotan solos. Las metas de ahorro
+        son una alcancía: pones un número, cargas los aportes a mano y se llena
+        una barra — no calculan cuánto apartar. El resumen semanal llega
+        activado y se apaga en un clic, y es lo único de Mesura que te busca a
+        ti en vez de esperar a que te acuerdes.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 04 · EL TRATO CON TUS DATOS ═══════════ -->
+  <section class="section" id="datos">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag"><b>04</b> Qué pasa con lo que anotas</p>
+        <h2 class="t-h2">Lo que hace y lo que no.</h2>
+      </div>
+
+      <div class="pact">
+        <div class="pact__col">
+          <h3>Lo que Mesura usa</h3>
+          <ul>
+            <li>
+              Tu correo y una contraseña
+              <small>La contraseña se guarda de forma que no se puede leer: ni
+              tú, ni quien opera Mesura, ni nadie con acceso al servidor puede recuperarla.</small>
+            </li>
+            <li>
+              Tus movimientos, que sí se pueden leer desde el servidor
+              <small>Mesura calcula tus totales en su servidor, así que no hay
+              cifrado de extremo a extremo: tus movimientos quedan guardados en
+              texto legible y quien opera Mesura puede leerlos. Eso incluye lo
+              que escribas en «¿Qué fue?», que es texto tuyo, con tus palabras.
+              Se hace en cuatro situaciones, escritas una por una en la
+              política de privacidad: mantener el servicio andando, resolver
+              un fallo que alguien reportó, recuperar datos después de un
+              borrado, y completar una eliminación de cuenta que no se pudo
+              hacer desde la app. No se usa para desarrollo, ni para pruebas,
+              ni para demostraciones.</small>
+            </li>
+            <li>
+              Tres servicios para funcionar
+              <small>Cloudflare mantiene la app y la base de datos en internet.
+              Google manda los correos que Mesura te envía —confirmación,
+              recuperación de contraseña, invitaciones y el resumen semanal,
+              que lleva totales tuyos dentro—; no recibe tus movimientos uno
+              por uno. Anthropic sólo aparece si enciendes el comentario con
+              inteligencia artificial, y sólo recibe un resumen de tu semana.
+              Esa función viene apagada.</small>
+            </li>
+            <li>
+              Tu respaldo, cuando lo pidas
+              <small>Descargas tus movimientos en una hoja de cálculo que abres
+              en Excel, o una copia completa de tu cuenta en un archivo.</small>
+            </li>
+          </ul>
+        </div>
+        <div class="pact__col">
+          <h3>Lo que Mesura decidió no hacer</h3>
+          <ul>
+            <li>
+              Tu banco es tuyo
+              <small>Mesura no tiene ninguna conexión con bancos, no pide
+              claves y no lee estados de cuenta. Por eso funciona igual si
+              cobras en efectivo o no tienes cuenta bancaria.</small>
+            </li>
+            <li>
+              Nadie paga por verte
+              <small>No hay publicidad, no se venden tus datos y no hay
+              cookies que te sigan por otros sitios.</small>
+            </li>
+            <li>
+              Tus cuentas las hace la aritmética, no un modelo
+              <small>Tus totales, tu ritmo y tus categorías se calculan
+              siempre sin inteligencia artificial. Hay dos funciones que sí la
+              usan —un comentario semanal y anotar dictando— y las dos vienen
+              apagadas, cada una con su permiso aparte.</small>
+            </li>
+            <li>
+              Mesura no opina sobre cómo vives
+              <small>No hay rachas, ni premios por constancia, ni castigos por
+              saltarte un día. Cuando te pasas del presupuesto te dice cuánto y
+              en qué categorías, no que te hayas portado mal.</small>
+            </li>
+            <li>
+              Irte es un botón
+              <small>Eliminas tu cuenta desde tu perfil, sin escribirle a
+              nadie, y se borra de verdad. Lo único que queda, ya sin tu
+              nombre, es el saldo de los gastos que dividiste con alguien: la
+              otra persona lo necesita para que su cuenta no quede a medias.</small>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="fineprint">
+        Ninguna aplicación puede prometer seguridad absoluta, y ésta no lo
+        hace. El detalle completo está en los
+        <a href="https://mesura.mrifo2808.workers.dev/terminos" rel="noopener">términos de uso</a> y en la
+        <a href="https://mesura.mrifo2808.workers.dev/privacidad" rel="noopener">política de privacidad</a>, y están escritos para leerse.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 05 · ANTES DE DEJAR TU CORREO ═══════════ -->
   <section class="section section--band">
     <div class="wrap">
       <div class="section__head">
-        <p class="tag"><b>02</b> Entre planificar y cumplir</p>
+        <p class="tag">Dos cosas que cambian la decisión, y por eso van aquí</p>
       </div>
 
-      <div class="evidence">
-        <div class="gap-figure">
-          <div class="gap-figure__row">
-            <p class="gap-figure__pct">71%</p>
-            <p class="gap-figure__label">de las personas en Chile <b>declara manejar un presupuesto mensual.</b></p>
-            <div class="gap-figure__meter"><span style="width:71%"></span></div>
-          </div>
-          <div class="gap-figure__row gap-figure__row--weak">
-            <p class="gap-figure__pct">31%</p>
-            <p class="gap-figure__label">de quienes lo tienen <b>dice cumplirlo de manera consistente.</b></p>
-            <div class="gap-figure__meter"><span style="width:31%"></span></div>
-          </div>
+      <div class="callout callout--warn">
+        <b>Se empieza de cero.</b> No se puede importar lo que tengas en otra
+        app ni en una hoja de cálculo: hoy Mesura sólo exporta. Si quieres
+        traer tu historial, la única vía es escribirlo a mano. Es la primera
+        hora de trabajo que Mesura te va a costar, y preferimos que la sepas
+        antes de crear la cuenta, no después.
+      </div>
+
+      <div class="callout callout--warn" style="margin-top:12px;">
+        <b>La moneda se elige al crear la cuenta, y sí se puede cambiar
+        después.</b> Eliges entre peso chileno, sol, peso argentino, peso
+        mexicano, peso colombiano y bolívar. Una cuenta, una moneda: Mesura
+        nunca convierte de una a otra ni consulta un tipo de cambio. Si te
+        equivocaste, hay una salida: se pueden re-expresar todos tus montos en
+        otra unidad, pidiéndote la contraseña. Pero re-expresar no es
+        convertir — un gasto de 12.500 pasa a leerse 12.500 en la moneda
+        nueva, no su equivalente al cambio — y si la moneda nueva no usa
+        decimales, no se puede deshacer. Elige la moneda con la que vives.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 06 · PREGUNTAS ═══════════ -->
+  <section class="section" id="preguntas">
+    <div class="wrap">
+      <div class="qa-layout">
+        <div class="section__head">
+          <p class="tag"><b>06</b> Preguntas</p>
+          <h2 class="t-h2">Lo que la gente pregunta antes de dejar su correo.</h2>
         </div>
 
-        <div>
-          <h2 class="t-h2">El problema no es que a la gente le falte plan. Es que el plan se pierde de vista a mitad de mes.</h2>
-          <p class="lead">
-            Un presupuesto que solo se revisa cuando llega la cuenta no es un
-            presupuesto: es un resumen de algo que ya ocurrió. Mesura no existe para
-            que hagas un plan mejor — existe para que lo veas mientras todavía puedes
-            hacer algo al respecto.
-          </p>
-          <p class="source">
-            Fuente: <a href="https://politicaspublicas.uc.cl/publicacion/radiografia-a-la-educacion-e-inclusion-financiera-en-chile/" rel="noopener">«Radiografía a la educación e inclusión financiera en Chile»</a>,
-            Centro de Políticas Públicas UC y Banco Falabella, 2025.
-          </p>
+        <div class="qa">
+          <details>
+            <summary>¿Qué es esto de que está «en pruebas»?</summary>
+            <div class="qa__body">
+              <p>
+                Que Mesura funciona y se usa todos los días, pero es una
+                versión temprana: hay cosas que van a cambiar, cosas que
+                faltan y alguna que se va a caer. Lo que no se cae son tus
+                datos: hay respaldo y puedes descargar una copia completa
+                cuando quieras. Entrar ahora es usar lo que existe hoy y poder
+                pedir lo que te falte directamente a quien la hace.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Cuánto cuesta?</summary>
+            <div class="qa__body">
+              <p>
+                Hoy nada: no hay planes de pago, ni compras dentro de la app,
+                ni tarjeta de por medio. No prometemos que será gratis para
+                siempre. Si algún día hay una versión pagada, avisamos antes —
+                y primero a quienes estén en esta lista.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Cómo se instala? ¿Está en Google Play?</summary>
+            <div class="qa__body">
+              <p>
+                Todavía no está en Google Play ni en App Store, y no vamos a
+                anunciar una fecha que no podamos cumplir. Hoy Mesura se abre
+                en el navegador y se puede dejar con su propio ícono en la
+                pantalla del teléfono: menú del navegador → «Agregar a
+                pantalla de inicio». Funciona igual en iPhone, en Android y en
+                el computador.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Cuánto trabajo es de verdad?</summary>
+            <div class="qa__body">
+              <p>
+                Todos los días, y ésa es la parte que no se puede maquillar.
+                Mesura hace el cálculo; anotar lo sigues haciendo tú. Si
+                pierdes tres o cuatro días seguidos, ponerte al día deja de
+                ser anotar y pasa a ser reconstruir, y ahí es donde la mayoría
+                la deja. Si eso te suena a ti, sirve saberlo antes: puedes
+                anotar sólo lo grande y usarla igual, o usarla sólo para las
+                cuentas que llevas con otra persona.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Puedo ponerle presupuesto a cada categoría?</summary>
+            <div class="qa__body">
+              <p>
+                Sí. Hay un presupuesto general del mes y además puedes darle
+                el suyo a cada categoría; si la suma de los de categoría
+                supera al general, Mesura te avisa. Se configuran en la
+                pantalla de Presupuesto — en Inicio verás el gasto por
+                categoría, que es otra cosa.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Qué pasa cuando termina el mes?</summary>
+            <div class="qa__body">
+              <p>
+                El presupuesto del mes lo puedes copiar al siguiente de una
+                vez, con los de categoría incluidos. Lo que no pasa al mes
+                siguiente es el resultado: si te sobró, no se acumula; si te
+                pasaste, no se arrastra. Cada mes empieza en cero y se mide solo.
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>¿Qué pasa con mis datos?</summary>
+            <div class="qa__body">
+              <p>
+                Tu cuenta ve sólo lo tuyo. La única excepción es un gasto que
+                tú decides dividir: esa persona ve ese movimiento, y sólo ese.
+                Tus movimientos están guardados en un servidor y quien opera
+                Mesura puede leerlos — arriba, en «Lo que hace y lo que no»,
+                está en qué situaciones. Tu contraseña no la puede leer nadie.
+                Descargas todo lo tuyo cuando quieras y eliminas la cuenta
+                desde tu perfil, sin escribirle a nadie.
+              </p>
+            </div>
+          </details>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ CALCULADORA ═══════════ -->
-  <section class="section" id="calculadora">
+  <!-- ═══════════ 07 · LA INVITACIÓN Y EL FORMULARIO ═══════════ -->
+  <section class="section section--band">
     <div class="wrap">
       <div class="section__head">
-        <p class="tag"><b>03</b> Antes de empezar el mes</p>
+        <p class="tag">Hoy sólo se entra con invitación</p>
+      </div>
+
+      <div class="closing">
+        <div class="beta__intro">
+          <p class="stamp">Acceso por invitación</p>
+          <h2 class="t-h2">Mesura está creciendo despacio, y a propósito.</h2>
+          <p class="lead">
+            Entrar ahora significa usar la versión que existe hoy y tener línea
+            directa para pedir lo que te falte. Lo que digan estas primeras
+            personas define lo que se construye después.
+          </p>
+          <p class="marginal">
+            No hay tarjeta, no hay período de prueba y no hay nada que cancelar
+            después.
+          </p>
+        </div>
+
+        <!-- El ancla vive en el bloque de conversión, no en la sección: los tres
+             CTA de la página deben aterrizar en el campo de correo, no encima
+             del encuadre. -->
+        <div class="invite" id="acceso">
+          <h2 class="t-h2">Déjanos dónde escribirte y te avisamos cuando podamos abrirte una.</h2>
+
+          <form class="signup" id="waitlist-form" novalidate>
+            <div>
+              <label class="signup__label" for="waitlist-email">Tu correo</label>
+              <input id="waitlist-email" name="email" type="email" required
+                     autocomplete="email" inputmode="email" placeholder="tu@correo.com"
+                     aria-describedby="waitlist-msg">
+            </div>
+
+            <fieldset class="chips">
+              <legend class="signup__label">¿Cómo te entra la plata?</legend>
+              <div class="chips__set">
+                <input type="radio" id="ingreso-fijas" name="ingreso" value="fijas" checked>
+                <label for="ingreso-fijas">En fechas fijas</label>
+                <input type="radio" id="ingreso-saltos" name="ingreso" value="saltos">
+                <label for="ingreso-saltos">A los saltos</label>
+              </div>
+              <p class="signup__consent" style="margin-top:8px;">
+                Sirve para saber a quién le va a servir Mesura hoy y a quién
+                conviene decirle que espere.
+              </p>
+            </fieldset>
+
+            <input class="honey" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button type="submit" class="btn btn--primary">Pedir una invitación</button>
+            <p class="signup__consent">
+              Te escribimos, aunque sea para decirte que todavía no. Lo usamos
+              sólo para esto: nada de newsletters, y no se lo pasamos a nadie.
+              Al enviarlo aceptas los
+              <a href="https://mesura.mrifo2808.workers.dev/terminos" rel="noopener">términos de uso</a> y la
+              <a href="https://mesura.mrifo2808.workers.dev/privacidad" rel="noopener">política de privacidad</a>.
+            </p>
+          </form>
+          <p class="form-msg" id="waitlist-msg" role="status" aria-live="polite" tabindex="-1"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 08 · QUIÉN HACE MESURA ═══════════ -->
+  <section class="section" id="quien">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag"><b>08</b> Quién hace esto</p>
+        <h2 class="t-h2">Quién hace esto.</h2>
+      </div>
+      <p class="lead">
+        Mesura la hace <b>una sola persona: Matías Rifo</b>, desde Chile. No hay
+        empresa, no hay inversionistas y no hay un equipo de soporte: el correo
+        de contacto llega a él, y contesta él.
+      </p>
+      <p style="margin-top: var(--space-item); font-size: 16px; max-width: 60ch; color: var(--ink-2);">
+        Por eso se entra por invitación: una persona sola no puede atender a mil a la vez.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 09 · UNA HERRAMIENTA SUELTA ═══════════ -->
+  <section class="section section--band" id="calculadora">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="tag"><b>09</b> Una herramienta suelta</p>
       </div>
 
       <div class="calc">
         <div>
-          <h2 class="t-h2">¿Cuánto de tu sueldo ya está comprometido?</h2>
+          <h2 class="t-h2">Cuánto de lo que entra ya está comprometido.</h2>
           <p class="lead">
-            La parte del ingreso que se va en cuotas y créditos ya está decidida
-            antes de que empiece el mes. Saber cuánto es el primer número honesto:
-            lo que queda es lo que realmente administras.
+            La parte de tu ingreso que se va en cuotas y créditos está decidida
+            antes de que empiece el mes. Saber cuánto es sirve para lo de
+            arriba: lo que queda es lo que realmente administras.
           </p>
-          <p class="marginal">
-            El cálculo ocurre aquí, en tu navegador. No se envía ni se guarda en
-            ninguna parte.
+          <p class="callout">
+            <b>Nada de lo que escribas aquí se guarda.</b> La división pasa
+            dentro de tu navegador, no se envía a ninguna parte y no queda registrada.
           </p>
         </div>
 
@@ -436,12 +1006,12 @@
           <form class="statement" id="calc-form" novalidate>
             <div class="statement__row">
               <label class="statement__label" for="calc-income">
-                Tu ingreso mensual
-                <small>Lo que te llega a la cuenta, después de los descuentos</small>
+                Lo que te llega al mes
+                <small>Después de descuentos, lo que efectivamente entra a tu cuenta o a tu bolsillo.</small>
               </label>
               <div>
                 <span class="money-input">
-                  <span aria-hidden="true">$</span>
+                  <span aria-hidden="true" data-tok="simbolo">$</span>
                   <input id="calc-income" name="income" type="text" inputmode="numeric"
                          autocomplete="off" placeholder="800.000"
                          aria-describedby="calc-income-error">
@@ -453,11 +1023,12 @@
             <div class="statement__row">
               <label class="statement__label" for="calc-debt">
                 Lo que pagas al mes en deudas
-                <small>Cuotas de créditos, tarjetas y avances en efectivo</small>
+                <small>Cuotas de créditos, tarjetas y avances en efectivo. No
+                incluyas la vivienda ni las cuentas del mes: eso es gasto, no deuda.</small>
               </label>
               <div>
                 <span class="money-input">
-                  <span aria-hidden="true">$</span>
+                  <span aria-hidden="true" data-tok="simbolo">$</span>
                   <input id="calc-debt" name="debt" type="text" inputmode="numeric"
                          autocomplete="off" placeholder="95.000">
                 </span>
@@ -472,233 +1043,13 @@
 
           <div class="result" id="calc-result" role="status" aria-live="polite" hidden>
             <p class="result__pct" id="calc-pct">—</p>
-            <p class="result__caption">De tu ingreso mensual se va en deudas</p>
-            <div class="result__axis" aria-hidden="true">
-              <div class="result__fill" id="calc-fill" style="width:0%"></div>
-              <div class="result__ref" id="calc-ref" style="left:29.8%"><span>mediana en Chile 11,9%</span></div>
-            </div>
+            <p class="result__caption">de lo que te llega ya está comprometido antes de empezar el mes</p>
             <p class="result__text" id="calc-text"></p>
-            <p class="result__cta"><a class="btn btn--primary" href="#acceso">Pedir acceso a la beta</a></p>
-          </div>
-
-          <p class="fineprint">
-            El 11,9% es la mediana de la carga financiera de los deudores bancarios en
-            Chile, según el <a href="https://www.cmfchile.cl/portal/prensa/625/w4-article-102984.html" rel="noopener">Informe de Endeudamiento de la CMF</a>
-            (datos a junio de 2025). Sirve para poner tu número en contexto — no es una
-            recomendación financiera ni un diagnóstico de tu situación.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════ ACUERDO DE DATOS ═══════════ -->
-  <section class="section section--band" id="datos">
-    <div class="wrap">
-      <div class="section__head">
-        <p class="tag"><b>04</b> El trato con tus datos</p>
-        <h2 class="t-h2">Lo que hace y lo que no. Sin asteriscos.</h2>
-      </div>
-
-      <div class="pact">
-        <div class="pact__col">
-          <h3>Lo que Mesura usa</h3>
-          <ul>
-            <li>
-              Tu correo y una contraseña
-              <small>Se guarda de forma que nadie puede leerla — ni siquiera nosotros.</small>
-            </li>
-            <li>Los movimientos que anotas tú, en pesos chilenos.</li>
-            <li>
-              Tres servicios para funcionar
-              <small>Cloudflare mantiene la app y la base de datos en internet. Google
-              manda los correos que Mesura te envía, como el resumen semanal — no
-              recibe tus movimientos uno por uno. Anthropic solo interviene si activas
-              «Análisis con Mesura IA», y solo recibe un resumen de la semana; esa
-              función viene apagada.</small>
-            </li>
-            <li>
-              Tu respaldo, cuando lo pides
-              <small>Descargas tus movimientos en Excel, o un respaldo completo de tu cuenta.</small>
-            </li>
-          </ul>
-        </div>
-        <div class="pact__col">
-          <h3>Lo que Mesura no hace</h3>
-          <ul>
-            <li>No se conecta a tu banco ni te pide claves bancarias.</li>
-            <li>
-              No importa tus datos desde otra app ni desde una planilla
-              <small>Hoy solo se puede sacar, no meter: si ya llevas tus gastos en otro
-              lado, no hay forma de traerlos. Empiezas de cero.</small>
-            </li>
-            <li>No muestra publicidad, no vende tus datos y no usa cookies de seguimiento.</li>
-            <li>
-              No usa inteligencia artificial, salvo que tú la actives
-              <small>Tus cuentas se calculan siempre sin IA. Las dos funciones que sí la
-              usan —el análisis semanal y el registro por voz— vienen apagadas y cada una
-              se enciende con su propio permiso; la de voz envía tu grabación al servicio
-              de transcripción de Cloudflare para convertirla en texto, no la guarda y no
-              entrena modelos con ella.</small>
-            </li>
-            <li>
-              No te retiene si te quieres ir
-              <small>Eliminas tu cuenta desde tu perfil, sin escribirle a soporte, y se borra de verdad.</small>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <p class="fineprint">
-        Ninguna aplicación puede prometer seguridad absoluta, y esta no lo hace. El
-        detalle completo está en los
-        <a href="https://mesura.mrifo2808.workers.dev/terminos" rel="noopener">términos</a> y en la
-        <a href="https://mesura.mrifo2808.workers.dev/privacidad" rel="noopener">política de privacidad</a>.
-      </p>
-    </div>
-  </section>
-
-  <!-- ═══════════ PREGUNTAS ═══════════
-       Van antes del cierre a propósito: las objeciones se resuelven ANTES de
-       pedir el correo, no entre la oferta y el formulario. La banda alterna
-       pasó a la sección de cierre para que #datos y ésta no se fundan en un
-       solo bloque de --paper-2. -->
-  <section class="section" id="preguntas">
-    <div class="wrap">
-      <div class="qa-layout">
-        <div class="section__head">
-          <p class="tag"><b>05</b> Preguntas</p>
-          <h2 class="t-h2">Las cuatro que importan.</h2>
-        </div>
-
-        <div class="qa">
-          <details>
-            <summary>¿Cuánto cuesta actualmente?</summary>
-            <div class="qa__body">
-              <p>
-                Nada. Hoy Mesura no tiene ningún cobro: no hay planes de pago, ni
-                compras dentro de la app, ni tarjeta de por medio.
-              </p>
-              <p>
-                No prometemos que será gratis para siempre. Si algún día existe una
-                versión pagada, te avisaremos antes — y primero a quienes estén en
-                esta lista.
-              </p>
-            </div>
-          </details>
-  
-          <details>
-            <summary>¿Qué pasa con mis datos?</summary>
-            <div class="qa__body">
-              <p>
-                Tu cuenta ve únicamente sus propios datos, y tu contraseña se guarda de
-                forma que nadie puede leerla — ni siquiera quien mantiene Mesura.
-                La única excepción es un gasto que tú decides dividir: la otra persona
-                ve ese movimiento, nada más.
-              </p>
-              <p>
-                Todo lo tuyo es tuyo: descargas tus movimientos en Excel, o un respaldo
-                completo de tu cuenta, y eliminas la cuenta desde tu propio perfil, sin
-                escribirle a soporte. Se borra de verdad — solo queda, sin
-                tu nombre, el saldo de los gastos que dividiste con alguien, porque la
-                otra persona lo necesita. No hay publicidad, ni venta de datos, ni
-                cookies de seguimiento.
-              </p>
-            </div>
-          </details>
-  
-          <details>
-            <summary>¿Debo conectar mi banco?</summary>
-            <div class="qa__body">
-              <p>
-                No, y tampoco podrías: Mesura no tiene ninguna conexión con bancos.
-                No pide claves, no lee tus estados de cuenta y no usa servicios que
-                entren al banco por ti.
-              </p>
-              <p>
-                Eso significa que los movimientos los anotas tú. Es más trabajo que
-                una sincronización automática, y es deliberado: anotar un gasto es lo
-                que hace que lo veas. A cambio, no le entregas a nadie las claves de
-                tu banco.
-              </p>
-            </div>
-          </details>
-  
-          <details>
-            <summary>¿Cómo se instala?</summary>
-            <div class="qa__body">
-              <p>
-                Hoy Mesura funciona en el navegador. Desde el menú del propio navegador
-                eliges «agregar a pantalla de inicio» y queda con su ícono, en iPhone,
-                en Android y en el computador. No se descarga nada.
-              </p>
-              <p>
-                Dos cosas que conviene saber antes: <b>necesita conexión a internet</b>,
-                no funciona sin señal; y <b>todavía no está en App Store ni en Google
-                Play</b>. Hay una aplicación nativa en desarrollo, pero no vamos a
-                anunciar una fecha que no podamos cumplir.
-              </p>
-            </div>
-          </details>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════ CIERRE: BETA FUNDADORA + INVITACIÓN ═══════════
-       Una sola conclusión, no dos. El encuadre de la beta (por qué el acceso
-       es por invitación) y el formulario que lo resuelve viven en la misma
-       composición: antes eran dos secciones separadas por toda la FAQ, y la
-       primera despertaba la intención sin ofrecer ningún control. -->
-  <section class="section section--band">
-    <div class="wrap">
-      <div class="section__head">
-        <p class="tag"><b>06</b> Beta fundadora</p>
-      </div>
-
-      <div class="closing">
-        <div class="beta__intro">
-          <p class="stamp">Acceso por invitación</p>
-          <h2 class="t-h2">Mesura está creciendo despacio, y a propósito.</h2>
-          <p class="lead">
-            Entrar ahora significa usar la versión que existe hoy y tener línea
-            directa para pedir lo que te falte — lo que digan estas primeras
-            personas define lo que se construye después. Por eso los cupos se
-            abren de a poco.
-          </p>
-          <p class="marginal">
-            No hay tarjeta, no hay período de prueba y no hay nada que cancelar
-            después.
-          </p>
-        </div>
-
-        <!-- El ancla vive en el bloque de conversión, no en la sección: los tres
-             CTA de la página deben aterrizar en el campo de correo, no encima
-             del encuadre. -->
-        <div class="invite" id="acceso">
-          <h2 class="t-h2">Pide tu acceso a la <span class="mark">beta fundadora</span>.</h2>
-          <p>
-            Deja tu correo y te escribimos cuando se abra un cupo. Es lo único
-            que pedimos: no hay formulario largo, ni encuesta, ni tarjeta.
-          </p>
-
-          <form class="signup" id="waitlist-form" novalidate>
-            <div>
-              <label class="signup__label" for="waitlist-email">Tu correo</label>
-              <input id="waitlist-email" name="email" type="email" required
-                     autocomplete="email" inputmode="email" placeholder="tu@correo.com"
-                     aria-describedby="waitlist-msg">
-            </div>
-            <input class="honey" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <button type="submit" class="btn btn--primary">Pedir acceso</button>
-            <p class="signup__consent">
-              Usamos tu correo solo para avisarte del cupo. Nada de newsletters.
-              Al enviarlo aceptas los
-              <a href="https://mesura.mrifo2808.workers.dev/terminos" rel="noopener">términos</a> y la
-              <a href="https://mesura.mrifo2808.workers.dev/privacidad" rel="noopener">política de privacidad</a>.
+            <p class="fineprint">
+              Este número no dice si tu situación es buena o mala: una hipoteca
+              y una tarjeta se ven igual aquí.
             </p>
-          </form>
-          <p class="form-msg" id="waitlist-msg" role="status" aria-live="polite" tabindex="-1"></p>
+          </div>
         </div>
       </div>
     </div>
@@ -718,16 +1069,24 @@
       <a href="https://mesura.mrifo2808.workers.dev/login" rel="noopener">Iniciar sesión</a>
     </nav>
     <p class="foot__note">
-      © 2026 Mesura · Hecha en Chile · Sin publicidad ni venta de datos.
-      Mesura registra y ordena información que tú ingresas; no es un banco, no
-      administra dinero y no entrega asesoría financiera. Los ejemplos y cifras
-      de esta página son referenciales y citan su fuente.
+      © 2026 Mesura · Hecha en Chile por Matías Rifo · Sin publicidad ni venta de datos.
+    </p>
+    <p class="foot__note">
+      Esta página está escrita en español neutro a propósito: la hace una
+      persona sola, desde Chile, y prefiere no imitar un acento que no tiene.
+      Los montos del ejemplo están en la moneda que elijas arriba.
+    </p>
+    <p class="foot__note">
+      Mesura registra y ordena información que tú ingresas. No es un banco, no
+      administra dinero y no entrega asesoría ni recomendaciones financieras.
+      Los montos y las funciones de los ejemplos de esta página son inventados
+      y sirven para mostrar cómo se ve la app.
     </p>
   </div>
 </footer>
 
-<script src="/assets/js/demo.js" defer></script>
-<script src="/assets/js/calculator.js" defer></script>
+<script type="module" src="/assets/js/demo.js"></script>
+<script type="module" src="/assets/js/calculator.js"></script>
 <script src="/assets/js/landing.js" defer></script>
 
 </body>
