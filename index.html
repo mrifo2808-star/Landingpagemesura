@@ -198,11 +198,13 @@
       </p>
       <p class="showcase-note">
         Dos cosas para que el ejemplo no prometa de más. El presupuesto de
-        <span data-tok="presupuesto">$487.300</span> es de gastos variables del
-        mes —mercado, transporte, salidas, cuentas de la casa— y no incluye
-        vivienda; en la sección <a href="#ritmo">02</a> está por qué. Y el
-        ritmo y el bloque de categorías aparecen desde tu quinto movimiento del
-        mes: antes de eso Inicio te muestra el resumen y la lista, y nada más.
+        <span data-tok="presupuesto">$487.300</span> y sus cuatro movimientos
+        —mercado, transporte, salidas, cuentas de la casa— son gasto del día a
+        día: ninguno está marcado como gasto fijo, así que este ejemplo no
+        muestra ese cálculo; en la sección <a href="#ritmo">02</a> está cómo
+        cambia si marcas uno. Y el ritmo y el bloque de categorías aparecen
+        desde tu quinto movimiento del mes: antes de eso Inicio te muestra el
+        resumen y la lista, y nada más.
       </p>
 
       <!-- La hoja: estado del mes. Ejemplo interactivo, sin cuenta y sin backend. -->
@@ -400,22 +402,28 @@
         el grupo te las muestra juntas y te da el resumen.
       </p>
 
-      <div class="callout">
-        <b>La otra persona necesita una cuenta en Mesura.</b> No hay modo invitado.
-        Escribes su correo cuando divides el gasto y pasa una de dos cosas: si ya
-        usa Mesura, le llega una solicitud para vincularse contigo; si no la usa,
-        le llega una invitación que sirve para entrar.
-        <br><br>
-        <b>Es una sola vez.</b> Cuando acepta, quedan vinculados: los gastos que
-        dividas con ella después ya no piden permiso de nuevo.
-        <br><br>
-        <b>Si no acepta en siete días, la invitación vence</b> y ese gasto se
-        queda sin dividir. Lo ves en tu lista de invitaciones, con la fecha, y
-        puedes volver a enviarla.
-        <br><br>
-        <b>Y si nunca acepta, esa parte no existe en la app.</b> Tú te quedas con
-        tu registro del gasto completo y nada más. No hay saldo, no hay deuda.
-        Mesura no cobra: lleva la cuenta.
+      <div class="notice-group">
+        <span class="notice-group__label">Cómo funciona la invitación</span>
+        <p class="notice-group__item">
+          <b>La otra persona necesita una cuenta en Mesura.</b> No hay modo invitado.
+          Escribes su correo cuando divides el gasto y pasa una de dos cosas: si ya
+          usa Mesura, le llega una solicitud para vincularse contigo; si no la usa,
+          le llega una invitación que sirve para entrar.
+        </p>
+        <p class="notice-group__item">
+          <b>Es una sola vez.</b> Cuando acepta, quedan vinculados: los gastos que
+          dividas con ella después ya no piden permiso de nuevo.
+        </p>
+        <p class="notice-group__item">
+          <b>Si no acepta en siete días, la invitación vence</b> y ese gasto se
+          queda sin dividir. Lo ves en tu lista de invitaciones, con la fecha, y
+          puedes volver a enviarla.
+        </p>
+        <p class="notice-group__item">
+          <b>Y si nunca acepta, esa parte no existe en la app.</b> Tú te quedas con
+          tu registro del gasto completo y nada más. No hay saldo, no hay deuda.
+          Mesura no cobra: lleva la cuenta.
+        </p>
       </div>
 
       <p class="marginal">
@@ -496,45 +504,27 @@
       </p>
 
       <div class="callout" style="margin-top: var(--space-group);">
-        <b>Pon sólo lo que gastas del día a día</b> —mercado, transporte, salidas,
-        cuentas del mes— <b>y deja fuera la vivienda y los pagos fijos grandes.</b>
-        Es lo que hace la gente a la que el ritmo le termina sirviendo, y es lo
-        único que hace que la cifra de arriba signifique algo.
-        <br><br>
-        <b>Y esto cuesta algo, dicho antes y no después:</b> la cifra grande de
-        «te queda» y la hoja de cálculo que exportes no van a ser todo tu gasto
-        del mes, sino sólo el del día a día. Si necesitas el registro completo,
-        hoy tienes que llevarlo aparte. Mesura no puede darte las dos cosas a la vez.
+        <b>Pon como presupuesto lo que quieres que te dure el mes, todo
+        incluido.</b> Cuando anotes la vivienda, la luz o cualquier pago que
+        igual tenías que hacer, marca la casilla <b>«Es un gasto fijo
+        (arriendo, cuentas)»</b>: Mesura lo da por pagado y no lo reparte entre
+        los días que quedan. El resto del presupuesto sí se reparte parejo, y
+        es eso —no el total— lo que se compara con lo que llevas gastado.
       </div>
 
       <p class="marginal" style="margin-top: var(--space-group);">
-        <b>Si no lo haces así:</b> Mesura no separa los gastos fijos del resto. Si
-        metes la vivienda dentro del presupuesto y la pagas a principio de mes, el
-        ritmo va a decirte que vas por delante casi todos los días del mes, no
-        sólo los primeros. No es un mal día que se pasa.
+        <b>Si no marcas nada:</b> el ritmo te va a decir que vas por delante
+        buena parte del mes, sobre todo si pagas tus fijos al principio. No es
+        un mal día que se pasa: es que un presupuesto sin marcar reparte
+        también lo que ya estaba pagado.
       </p>
 
-      <p style="margin-top: var(--space-group); font-size: 15.5px; color: var(--ink-2); max-width: 60ch;">
-        Hay un margen: por debajo de <b data-tok="tolerancia">$500</b> de
-        diferencia, Mesura dice «vas al día» en vez de avisar, para que el
-        número no se mueva con cada gasto. Es una cifra fija, no un porcentaje,
-        y sobre un presupuesto mensual no llega al 0,4%. O sea: el ritmo te dice
-        la cifra desde el primer día. No se guarda nada esperando a que sea grave.
+      <p style="margin-top: var(--space-near); font-size: 14px; color: var(--muted); max-width: 60ch;">
+        Y algo aparte, que vale se marque o no la casilla: Mesura no distingue
+        un día en que no gastaste de uno en que no anotaste. Los dos se ven
+        vacíos, así que si te atrasas varios días, el «vas al día» de esos
+        días no significa nada.
       </p>
-
-      <div class="callout" style="margin-top: var(--space-group);">
-        <b>Si entras a mitad de mes, el primer mes el ritmo te va a decir que vas
-        holgado, y no es verdad.</b> Mesura compara lo que anotaste desde que
-        entraste contra lo que correspondería desde el día 1 del calendario, así
-        que los días anteriores a tu registro cuentan como si no hubieras
-        gastado nada. El ritmo empieza a servirte el mes siguiente, el primero
-        que empiezas completo. Mientras tanto, el registro y los gastos
-        compartidos funcionan igual de bien.
-        <br><br>
-        <b>Y por lo mismo: Mesura no distingue un día en que no gastaste de uno
-        en que no anotaste.</b> Los dos se ven vacíos. Si te atrasas varios días,
-        el «vas al día» de esos días no significa nada.
-      </div>
 
       <p style="margin-top: var(--space-group); font-size: 16px; max-width: 60ch;">
         Una hoja de cálculo también te lo puede decir, y con una fórmula. La
@@ -767,24 +757,25 @@
         <p class="tag">Dos cosas que cambian la decisión, y por eso van aquí</p>
       </div>
 
-      <div class="callout callout--warn">
-        <b>Se empieza de cero.</b> No se puede importar lo que tengas en otra
-        app ni en una hoja de cálculo: hoy Mesura sólo exporta. Si quieres
-        traer tu historial, la única vía es escribirlo a mano. Es la primera
-        hora de trabajo que Mesura te va a costar, y preferimos que la sepas
-        antes de crear la cuenta, no después.
-      </div>
-
-      <div class="callout callout--warn" style="margin-top:12px;">
-        <b>La moneda se elige al crear la cuenta, y sí se puede cambiar
-        después.</b> Eliges entre peso chileno, sol, peso argentino, peso
-        mexicano, peso colombiano y bolívar. Una cuenta, una moneda: Mesura
-        nunca convierte de una a otra ni consulta un tipo de cambio. Si te
-        equivocaste, hay una salida: se pueden re-expresar todos tus montos en
-        otra unidad, pidiéndote la contraseña. Pero re-expresar no es
-        convertir — un gasto de 12.500 pasa a leerse 12.500 en la moneda
-        nueva, no su equivalente al cambio — y si la moneda nueva no usa
-        decimales, no se puede deshacer. Elige la moneda con la que vives.
+      <div class="notice-group notice-group--warn">
+        <p class="notice-group__item">
+          <b>Se empieza de cero.</b> No se puede importar lo que tengas en otra
+          app ni en una hoja de cálculo: hoy Mesura sólo exporta. Si quieres
+          traer tu historial, la única vía es escribirlo a mano. Es la primera
+          hora de trabajo que Mesura te va a costar, y preferimos que la sepas
+          antes de crear la cuenta, no después.
+        </p>
+        <p class="notice-group__item">
+          <b>La moneda se elige al crear la cuenta, y sí se puede cambiar
+          después.</b> Eliges entre peso chileno, sol, peso argentino, peso
+          mexicano, peso colombiano y bolívar. Una cuenta, una moneda: Mesura
+          nunca convierte de una a otra ni consulta un tipo de cambio. Si te
+          equivocaste, hay una salida: se pueden re-expresar todos tus montos en
+          otra unidad, pidiéndote la contraseña. Pero re-expresar no es
+          convertir — un gasto de 12.500 pasa a leerse 12.500 en la moneda
+          nueva, no su equivalente al cambio — y si la moneda nueva no usa
+          decimales, no se puede deshacer. Elige la moneda con la que vives.
+        </p>
       </div>
     </div>
   </section>

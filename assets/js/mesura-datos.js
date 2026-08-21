@@ -67,8 +67,12 @@ export const SIMBOLOS = { CLP: "$", PEN: "S/", ARS: "$", MXN: "$", COP: "$", VES
 export const PAIS_A_MONEDA = { CL: "CLP", PE: "PEN", AR: "ARS", MX: "MXN", CO: "COP", VE: "VES" };
 export const MONEDA_POR_DEFECTO = "CLP";
 
-/** Web: app/lib/home-context.ts. Por debajo de esto el mes se declara "al día". */
-export const PACE_TOLERANCE = 500;
+/** Web y nativa: app/lib/home-context.ts, lib/home-state.ts. El ritmo se compara
+ * contra un umbral RELATIVO a lo esperado a la fecha —10%—, no contra un monto
+ * fijo. El monto fijo (PACE_TOLERANCE = 500) se retiró de las dos apps el
+ * 2026-08-21: con un presupuesto grande esas 500 unidades no filtraban nada y
+ * "vas por delante" quedaba encendido casi todos los días del mes. */
+export const PACE_ESCALATION_RATIO = 0.1;
 
 export const diasDelMes = (a, m) => new Date(a, m, 0).getDate();
 export const nombreDia = (d) =>
@@ -106,6 +110,7 @@ export function calcular(codigo, { dia = DIA, mes = MES, anio = ANIO } = {}) {
   const gastado = cats.reduce((a, c) => a + c.monto, 0);
   const esperado = Math.round((B * dia) / DIAS);
   const desvio = gastado - esperado; // paceDiff
+  const tolerancia = Math.round(Math.abs(esperado) * PACE_ESCALATION_RATIO);
   const queda = B - gastado;
   const diario = RESTAN > 0 ? Math.floor(queda / RESTAN) : queda; // siempre hacia abajo
   const movs = MOVIMIENTOS.map((m) => ({
@@ -118,11 +123,11 @@ export function calcular(codigo, { dia = DIA, mes = MES, anio = ANIO } = {}) {
   const f = formatterFor(codigo);
 
   let paceState, paceHeadline, paceDetail;
-  if (desvio > PACE_TOLERANCE) {
+  if (desvio > tolerancia) {
     paceState = "over";
     paceHeadline = `Vas ${f(desvio)} por delante de tu ritmo`;
     paceDetail = "Es lo que llevas de más respecto a lo que correspondería a esta altura del mes.";
-  } else if (desvio < -PACE_TOLERANCE) {
+  } else if (desvio < -tolerancia) {
     paceState = "under";
     paceHeadline = `Vas ${f(Math.abs(desvio))} por debajo de tu ritmo`;
     paceDetail = "Si sigues así, cierras el mes con holgura sobre tu presupuesto.";
@@ -136,6 +141,6 @@ export function calcular(codigo, { dia = DIA, mes = MES, anio = ANIO } = {}) {
     codigo, mon, B, DIAS, dia, RESTAN, cats, gastado, esperado, desvio, queda, diario,
     movs, paceState, paceHeadline, paceDetail,
     mitad: Math.round(luz / 2), sesenta: Math.round(luz * 0.6), cuarenta: luz - Math.round(luz * 0.6),
-    tolerancia: PACE_TOLERANCE, f,
+    tolerancia, f,
   };
 }

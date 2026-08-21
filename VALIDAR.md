@@ -1,255 +1,267 @@
-# Validar — pasada del 20–21 de agosto de 2026
+# Validar — pasada de jerarquía visual, 21 de agosto de 2026
 
-Rama: `claude/estudio-usuarios-capa1-20260820`. Cuatro commits: `3a2ec58`,
-`a55bc48`, `f54f022` (el grande) y este archivo. No se hizo merge, no se
-desplegó, no se tocó ningún secreto.
+Rama: `claude/jerarquia-visual-20260821`, sobre `main` (que ya tenía fusionada
+`claude/estudio-usuarios-capa1-20260820`). No se hizo merge, no se desplegó, no se tocó ningún
+secreto. **Esto reemplaza la versión anterior de `VALIDAR.md`** — su contenido sigue siendo
+historia correcta de la pasada anterior; queda en `git log` si hace falta releerlo.
 
-**Esto reemplaza la versión anterior de `VALIDAR.md`.** Empezó como una
-pasada acotada (Capa 1: fechas, "dos toques", tres servicios). A mitad de la
-noche llegaron dos cosas tuyas que cambiaron el encargo: cerraste la
-pregunta de seis-sitios-vs-uno, y la sesión paralela ("Alcance real de la
-landing") terminó y dejó su decisión de moneda escrita en
-`Mesura-lanzamiento/landing-v3/`. Con eso disponible, la pasada se volvió
-una reescritura completa de la página según esa especificación. La Capa 1
-original queda incorporada adentro; no hace falta revisarla aparte.
-
-**Tercera ronda, misma noche:** llegó `landing-v3/VALIDAR.md` (el de la
-sesión paralela, no este) y tu respuesta al hueco de la sección 08. Eso se
-resume en el §8 nuevo, al final — léelo si sólo vas a leer una parte de
-este documento además de §2, porque cambia lo que dice §3.3 más abajo.
+**El encargo:** dijiste que la landing "quedó con mucho texto" y que "confunde", y pediste una
+revisión profesional y justificada, aplicar mejoras, y verificar que la mejora es real — sin
+borrar ninguna verdad declarada. Esto es esa revisión, lo que se aplicó, y la evaluación.
 
 ---
 
-## 0. Qué encontré cuando fui a buscar la decisión de moneda
+## 1. La revisión profesional
 
-Hiciste bien en avisar que llegaría en una carpeta nueva. La encontré:
-`Mesura-lanzamiento/landing-v3/` tenía, cuando la leí, tres piezas ya
-terminadas:
+### 1.1 El diagnóstico correcto, y por qué no es "sobra texto"
 
-- **`ESPECIFICACION-MONEDA.md`** — la decisión técnica, tomada: un solo
-  sitio, el ejemplo se muestra en la moneda del lector, detectada por país
-  de conexión, con un selector visible que manda siempre. **Nada de dólares
-  ni euros** — no porque yo lo decidiera, sino porque el propio documento
-  dice que el producto los está retirando de las monedas elegibles
-  (`Mesura-mobile/lib/money.ts:96`). Un ejemplo en una moneda que la app no
-  va a dejar elegir rompería la regla del escaparate.
-- **`TEXTO.md`** — "v3.1 · FINAL", el texto completo de la página, ya
-  pasado por dos rondas de evaluación con trece lectores simulados. Es lo
-  que llevé al repositorio.
-- **`landing-v3/ejemplo/ejemplo.js` + `verificar.js`** — el generador
-  verificado de todos los montos del ejemplo, con las seis monedas, y el
-  script que audita calendario, divisibilidad y disparo de la alerta contra
-  el código real de los dos repos de la app.
+Tu lectura es acertada, pero la causa no es el volumen de palabras — es la **jerarquía dentro de
+cada sección**. La página tiene una escala tipográfica cuidada, una medida de línea consistente
+(46–64 caracteres en casi todo el cuerpo, dentro del rango profesional), cifras siempre
+monoespaciadas y un solo acento de color. Ese trabajo ya estaba hecho y no había que rehacerlo.
+Lo que fallaba era otra cosa, y el propio proyecto ya lo había anticipado por escrito sin
+notarlo: `landing-v3/evaluacion/METODO.md` §5.5, escrito por la sesión que evaluó el TEXTO, no la
+maqueta, cierra con esta frase — *"nada de lo que dice esta evaluación sobrevive a una
+maquetación que ponga la sección 02 en letra grande y el escaparate abajo."* Once días después,
+la maqueta llegó y nadie volvió a leer esa frase contra ella. La sección 02 es, en efecto, la que
+peor estaba.
 
-Antes de usarlos verifiqué las dos afirmaciones de código que la
-especificación hacía, porque son las que sostienen toda la arquitectura:
+### 1.2 El síntoma exacto: bloques de igual peso, en fila
 
-- **USD y EUR existen como monedas de cuenta reales** en
-  `Mesura-app-source/app/lib/money.ts` (`CurrencyCode`, con exponente y
-  locale igual que las otras seis) — pero **`Mesura-mobile/lib/money.ts:96`
-  las excluye de las elegibles al crear cuenta**. Las dos cosas son
-  ciertas a la vez: por eso la especificación dice que el producto "las
-  está retirando", no que nunca existieron.
-- **`app/lib/home-maturity.ts`**: el ritmo y el bloque de categorías
-  aparecen desde el quinto movimiento del mes (`USEFUL_MONTH_MIN_TRANSACTIONS
-  = 5`), verificado línea por línea. La nota que el ejemplo hace de esto es cierta.
+Conté los bloques con borde y fondo propio —`.callout`, la unidad que usa la página para marcar
+"esto es una salvedad importante"— por sección, antes de esta pasada:
+
+| Sección | Bloques `.callout` seguidos | Qué contenían |
+|---|---|---|
+| 00 · Hero | 1 (+1 dentro de la hoja, +1 nota aparte) | Límites del producto — aceptable, es uno solo, no en fila |
+| 01 · Compartido | 1, con **cuatro** afirmaciones distintas unidas por `<br><br>` dentro de la misma caja | Mecánica completa de la invitación |
+| 02 · El ritmo | **3 callouts seguidos** + 1 párrafo de más de 60 palabras entre medio | Instrucción de presupuesto, margen del aviso, bug del primer mes |
+| 05 · Antes de dejar tu correo | **2 callouts `--warn` seguidos**, cada uno de 3–5 oraciones | Sin importación, moneda |
+
+Sección 02 es el caso de libro: tres cajas del mismo color, del mismo grosor de borde, la misma
+tipografía, una debajo de otra, sin que ninguna señale "ésta importa más". Es exactamente lo que
+`RESULTADO.md` §3.1 ya había nombrado en el texto, con la cita de Andrés (contador, corpus
+anterior): *"Si yo revelo cinco contingencias verdaderas, cada una bien medida, en un párrafo
+seguido, el que lee concluye que la empresa se está cayendo aunque ninguna sola lo diga. (…)
+Ustedes pusieron todo en fila."* Ese arreglo se hizo en el TEXTO en la ronda pasada. No se hizo
+en la MAQUETA, porque en agosto la maqueta todavía no existía como para someterla a la misma
+prueba. Ahora existe, y falla la misma prueba por la misma razón, un nivel más abajo: ya no es el
+texto el que va en fila, es la caja.
+
+### 1.3 El barrido de cinco segundos: lo que YA funciona y no hay que tocar
+
+El titular (`t-display`, hasta 84px) más la bajada inmediata —"anotas un gasto: el monto, la
+categoría, guardar... cuánto te queda por día"— **ya es el mensaje de tres segundos**, y está
+donde tiene que estar: lo primero que se lee, en el tamaño más grande de la página, sin
+competencia. No lo toqué. Es el activo más fuerte de la página y cualquier intervención que lo
+opacara habría sido un error, por buena que fuera la intención.
+
+Tampoco moví el primer `.callout` del hero (límites: no banco, necesita conexión) más abajo, aun
+sabiendo que es lo primero con borde que el ojo encuentra después del titular. La razón la dio la
+propia evaluación de trece lectores, y la cito porque contradice la intuición de "lo negativo va
+después de que el lector ya esté convencido": Priscila, *"lo que asusta no es el 'no', es el 'no'
+cuando todavía te estabas ilusionando."* Un límite dicho temprano se lee como información; el
+mismo límite dicho tarde se lee como decepción. Moverlo habría sido la corrección equivocada.
+
+### 1.4 Qué se puede plegar sin esconder, y qué no
+
+Revisé cada bloque candidato a `<details>`. Casi ninguno calificó: son hechos que cambian la
+decisión de crear la cuenta (moneda, importación) o el cálculo central (ritmo, gastos fijos), y
+esconderlos detrás de un clic —aunque siga siendo "no borrar"— es la misma falta que la re-lectura
+del texto ya corrigió una vez (§3.2 de `RESULTADO.md`: seis de trece "no" que Camila saltó a
+propósito por estar en una lista plegable, y que ella misma pidió que quedaran plegados). La única
+pieza que sí es candidata legítima —"cómo se arma este ejemplo" en el hero— decidí NO plegarla:
+explica el presupuesto que el lector está mirando en ese momento, y ocultarla detrás de un clic
+mientras el número queda a la vista sería mostrar la cifra sin su condición, que es justo el tipo
+de "asterisco a mitad de camino" que el estudio castigó. Se queda visible, más corta.
+
+### 1.5 El único mensaje de tres segundos, por sección — auditoría
+
+| Sección | ¿Hay un único mensaje claro? |
+|---|---|
+| 00 Hero | Sí — el titular + bajada. No tocado. |
+| 01 Compartido | Sí — "anotas una vez, Mesura lleva el saldo". La mecánica de invitación es soporte, ahora en lista, no compite con el mensaje. |
+| 02 Ritmo | Antes no: tres cajas competían por ser "la" advertencia. Ahora sí — "pon todo, marca lo fijo" es la única caja; el resto es nota al margen. |
+| 03 Anotar | Sí — no tocada, ya tenía un solo callout. |
+| 04 Datos | Sí — el mejor ejemplo de la página: lista de dos columnas con signo +/–, nunca prosa corrida. No tocada; es el patrón que repliqué en 01 y 05. |
+| 05 Antes de correo | Antes no: dos cajas del mismo peso. Ahora sí — una sola caja con dos filas. |
+| 06 Preguntas | Sí — acordeón, ya era progresivo. No tocada. |
+
+### 1.6 Veredicto
+
+La craft tipográfica de la página es sólida y no era el problema. El problema era de
+**arquitectura de la información dentro de la sección**: varias advertencias independientes,
+cada una legítima, puestas en cajas idénticas, una tras otra, sin que ninguna se subordinara a
+otra. La cura que ya usa la propia página en la sección 04 —lista con filete, negrita como
+encabezado de fila, cuerpo más chico debajo— es la que faltaba extender a las secciones 01, 02 y
+05. Es la misma cura que Andrés pidió para el texto en agosto, aplicada ahora al layout.
 
 ---
 
-## 1. Qué cambió, en una frase cada uno
+## 2. Qué se cambió, y por qué
 
-1. **Un solo `index.html`, no seis.** Cerraste tú esa pregunta; la landing-v2
-   de seis países queda como estaba, sin publicar, en `Mesura-lanzamiento/`.
-2. **El ejemplo del hero ahora tiene un selector de moneda visible** ("Ejemplo
-   en ▾"), y por defecto muestra la moneda del país de conexión
-   (`CF-IPCountry`, resuelto en el borde con una Cloudflare Pages Function
-   nueva — `functions/_middleware.js` — para que no parpadee). Una entrada
-   rota en la URL (`?m=xx`, `?m=USD`) nunca deja la página sin ejemplo: cae
-   al país o a pesos chilenos.
-3. **El texto de la página completa se reescribió según `TEXTO.md` v3.1**:
-   el ritmo real ("Vas $X por delante de tu ritmo", sin porcentaje), los
-   cuatro casos en que el ritmo no sirve hoy (quincena, ingreso irregular,
-   temporada, gasto que no decides tú), lo compartido explicado completo
-   (invitación de 7 días, qué ve la otra persona, grupos de hasta 20), que
-   el presupuesto por categoría existe, los favoritos, y "Lo que Mesura
-   decidió no hacer" en vez de una lista de "no". Se sacó la sección de
-   estadísticas 71%/31% (bases distintas, salto causal, un solo país).
-4. **La moneda sí se puede cambiar — dicho explícito, donde antes no se
-   decía nada.** Sección "Antes de dejar tu correo": re-expresar, no
-   convertir, con contraseña, irreversible si la moneda nueva no tiene
-   decimales. (Ver §4: esto contradice al propio formulario de registro de
-   la app — hay que decidir cuál de las dos superficies se corrige.)
-5. **La calculadora dejó de fijar pesos chilenos.** Ahora sigue la moneda
-   que el lector eligió arriba, y se sacó la comparación con la mediana de
-   endeudamiento de Chile (no tenía sentido para seis países).
-6. **El formulario de invitación pregunta "¿Cómo te entra la plata?"**
-   (fechas fijas / a los saltos) — es sólo para priorizar a quién conviene
-   invitar primero; no bloquea el envío. `functions/api/waitlist.js` lo
-   guarda como campo opcional, sin tocar el contrato existente.
-7. **No hay ninguna sección dedicada a "quién hace Mesura", y no se anuncia
-   ningún plazo de aviso por cierre.** Esto llegó después de la reescritura
-   inicial, en tu ronda de comentarios sobre el tono — detalle completo,
-   con el argumento y la alternativa, en §8.
+### 2.1 Componente nuevo: `.notice-group` (`assets/css/landing.css`)
 
----
+Una caja con borde, lista de filas separadas por filete horizontal, negrita como encabezado de
+cada fila. Mismo lenguaje visual que `.pact` (sección 04). Se usa donde antes había un `.callout`
+con `<br><br>` simulando una lista que en realidad ya era una lista semánticamente.
 
-## 2. Cómo comprobarlo en menos de diez minutos
+### 2.2 Sección 01 — la mecánica de la invitación, de párrafo a lista
 
-Esta vez sí hace falta `wrangler`, porque la detección por país corre en
-una Cloudflare Pages Function que el arnés de QA no ejecuta:
+Las cuatro afirmaciones («necesita una cuenta», «es una sola vez», «vence a los siete días», «si
+nunca acepta») pasaron de un `.callout` con `<br><br>` a un `.notice-group` de cuatro filas.
+**Ninguna palabra cambió.** Es restructuración pura de marcado.
 
-```
-cd Mesura-landing
-npx wrangler pages dev . --compatibility-date=2026-08-01
-```
+### 2.3 Sección 05 — dos advertencias, una caja
 
-Abre la URL que imprima y mira:
+Los dos `.callout--warn` («se empieza de cero», «la moneda se elige…») se fusionaron en un
+`.notice-group--warn` de dos filas. **Ninguna palabra cambió.**
 
-- **El selector "Ejemplo en ▾"**, pegado al ejemplo. Cámbialo a "soles":
-  toda la hoja (disponible, gastado, ritmo, movimientos, categorías, la
-  cifra diaria, el símbolo de la calculadora) tiene que cambiar junta, y la
-  URL debe pasar a `?m=PEN` sin recargar la página.
-- **La detección por país**, sin usar el navegador — con curl, simulando un
-  visitante peruano:
-  ```
-  curl -s -H "CF-IPCountry: PE" http://127.0.0.1:8788/ | grep data-moneda
-  ```
-  Debe imprimir `data-moneda="PEN"`. Sin la cabecera, `data-moneda="CLP"`.
-- **Que una URL rota no rompa nada**: abre `/?m=USD` o `/?m=xx` — la página
-  tiene que verse en pesos chilenos, no en blanco ni con un error.
-- **Que el ritmo diga dinero, no porcentaje**: el recuadro debe decir "Vas
-  $48.027 por delante de tu ritmo", nunca "Vas 16%…".
-- **Que `/api/waitlist` siga funcionando**: llena el formulario del final
-  con un correo cualquiera — no lo va a mandar a producción si no
-  configuraste el KV, pero no debería tirar un error de servidor.
-- **Que no exista ninguna sección "Quién hace esto"** ni ninguna mención a
-  un plazo de aviso por cierre — busca "Matías Rifo" en la página: sólo
-  debería aparecer dos veces, en la sección 04 (junto a "quien opera Mesura
-  puede leerlos") y en el pie. Ver §8 si quieres el argumento completo.
+### 2.4 Sección 02 — esto sí cambió contenido, y es lo que más justifica revisar antes de aprobar
 
-Y la batería automática (no ejecuta la Function, pero cubre todo lo demás:
-teclado, contraste, formulario, la demo con JS y sin JS):
+Aquí no sólo reorganicé: corregí tres afirmaciones que dejaron de ser ciertas la noche del 20 al
+21 de agosto, cuando las dos apps reemplazaron el umbral fijo del ritmo por uno relativo. Lo
+verifiqué de nuevo contra el código, en vivo, antes de tocar nada — no confié en que el hallazgo
+de `Mesura-lanzamiento/LEEME-PRIMERO-21-agosto.md` siguiera vigente sólo porque estaba escrito:
 
-```
-cd docs/redesign/qa && npm test
-```
+- **`app/lib/home-context.ts:53`** (Mesura-app-source): `PACE_ESCALATION_RATIO = 0.1` — 10% de lo
+  esperado a la fecha, no un monto fijo. La constante vieja, `PACE_TOLERANCE = 500`, ya no existe
+  en el archivo.
+- **`lib/home-state.ts:97`** (Mesura-mobile): el mismo `0.1`, con el mismo nombre.
+- El comentario de `home-context.ts:29-52` documenta el motivo: con un umbral fijo, "vas por
+  delante" se encendía el 97% de los días del mes para cualquier presupuesto, sin importar su
+  tamaño.
 
-Debe imprimir `7/7 bloques en verde` (incluido `funcional: 26/26`).
+**Los tres cambios de texto:**
 
-Y, si quieres la verificación más dura — la que audita los números contra
-el código real de los dos repos de la app —, desde
-`Mesura-lanzamiento/landing-v3/ejemplo/`:
+1. **Se borró el párrafo del margen** («por debajo de $500... no llega al 0,4%»). Con el ejemplo
+   propio de la página (presupuesto $487.300, día 18/31), el margen real hoy es **$28.295**, el
+   **5,8%** del presupuesto — no $500 ni 0,4%. No lo reescribí con el número nuevo: seguí la
+   recomendación de `LEEME-PRIMERO-21-agosto.md` de borrar el bloque entero, porque con un umbral
+   relativo ya no hay una "banda fija" que valga la pena confesarle al lector con ese detalle.
+2. **Se borró el párrafo del bug del primer mes** («si entras a mitad de mes... te va a decir que
+   vas holgado»). Verifiqué que el arreglo (`firstTrackedDayInMonth` / `paceWindowFor`) está en
+   las dos apps, con el mismo mecanismo. El hecho que sí seguía siendo cierto —"Mesura no
+   distingue un día sin gasto de un día sin anotar"— se conservó, ahora como nota breve.
+3. **Se reescribió la instrucción del presupuesto.** Verifiqué que la web ya tiene completa la
+   casilla de gasto fijo: esquema (`db/schema.ts:49`), migración (`0025_naive_deathstrike.sql`),
+   API (`app/api/expenses/route.ts:93`), el checkbox en el formulario
+   (`MovementFormSheet.tsx:342`, texto literal **«Es un gasto fijo (arriendo, cuentas)»**, citado
+   palabra por palabra en la página) y su uso en el cálculo (`expectedSpendToDateFor`,
+   `home-context.ts:148`). La instrucción vieja («deja fuera la vivienda») describía un producto
+   que ya no existe: hoy la instrucción correcta es la contraria — anota todo, marca lo fijo. **La
+   nativa todavía no tiene esta casilla** (`Mesura-mobile/app/edit-budget.tsx:175` sigue con el
+   texto viejo); no es un problema para esta página porque describe la web, que es el sitio que
+   existe hoy. Deja de serlo el día que la nativa se publique — ver §3.
 
-```
-node verificar.js --contra-repo "C:\Users\matia\Downloads\Mesura-app-source" "C:\Users\matia\Downloads\Mesura-mobile"
-```
+**Consecuencia de bloques, no sólo de verdad:** la sección pasó de 3 cajas `.callout` + 1 párrafo
+suelto a **1 caja + 1 nota al margen + 1 línea de texto corrido subordinada**. Menos bloques,
+menos peso, y de paso, correcto.
 
-Debe imprimir `SIN FALLOS`.
+### 2.5 El bug que encontré en el propio motor del ejemplo interactivo
+
+`assets/js/mesura-datos.js` tenía, hasta esta pasada, la MISMA constante obsoleta
+(`PACE_TOLERANCE = 500`) gobernando el ejemplo interactivo de la hoja — el que corre en el
+navegador de cualquier visitante cuando escribe un monto de prueba. Si alguien escribía un gasto
+que dejara el desvío entre $500 y el umbral real (hoy ~$28.295 en pesos chilenos, escala con el
+presupuesto en las seis monedas), el ejemplo le habría mostrado un veredicto que la app real no
+daría — el error exacto contra el que existe la regla del escaparate. Se reemplazó por el cálculo
+relativo (`tolerancia = Math.round(Math.abs(esperado) * PACE_ESCALATION_RATIO)`), que alimenta
+tanto el render inicial como `demo.js` (que ya leía el campo `tolerancia` sin cambios propios).
+**Esto no es un cambio de "jerarquía visual" — es una corrección de exactitud que apareció
+mientras verificaba la de al lado**, y quedó arreglada en la misma pasada porque dejarla habría
+significado publicar el mismo error que acabo de sacar del texto, sólo que en JavaScript.
+
+### 2.6 Consistencia: la nota del ejemplo, en el hero
+
+El hero explicaba el presupuesto del ejemplo diciendo que "no incluye vivienda", con la razón
+apuntando a la sección 02 — razón que ya no es la que la sección 02 da. Se reescribió para decir
+lo que es cierto hoy: el ejemplo no tiene ningún movimiento marcado como gasto fijo, así que no
+demuestra ese cálculo, y la sección 02 explica cómo cambiaría si lo tuviera. Es una limitación
+real y declarada del ejemplo, no un error — ver §3.
+
+### 2.7 El script de verificación externo, en el repo hermano
+
+`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` fallaba con `1 FALLO(S)` porque su
+comprobación 7 buscaba literalmente `PACE_TOLERANCE` en `home-context.ts` — el mismo hallazgo que
+`LEEME-PRIMERO-21-agosto.md` ya había anotado, con la misma recomendación (actualizar la
+comprobación, no el código). Apliqué esa única línea de cambio, simétrica a la que el script ya
+hacía para la nativa: ahora valida `PACE_ESCALATION_RATIO` en la web también, que es la
+invariante que de verdad importa —que las dos apps usan el mismo umbral relativo— no el nombre de
+una constante retirada. **No toqué nada más de ese repositorio.** `node verificar.js
+--contra-repo ...` corre hoy `SIN FALLOS`.
 
 ---
 
 ## 3. Lo que necesita tu decisión — con mi recomendación ya tomada
 
-1. **El formulario NO ofrece WhatsApp como canal**, aunque `TEXTO.md` lo
-   pedía. Lo dejé fuera después de leer `google-apps-script/MesuraWaitlist.gs`
-   completo: la aprobación y el envío de la invitación dependen del correo
-   de punta a punta — no hay forma de mandar una invitación por WhatsApp
-   hoy. Ofrecer la opción en la página sin poder cumplirla habría sido
-   exactamente el tipo de promesa vacía que esta reescritura vino a
-   eliminar. **Recomendación: si quieres esa opción, hace falta decidir
-   cómo se entrega la invitación por WhatsApp antes de tocar la landing** —
-   no es un cambio de texto, es un canal de entrega nuevo.
-   *Alternativa reversible: agregar el radio "Correo / WhatsApp" ya mismo
-   como preferencia declarada (sin cambiar la entrega real), y ser
-   honestos en la misma línea: "hoy solo podemos escribirte por correo".*
-   No lo hice porque me pareció peor que omitirlo del todo — decide tú.
-
-2. **"Te escribimos, aunque sea para decirte que todavía no."** — sin plazo.
-   `TEXTO.md` proponía "en menos de dos semanas", con la condición explícita
-   de que "hay que poder cumplirlo. Si no, se quita el número." No tengo
-   forma de verificar tu capacidad real de respuesta, así que usé la
-   versión sin promesa. **Recomendación: si dos semanas es realista, agrega
-   el plazo** — es una frase, en `index.html`, sección 07, dentro de
-   `.signup__consent`. *Alternativa: dejarlo como está.*
-
-3. ~~La sección 08 ("Quién hace esto") no lleva la frase sobre qué pasa si
-   cierras Mesura.~~ **Resuelto — ver §8.** Diste 30 días "por decir algo" y
-   después dijiste algo más importante: que no querías plantar la idea de
-   un cierre en la página. Apliqué eso: no hay plazo de aviso, no hay
-   escenario de cierre, y la sección 08 completa se sacó de la página — el
-   argumento y qué queda en su lugar está en §8.
-
-4. **El `og-mesura.png` no se tocó en esta pasada** — ya lo había regenerado
-   en el commit `3a2ec58` con las cifras correctas ($156.325 / $330.975 /
-   "Vas $48.027 por delante de tu ritmo"), y esos números no cambiaron. Sigue
-   siendo una imagen fija en pesos chilenos: no hay una versión por moneda
-   para compartir en redes. **Recomendación: dejarlo así** — es la moneda
-   por defecto y regenerar una imagen distinta por cada una de las seis es
-   trabajo de diseño, no de esta pasada.
-
-5. **`docs/redesign/CLAIM_INVENTORY.md`** (el inventario de afirmaciones de
-   una revisión anterior) no se concilió con este cambio. Puede tener
-   entradas que esta reescritura ya resolvió. No lo abrí por tiempo — queda
-   para una pasada de limpieza documental, no bloquea nada de lo publicado.
+1. **La instrucción de gastos fijos describe la web, no la nativa, que todavía no la tiene.** Es
+   tolerable hoy porque la landing describe el sitio que existe. Deja de serlo el día que se
+   publique la app nativa con esta función atrasada. *Recomendación: cuando planifiques ese
+   lanzamiento, revisa esta sección de nuevo antes de nada más — es una búsqueda de "gasto fijo"
+   en `index.html`.*
+2. **El ejemplo interactivo no demuestra la casilla de gasto fijo.** Dos de nueve lectores
+   simulados (Teresa, Renata — ver `docs/redesign/EVALUACION-JERARQUIA-20260821.md` §4.3) se
+   quedaron con la pregunta de qué pasaría si la marcaran. La nota ya lo declara (no oculta el
+   límite), pero no lo resuelve. *Recomendación: si esto sigue generando dudas en uso real, es
+   trabajo de ingeniería —agregar la casilla al formulario de la hoja de ejemplo— no de texto ni
+   de maqueta, y queda para una pasada aparte. Alternativa reversible: nada que hacer hoy, es una
+   limitación declarada, no un error.*
+3. **El og-image y el JSON-LD no se tocaron en esta pasada** — no citan el margen ni el bug del
+   primer mes, así que no quedaron con nada falso, pero tampoco se revisaron línea por línea de
+   nuevo. *Recomendación: no urgente, ninguna cifra que citen cambió.*
 
 ---
 
-## 4. Qué resultó falso — de lo que afirmé yo antes y de lo que encontré ahora
+## 4. Cómo se verificó — todo lo que corrí, con resultado
 
-- **Mi VALIDAR.md anterior decía que "la moneda no se puede cambiar" no
-  aparecía en ningún lugar del repo.** Seguía siendo cierto en ese momento.
-  Ahora sí aparece — la agregué yo, siguiendo `TEXTO.md` — y por eso
-  encontré algo que antes no era relevante: **el formulario de registro
-  real de la app dice lo contrario.** `Mesura-app-source/app/components/SignupForm.tsx`
-  tiene el texto "No podrás cambiarla una vez que tengas movimientos
-  registrados", y eso es falso: `POST /api/account/currency` existe y re-expresa
-  montos con contraseña. **La landing y el formulario de la propia app
-  ahora dicen cosas distintas**, y las dos no pueden quedar así. No corregí
-  `SignupForm.tsx` — no es un archivo de este repositorio — pero queda
-  anotado para quien tenga el repo de la app abierto.
-- **Encontré tres funciones que el estudio de usuarios documentó como
-  "escondidas o negadas" y verifiqué las tres contra el código antes de
-  escribir sobre ellas:** presupuesto por categoría (`app/api/category-budgets`,
-  existe), favoritos con monto opcional (`app/api/favorites/route.ts:77`),
-  y grupos de deudas de hasta 20 personas (`app/lib/debt-groups/validation.ts:18`,
-  `MAX_MEMBERS_PER_GROUP = 20`). Las tres están en la página ahora.
-- **El campo "¿Qué fue?" es obligatorio en el móvil y opcional en la web.**
-  Verificado: `MovementFormSheet.tsx:316` (web) lo marca "(opcional)";
-  `components/TransactionForm.tsx:363` (móvil) y `app/api/expenses/route.ts:66-69`
-  (el servidor exige título) lo hacen obligatorio ahí. La landing describe
-  la versión web, que es la que existe hoy como sitio; si en algún momento
-  la página empieza a hablar específicamente de la app de teléfono, esta
-  frase hay que revisarla aparte — quedó anotada en el propio `TEXTO.md`
-  y la repito aquí porque es la clase de discrepancia fácil de perder.
+| Comprobación | Resultado |
+|---|---|
+| `cd docs/redesign/qa && npm test` | **7/7 bloques en verde**, incluido `funcional: 26/26` y `axe-core: 0 violaciones en 10 configuraciones` |
+| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` (desde `landing-v3/ejemplo`) | **SIN FALLOS** · 3 avisos preexistentes, no relacionados (montos citados a mano en archivos de evaluación) |
+| `npx wrangler pages dev .` + `curl` sin cabecera | `data-moneda="CLP"` |
+| ídem con `CF-IPCountry: PE` | `data-moneda="PEN"` |
+| ídem con `?m=USD` (moneda no elegible) | cae a `data-moneda="CLP"`, sin error |
+| ídem con `?m=xx` (basura) | cae a `data-moneda="CLP"`, sin error |
+| Selector de moneda, cambio manual, teclado, formulario, calculadora, tema oscuro | Cubierto por el `funcional: 26/26` de arriba — no hay regresión |
+| Evaluación con lectores simulados, 5 anclados + 4 control nuevo | `docs/redesign/EVALUACION-JERARQUIA-20260821.md` — resultado en §5 abajo |
 
-No encontré nada más que contradijera lo que este encargo o `TEXTO.md`
-afirmaban — pero tampoco re-verifiqué cada línea de `TEXTO.md` contra el
-código; verifiqué las que sostienen la arquitectura (moneda, quinto
-movimiento) y las que ya traían cita de archivo:línea. El resto lo heredé
-de un texto que ya pasó dos rondas de evaluación con objeciones reales.
+**Una verificación que NO pude hacer:** capturas de pantalla reales. El Browser pane de esta
+sesión no compositó frames (`screenshot failed: the Browser pane is not displayed`) pese a varios
+intentos con la página cargada y confirmada por `get_page_text` y el árbol de accesibilidad
+(`read_page`), que sí mostraron el marcado nuevo renderizando sin errores de consola. Verifiqué
+estructura y accesibilidad por esa vía más el axe-core del arnés automático (que sí corre en
+Chrome headless real, con 10 combinaciones de viewport y tema), pero **nadie —yo ni tú— vio esta
+versión con los ojos todavía.** Antes de mergear, ábrela: `npx wrangler pages dev .` y mira al
+menos la sección 02 y la 01, que son las que más cambiaron de forma.
 
 ---
 
-## 5. Frases que quedaron pendientes de que el código las respalde
+## 5. La evaluación — resumen
 
-- **La moneda "sí se puede cambiar"** (sección 05) es cierta hoy vía
-  `POST /api/account/currency`, pero es una salida de emergencia, no el
-  camino normal — y como se dijo en §4, el propio formulario de registro
-  todavía promete lo contrario. Si `SignupForm.tsx` se corrige, esta
-  sección de la landing no necesita cambiar; si en cambio se decide sacar
-  el endpoint de re-expresión, esta sección sí.
-- **El mensaje de ritmo como división** ("Te quedan $X para N días · $Y al
-  día", en vez de la resta manual que hace la "cifra diaria" de esta
-  landing) existe en `Mesura-app-source`, pero **sin commitear**, en la
-  rama de trabajo `mejoras/estudio-usuarios-web-20260820`. `master` — lo
-  desplegado — sigue con el adjetivo/diferencia en dinero, que es lo que
-  la landing describe ahora. Cuando esa rama se mergee, la nota de la
-  "cifra diaria" ("La app todavía no la muestra") deja de ser cierta y hay
-  que borrar el párrafo — está escrito para que sea un borrado, no una
-  reescritura.
-- **El campo "¿Qué fue?" opcional** es cierto en la web, falso en el móvil
-  (ver §4). Si la landing empieza a hablar de la app nativa específicamente,
-  revisar esto primero.
+Documento completo: `docs/redesign/EVALUACION-JERARQUIA-20260821.md`. Nueve lectores simulados,
+cinco que ya habían objetado específicamente "todo en fila" o "conté ocho no" en la ronda de
+agosto, cuatro de control nuevo, sin haber visto ninguna versión.
+
+**Sostiene la pasada:** las dos personas cuya objeción original era literalmente la acumulación
+—Andrés (contador, la metáfora de las notas contables) y Camila (la metáfora del restorán)—
+dijeron que la sección 01 ya no se siente "en fila". Nicolás, que pidió contar los "no" por
+función, confirmó que la sección 02 bajó de bloque de siete a bloque de tres — no sólo se ve más
+liviana, lo es.
+
+**Expuso dos cosas reales, y las dos quedan escritas en vez de escondidas:**
+
+1. **El ejemplo no demuestra la casilla de gasto fijo** (Teresa, Renata) — limitación declarada,
+   no resuelta; ver §3.2 arriba.
+2. **Una asimetría de peso visual dentro de la sección 02**, que Valeria (la única lectora con
+   oficio de diseño del grupo) encontró y que **si se corrigió** en esta misma pasada: la nota
+   "no distingue no gasté de no anoté" tenía el mismo peso que la nota principal de al lado; bajó
+   a texto corrido subordinado.
+
+**Límite del ejercicio, dicho una vez más porque importa:** el control tiene cuatro personas, no
+cinco, y ya se demostró una vez —con la ronda anterior— que el tamaño del control puede invertir
+una conclusión. Nadie usó la página real. Quien escribió las nueve respuestas es quien hizo los
+cambios que evalúa. Detalle completo en el documento, sección 5.
 
 ---
 
@@ -258,15 +270,22 @@ de un texto que ya pasó dos rondas de evaluación con objeciones reales.
 ### Revisar el diff antes de decidir
 
 ```
-git -C Mesura-landing log main..claude/estudio-usuarios-capa1-20260820 --oneline
-git -C Mesura-landing diff main...claude/estudio-usuarios-capa1-20260820 -- index.html
+git -C Mesura-landing log main..claude/jerarquia-visual-20260821 --oneline
+git -C Mesura-landing diff main...claude/jerarquia-visual-20260821
+```
+
+### Ver la página localmente antes de aprobar
+
+```
+cd Mesura-landing
+npx wrangler pages dev . --compatibility-date=2026-08-01
 ```
 
 ### Mergear a `main`
 
 ```
 git -C Mesura-landing checkout main
-git -C Mesura-landing merge --no-ff claude/estudio-usuarios-capa1-20260820
+git -C Mesura-landing merge --no-ff claude/jerarquia-visual-20260821
 git -C Mesura-landing push origin main
 ```
 
@@ -276,6 +295,19 @@ git -C Mesura-landing push origin main
 cd Mesura-landing
 npx wrangler pages deploy . --project-name=mesura-landing
 ```
+
+### El fix del script hermano — decidir si se comitea aparte
+
+`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` se modificó (§2.7) pero es un repositorio
+distinto, sin relación de submódulo con éste. Si ese repositorio lleva su propio control de
+versiones:
+
+```
+git -C Mesura-lanzamiento status
+git -C Mesura-lanzamiento diff -- landing-v3/ejemplo/verificar.js
+```
+
+y decide ahí si comitear ese cambio; no forma parte de este merge.
 
 ### Revertir, si algo no calza
 
@@ -289,98 +321,9 @@ git -C Mesura-landing push origin main
 Si **todavía no mergeaste** (el estado de ahora mismo):
 
 ```
-git -C Mesura-landing branch -D claude/estudio-usuarios-capa1-20260820
+git -C Mesura-landing checkout main
+git -C Mesura-landing branch -D claude/jerarquia-visual-20260821
 ```
 
-Si **ya desplegaste**: Cloudflare Pages guarda cada deploy —
-`mesura-landing` → pestaña Deployments → "Rollback to this deployment"
-sobre el anterior a éste, sin tocar git.
-
-### Si el rollback es sólo de la Function (no de todo el sitio)
-
-`functions/_middleware.js` es nuevo y es lo único de este cambio que corre
-en el borde de Cloudflare en vez de ser HTML/CSS/JS estático. Si algo falla
-específicamente ahí (por ejemplo, `CF-IPCountry` se comporta distinto de lo
-esperado en producción) y quieres el resto del cambio sin la detección por
-país, la salida más chica es borrar `functions/_middleware.js` — el
-selector y `?m=` siguen funcionando enteros sin él, sólo se pierde el valor
-por defecto según el país.
-
----
-
-## 7. Verificaciones que hice y que puedes repetir
-
-- `node ejemplo/verificar.js --contra-repo ...` (arriba, §2): `SIN FALLOS`.
-- `npx wrangler pages dev .` + `curl` con `CF-IPCountry` y `?m=`: confirmado
-  que la Function resuelve en el orden correcto (elección > país > CLP), que
-  `Vary: CF-IPCountry` se agrega, y que las cabeceras de seguridad de
-  `_headers` sobreviven pasando por la Function.
-- `docs/redesign/qa`: 7/7, incluida una prueba nueva de cambio de moneda y
-  una de que `?m=USD` (basura, porque USD no es elegible) cae a pesos
-  chilenos sin romper la página.
-- Grep manual en `Mesura-app-source` y `Mesura-mobile` para las citas de
-  código de §0 y §4 — no confié en que `TEXTO.md` las tuviera bien sólo
-  porque traía la ruta del archivo.
-
----
-
-## 8. La sección "Quién hace esto" — resuelta, y distinta de lo que pedía `TEXTO.md`
-
-`Mesura-lanzamiento/landing-v3/TEXTO.md` traía la sección 08 completa, con
-un hueco `[PENDIENTE]` para tus días de aviso antes de un eventual cierre.
-Le diste 30 días "por decir algo", incómodo, y después dijiste algo más
-importante: que no ves por qué habría que plantar la idea de un cierre en
-la propia página, ni por qué habría que anunciar que la hace una sola
-persona. Apliqué eso, no lo que traía `TEXTO.md` — por eso esta sección
-queda como una desviación explícita de la especificación, marcada como tal.
-
-**Lo que hice:**
-
-1. **Saqué el escenario de cierre por completo.** No hay plazo de aviso, no
-   se nombra la posibilidad de que Mesura cierre. `TEXTO.md` §08 quedó sin
-   usarse en esa parte.
-2. **En su lugar, verifiqué si el mecanismo que de verdad responde el
-   miedo —quedarte sin tus datos de un día para otro— existe.** Sí existe:
-   `Mesura-app-source/app/api/account/export/route.ts` genera, al pedirlo,
-   un archivo con **todo** tu historial (JSON o Excel), sin guardar copia
-   en ningún lado más que en tu disco. **Un matiz que hay que decir bien:**
-   no es "sin pedir permiso a nadie" en el sentido de que no pide nada —
-   **sí vuelve a pedirte tu contraseña**, igual que cambiar de moneda o
-   borrar la cuenta. Lo que no pide es el permiso de Mesura ni de un
-   tercero: es un botón tuyo, disponible siempre. Así quedó escrito
-   (sección 04, "Tu respaldo, cuando lo pidas — sin pedirle permiso a
-   nadie"). **El móvil no genera el archivo — abre la página web para
-   hacerlo** (`Mesura-mobile/app/(tabs)/profile.tsx:352` + `lib/account-api.ts`
-   `webRoutes`), así que la frase es cierta también para quien usa la app
-   de teléfono, con el matiz de que la pantalla de descarga es la web.
-3. **Quité la sección 08 completa** — no sólo el hueco pendiente — y con
-   ella la nota de la primera pantalla que decía "La hace una persona:
-   Matías Rifo… Más abajo, quién es." Esa nota, arriba de todo y sin que
-   nada en pantalla la pidiera, era exactamente "liderar con eso".
-4. **El hecho no desapareció: cambié dónde vive.** Sección 04, dentro de la
-   frase que el estudio de trece lectores señaló como la que más
-   credibilidad compró («quien opera Mesura puede leerlos»), le agregué:
-   *"Quien puede leerlos es una persona, no un equipo: Matías Rifo — el
-   mismo correo de contacto de esta página."* Es el mismo hecho, dicho en
-   el momento exacto en que importa —estás leyendo quién puede ver tus
-   datos— y no como apertura. El pie de página sigue diciendo, como
-   siempre, "Hecha en Chile por Matías Rifo": un crédito de una línea, del
-   mismo tipo que cualquier sitio pequeño lleva en el pie, no una revelación.
-
-**Decisión que tomé sin preguntarte primero, y que te dejo explícita para
-que la apruebes a sabiendas:** el nombre ya no tiene una sección propia ni
-un momento dedicado. Aparece dos veces: una funcional (§04, junto al hecho
-que ya generaba confianza) y una protocolar (el pie). Si prefieres que
-tenga más presencia que eso —por ejemplo, que "¿quién hace esto?" vuelva
-como una entrada más del FAQ de la sección 06, en vez de una sección
-aparte—, es un cambio de diez minutos: agregar un `<details>` a la lista
-de `#preguntas`.
-
-**Lo que no toqué, y por qué:** `Mesura-lanzamiento/landing-v3/CONTRAPARTES.md`
-§4 tiene una recomendación de altísimo valor —cuatro frases que le faltan
-al correo de invitación automático (`app/lib/account-links/email.ts:79-95`
-en `Mesura-app-source`), entre ellas que la invitación vence en siete días
-y cuánto es la parte que le toca a quien la recibe—. **No es de este
-repositorio**: vive en el código de la app, no en la landing. Queda
-anotado aquí porque es barato de hacer y porque nadie más lo va a ver si
-no lo dejo escrito en algún lado que revises.
+Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` → pestaña
+Deployments → "Rollback to this deployment" sobre el anterior a éste, sin tocar git.
