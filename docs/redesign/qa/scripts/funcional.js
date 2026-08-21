@@ -73,7 +73,9 @@ prueba("demo", "sin JavaScript no se pinta ningún control muerto", () =>
     // enumeran las carencias) + 1 en la calculadora, que volvió ("algo
     // aportaba ese apartado"). "En qué se ha ido" (categorías del ejemplo)
     // se borró del todo, sin acordeón de reemplazo — "se ve molesto y no
-    // aporta".
+    // aporta". Ese mismo día, más tarde, la calculadora pasó a ser el último
+    // <details> de "06 · Preguntas" en vez de tener su propia sección: el
+    // total sigue en 8, sólo cambió cuál de los cinco bloques la contiene.
     igual((await page.$$("details")).length, 8);
   }, { sinJs: true }));
 
@@ -255,11 +257,14 @@ prueba("moneda", "una eleccion hecha antes de que demo.js cargue no se pierde", 
 /* ═══════════ Calculadora ═══════════
    Restaurada el 21 de agosto: Matías pidió que volviera tras haberse
    borrado en la pasada de minimalismo real ("algo aportaba ese apartado").
-   Vive colapsada detrás de un <details>: hay que abrirlo antes de que
-   Puppeteer pueda hacer clic en sus campos, que si no cuentan como no
-   visibles. */
+   Se movió al final del FAQ el mismo día, como su último ítem (un estudio
+   rápido con lectores nuevos mostró que ponerla justo antes del CTA de
+   invitación cortaba el ritmo en vez de ayudarlo). El propio <details>
+   lleva el id "calculadora" — ya no hay un contenedor aparte. Hay que
+   abrirlo antes de que Puppeteer pueda hacer clic en sus campos, que si no
+   cuentan como no visibles. */
 const abrirCalculadora = (page) =>
-  page.evaluate(() => { document.querySelector("#calculadora details").open = true; });
+  page.evaluate(() => { document.querySelector("#calculadora").open = true; });
 
 prueba("calculadora", "800.000 / 95.000 da 11,9% y dice cuánto queda", () =>
   conPagina(async (page) => {
