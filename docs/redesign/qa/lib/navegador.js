@@ -56,7 +56,9 @@ export async function pagina(browser, { width, height, isMobile = false }, tema 
   return page;
 }
 
-/** Los destinos de ancla que la cabecera y los CTA usan. */
-export const ANCLAS = ["#contenido", "#compartido", "#ritmo", "#anotar", "#datos", "#preguntas", "#acceso", "#calculadora"];
+/** Los destinos de ancla que la cabecera y los CTA usan. #ritmo, #anotar y
+ * #calculadora se retiraron el 21 de agosto (pasada de minimalismo real):
+ * esas tres secciones dejaron de existir como bloques propios de la página. */
+export const ANCLAS = ["#contenido", "#compartido", "#datos", "#preguntas", "#acceso"];
 
 export const RAIZ_QA = path.resolve(AQUI, "..");

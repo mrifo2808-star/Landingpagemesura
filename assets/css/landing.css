@@ -101,6 +101,21 @@
   --space-band:   clamp(36px, 3.4vw, 48px);     /* inset interno de una banda */
   --space-section: clamp(40px, 4.4vw, 64px);    /* seccion a seccion */
 }
+/* Bajo 720px el piso de estos cinco valores era el mismo que en escritorio
+   —el clamp() no baja de 24-40px en ningún ancho—, pero en un teléfono el
+   aire entre secciones no cumple la misma función que en una pantalla ancha
+   (separar columnas de la vista). Es sólo espaciado, ninguna palabra se
+   toca: recorte de scroll móvil del 21 de agosto (13,6 → objetivo 7-9
+   pantallas), medido en EVALUACION-MOVIL-20260821.md. */
+@media (max-width: 719.98px) {
+  :root {
+    --space-block: 20px;
+    --space-after-band: 18px;
+    --space-band: 26px;
+    --space-section: 28px;
+    --space-hero: 20px;
+  }
+}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -180,6 +195,21 @@ button { background: none; border: 0; cursor: pointer; }
   position: absolute; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+/* El enlace "Saltar al contenido" es el único .sr-only pensado para que
+   alguien lo vea: quien navega con teclado y sin lector de pantalla, al
+   presionar Tab, no veía nada — el link se anunciaba a un lector de pantalla
+   pero quedaba recortado incluso con foco. Acotado a <a> para no afectar los
+   avisos aria-live (#moneda-live, #demo-live), que sí deben seguir invisibles
+   cuando reciben foco programático. */
+a.sr-only:focus {
+  position: static;
+  width: auto; height: auto;
+  padding: 10px 16px; margin: 0;
+  overflow: visible; clip: auto; clip-path: none; white-space: normal;
+  display: inline-block;
+  background: var(--ink); color: var(--paper);
+  z-index: 100;
 }
 
 /* El bloque para anotar gastos solo aparece cuando demo.js confirmo que
@@ -364,6 +394,11 @@ h1, h2, h3, h4 {
   font-weight: 700;
   border: 1px solid var(--ink);
 }
+.masthead__right {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 30px);
+}
 .masthead__nav {
   display: flex;
   align-items: center;
@@ -386,9 +421,10 @@ h1, h2, h3, h4 {
   white-space: nowrap;
 }
 .masthead__nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
-/* Calificado con .masthead__nav porque `.masthead__nav a` tiene mas
-   especificidad y le estaba imponiendo su color de texto al boton. */
-.masthead__nav .masthead__cta {
+/* Sibling de .masthead__nav (no hijo, ver comentario en el HTML): visible en
+   todos los anchos, incluido bajo 720px, donde .masthead__nav se oculta
+   entero y antes no quedaba ningún CTA de acceso en la cabecera. */
+.masthead__cta {
   min-height: 44px;
   padding: 12px 15px;
   border: 1.5px solid var(--rule);
@@ -402,7 +438,7 @@ h1, h2, h3, h4 {
   text-decoration: none;
   white-space: nowrap;
 }
-.masthead__nav .masthead__cta:hover { background: var(--acid); color: var(--on-acid); }
+.masthead__cta:hover { background: var(--acid); color: var(--on-acid); }
 
 /* Móvil: la fila de secciones baja a su propia banda con filete. */
 .masthead__strip { display: none; }
@@ -464,26 +500,12 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .section__head { margin-bottom: var(--space-block); }
 .section__head .t-h2 { margin-top: var(--space-item); max-width: 18ch; }
 
-/* Nota marginal: el comentario al margen de un libro, no una tarjeta. */
 /* Los márgenes que antes iban en style="margin-top:…" dentro del HTML ahora
    salen de la escala: un solo valor para "bloque relacionado dentro de una
    columna", en vez de 34/26/24 escritos a mano en cinco sitios distintos. */
 .section__head + * > .lead,
-.evidence .lead,
-.calc .lead { margin-top: var(--space-item); }
-.moments + .marginal,
-.calc .marginal,
+.evidence .lead { margin-top: var(--space-item); }
 .pact + .fineprint { margin-top: var(--space-group); }
-
-.marginal {
-  font-family: var(--mono);
-  font-size: 12px;
-  line-height: 1.65;
-  color: var(--muted);
-  border-left: 2px solid var(--acid);
-  padding-left: 14px;
-  max-width: 56ch;
-}
 
 /* ---------- 7. Hero: el estado del mes ----------------------------------- */
 /* Sin padding inferior: la sección siguiente pone la separación. */
@@ -565,6 +587,9 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   border-bottom: 1px solid var(--hair);
 }
 .figures > div:last-child { border-bottom: 0; }
+@media (max-width: 719.98px) {
+  .figures > div { padding: 14px 16px; }
+}
 @media (min-width: 768px) {
   .figures { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1.35fr); }
   .figures > div { border-bottom: 0; border-right: 1px solid var(--hair); padding: 22px 24px; }
@@ -958,47 +983,6 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .source a { color: inherit; text-underline-offset: 3px; }
 .source a:hover { color: var(--ink); }
 
-/* ---------- 10. Calculadora --------------------------------------------- */
-.calc {
-  display: grid;
-  gap: clamp(26px, 4vw, 44px);
-  grid-template-columns: 1fr;
-  align-items: start;
-  border-top: 2px solid var(--rule);
-  padding-top: var(--space-block);
-}
-@media (min-width: 900px) { .calc { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
-
-/* La calculadora vive dentro del lenguaje de un estado financiero: filete
-   arriba, filas regladas, resultado alineado a la derecha. */
-.statement { border-top: 0; }
-.statement__row {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--hair);
-  align-items: center;
-}
-@media (min-width: 640px) {
-  .statement__row { grid-template-columns: minmax(0, 1fr) minmax(190px, 240px); gap: 20px; }
-}
-.statement__label { font-size: 15px; line-height: 1.4; }
-.statement__label small {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: .03em;
-}
-.statement__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px;
-  padding-top: 20px;
-}
 .field-error {
   font-family: var(--mono);
   font-size: 11.5px;
@@ -1008,51 +992,6 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 }
 .field-error:empty { display: none; }
 
-.result { margin-top: var(--space-block); padding-top: var(--space-group); border-top: 2px solid var(--rule); }
-.result[hidden] { display: none; }
-.result__pct {
-  font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(46px, 8vw, 76px);
-  font-weight: 700;
-  letter-spacing: -.05em;
-  line-height: .9;
-}
-.result__pct[data-level="warn"] { color: var(--orange-ink); }
-.result__pct[data-level="high"] { color: var(--red); }
-.result__caption {
-  margin-top: 8px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.result__axis {
-  position: relative;
-  height: 10px;
-  margin-top: var(--space-group);
-  background: var(--paper-2);
-  border: 1px solid var(--rule);
-}
-.result__fill { height: 100%; background: var(--ink); transition: width .5s cubic-bezier(.22,.9,.3,1); }
-.result__fill[data-level="warn"] { background: var(--orange); }
-.result__fill[data-level="high"] { background: var(--red); }
-.result__ref { position: absolute; top: -8px; bottom: -8px; width: 2px; background: var(--ink); }
-.result__ref span {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  transform: translateX(-50%);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: .04em;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.result__text { margin-top: var(--space-group); font-size: 16px; line-height: 1.6; max-width: 54ch; color: var(--ink-2); }
-.result__cta { margin-top: var(--space-group); }
 .fineprint {
   margin-top: var(--space-group);
   font-family: var(--mono);
@@ -1132,21 +1071,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .beta__intro { max-width: 48ch; }
 .beta__intro .t-h2 { margin-top: 22px; max-width: 19ch; }
 .beta__intro .lead { margin-top: 16px; }
-.beta__intro .marginal { margin-top: 22px; }
 
-/* Timbre de goma: la única imperfección rotada de la página. */
-.stamp {
-  display: inline-block;
-  padding: 9px 14px;
-  border: 2px solid var(--orange-ink);
-  color: var(--orange-ink);
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  transform: rotate(-2.2deg);
-}
 /* ---------- 13. Preguntas ----------------------------------------------- */
 /* Encabezado en una columna y acordeón en la otra. Antes el acordeón vivía
    solo, tapado a 78ch, y dejaba la mitad derecha de la pantalla sin ninguna
@@ -1304,6 +1229,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 700;
+  min-height: 44px;
   padding: 8px 10px;
   border: 1.5px solid var(--rule);
   background: var(--sheet);
@@ -1315,6 +1241,7 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .06em;
+  min-height: 44px;
   padding: 8px 12px;
   border: 1.5px solid var(--rule);
   background: transparent;
@@ -1329,17 +1256,12 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   max-width: 46ch;
 }
 
-/* ---------- 10c. Rótulo y nota del escaparate ---------------------------- */
+/* ---------- 10c. Rótulo del escaparate ------------------------------------
+   Antes eran dos párrafos (rótulo + nota de fidelidad del ejemplo): se
+   fusionaron en uno solo en el recorte de scroll móvil del 21 de agosto. */
 .showcase-label {
   font-size: 15.5px;
   line-height: 1.55;
-  max-width: 62ch;
-  margin-bottom: 6px;
-}
-.showcase-note {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink-2);
   max-width: 62ch;
   margin-bottom: var(--space-item);
 }
@@ -1358,58 +1280,14 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
 .callout--warn { border-left-color: var(--orange-ink); }
 .callout + .callout { margin-top: 12px; }
 
-/* ---------- 10d-b. Grupo de avisos: varias advertencias relacionadas, una
-   sola caja ------------------------------------------------------------
-   Antes cada advertencia era su propio .callout con <br><br> adentro: dos o
-   tres cajas idénticas seguidas se leen como una sola pared de "no". El
-   estudio de trece lectores lo nombró (RESULTADO.md §3.1, la cita de Andrés
-   sobre notas contables en fila) y lo repitió el control de cinco (§4.2,
-   "el 'no' asusta cuando llega en fila, no cuando llega solo"). La cura no
-   es sacar información: es la misma que ya usa el Acuerdo de datos (§11,
-   .pact) — una lista con filete, no una pila de cajas. */
-.notice-group {
-  border: 1.5px solid var(--rule);
-  background: var(--paper-2);
-  max-width: 62ch;
-}
-.notice-group__label {
-  display: block;
-  padding: 10px 16px;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border-bottom: 1px solid var(--hair);
-}
-.notice-group__item {
-  padding: 14px 16px;
-  font-size: 14.5px;
-  line-height: 1.55;
-  border-bottom: 1px solid var(--hair);
-}
-.notice-group__item:last-child { border-bottom: 0; }
-.notice-group__item b { display: block; margin-bottom: 3px; }
-/* Variante para cuando el grupo entero es de la clase de aviso que importa
-   más (mismo uso que .callout--warn): el filete izquierdo se tiñe en vez del
-   borde completo, para no competir en peso con el borde de la caja. */
-.notice-group--warn { border-left: 3px solid var(--orange-ink); }
-
-/* ---------- 10e. Cifra diaria: fuera del recuadro que replica la app ----- */
-.cifra-diaria {
-  margin-top: clamp(20px, 2.4vw, 30px);
-  padding: clamp(18px, 2.4vw, 28px);
-  border: 2px dashed var(--rule);
-}
-.cifra-diaria__num {
-  font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(26px, 3.6vw, 36px);
-  font-weight: 700;
-  letter-spacing: -.03em;
-}
-.cifra-diaria p { margin-top: 10px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); max-width: 58ch; }
+/* ---------- 10e. CTA tras el ejemplo --------------------------------------
+   Reemplaza el bloque "cifra diaria" (borde punteado, único de la página —
+   señalado como inconsistente con el lenguaje de líneas sólidas del resto
+   del sitio) que además citaba una nota ya falsa: la app real sí muestra
+   esta división desde el 19-20 de agosto, con esta misma jerarquía. Aquí,
+   en su lugar, el CTA en el pico de intención real de la página: justo
+   después de que alguien ya probó que el ejemplo funciona. */
+.hero__post-demo-cta { margin-top: var(--space-group); }
 
 /* ---------- 10f. Cuatro casos (02b) --------------------------------------
    Bloque con marco propio para que se pueda saltar entero: quien no está en

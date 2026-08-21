@@ -106,7 +106,9 @@ function tokensFor(calc) {
     cuarenta: calc.f(calc.cuarenta),
     simbolo: SIMBOLOS[calc.codigo] || "$",
     monedaNombre: mon.nombre,
-    fraseRitmo: calc.paceHeadline,
+    // La sección "El ritmo del mes" explica la COMPARACIÓN (ese es su tema),
+    // no la división diaria — que ya es el titular de la hoja, arriba.
+    fraseRitmo: calc.paceComparison,
   };
 }
 
@@ -122,7 +124,13 @@ function fillTokens() {
   });
 }
 
-/* ---- Render de la hoja interactiva ---------------------------------------- */
+/* ---- Render de la hoja interactiva ----------------------------------------
+   Misma jerarquía que app/finance-app.tsx en Mesura-app-source (verificado en
+   vivo el 21-08-2026, no sólo confiado en un comentario): el titular es la
+   división diaria —"$X al día · N días más"—, no el juicio de valor. La
+   comparación contra el ritmo esperado baja a detalle, con la redacción real
+   de la app ("$X más/menos de lo esperado"), no "vas por delante/por
+   debajo" — esa frase ya no vive en Inicio, sólo en el correo semanal. */
 function renderFigures() {
   if (!el) return;
   var spent = totalSpent();
@@ -130,16 +138,20 @@ function renderFigures() {
   var expected = e.esperado;
   var diff = spent - expected;
   var state_ = diff > e.tolerancia ? "over" : diff < -e.tolerancia ? "under" : "";
-  var headline = state_ === "over"
-    ? "Vas " + e.f(diff) + " por delante de tu ritmo"
-    : state_ === "under"
-      ? "Vas " + e.f(Math.abs(diff)) + " por debajo de tu ritmo"
-      : "Vas al día con tu presupuesto";
+  var restan = e.RESTAN;
+  // Igual que app/finance-app.tsx: si ya se pasó todo el presupuesto del mes,
+  // no tiene sentido dividir lo que queda entre los días que faltan — el
+  // titular pasa a decir eso, no una cifra diaria negativa.
+  var headline = available < 0
+    ? "Ya pasaste tu presupuesto del mes"
+    : restan > 0
+      ? e.f(Math.floor(available / restan)) + " al día · " + restan + (restan === 1 ? " día más" : " días más")
+      : "Hoy es el último día del mes";
   var detail = state_ === "over"
-    ? "Es lo que llevas de más respecto a lo que correspondería a esta altura del mes."
+    ? e.f(diff) + " más de lo esperado a esta altura del mes"
     : state_ === "under"
-      ? "Si sigues así, cierras el mes con holgura sobre tu presupuesto."
-      : "Tu gasto va justo en lo que correspondería a esta altura del mes.";
+      ? e.f(Math.abs(diff)) + " menos de lo esperado a esta altura del mes"
+      : "Justo en lo esperado a esta altura del mes";
 
   el.available.textContent = e.f(available);
   el.available.classList.toggle("fig-amount--negative", available < 0);

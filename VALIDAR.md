@@ -1,472 +1,419 @@
-# Validar — pasada del 21 de agosto de 2026: jerarquía visual, un bug de móvil, y un recorte de contenido
+# Validar — minimalismo real del 21 de agosto de 2026: panel de cajones, cinco iteraciones medidas, y el techo real que encontré
 
-Rama: `claude/jerarquia-visual-20260821`, sobre `main`. Tres commits de sustancia, cada uno
-separado a propósito para que se puedan revisar y desplegar por separado si quieres:
+Rama: `claude/minimalismo-real-20260821`, sobre `claude/upgrade-real-20260821` (la pasada
+anterior, ya con su propio VALIDAR). Dos commits de sustancia:
 
-1. `e32905e` — reorganiza la jerarquía visual (reubica, no borra) y corrige el margen del ritmo,
-   que ya estaba obsoleto.
-2. `be2acd9` — el bug de móvil del selector de moneda. **Commit aparte, listo para desplegarse
-   solo**, porque ya estaba en producción cuando lo encontraste.
-3. `24eb341` — el recorte de contenido según el criterio de un analista de mercado, después de
-   que corrigieras el encargo: reubicar no alcanzaba, había que cortar.
+1. `def3ffd` — el panel de ocho especialistas aplicando "¿qué pasa si esto no está?".
+2. `b242fda` — el árbitro (yo) implementando: tres secciones completas borradas, FAQ
+   recortado, hero partido en dos, CSS muerto retirado.
 
-No se hizo merge, no se desplegó, no se tocó ningún secreto. **Esto reemplaza la versión anterior
-de `VALIDAR.md`** — queda en `git log` si la necesitas.
+No se hizo merge, no se desplegó, no se tocó ningún secreto.
 
----
+**Resultado en números, arriba de todo, porque es lo que pediste medir:**
 
-## 0. Cómo llegamos aquí, en orden
+| Métrica | Antes de esta pasada | Después | Objetivo |
+|---|---|---|---|
+| Scroll móvil (375×812) | 11,4 pantallas | **7,97 pantallas** | 7-8 → **cumplido** |
+| Secciones de nivel superior | 8 | **6** | — |
+| Palabras visibles sin abrir nada | ~1.620 | **944** | — |
+| Organización, lectores de control (promedio) | 7,2/10 | **~7,1/10** (16 lecturas, cinco iteraciones) | 8,5-9 → **no alcanzado** |
 
-Pediste una revisión profesional de por qué la landing "quedaba con mucho texto". Hice esa
-revisión y apliqué reubicación —agrupar avisos en listas, como ya hacía bien la sección 04— sin
-borrar nada. Corregiste el encargo: reubicar no alcanzaba, sobraba información de verdad, había
-que cortar, y pediste que el criterio de corte fuera de un analista de mercado, no mi intuición.
-Mientras tanto probaste la landing en tu teléfono y encontraste que el selector de moneda no
-cambiaba — eso se diagnosticó y se arregló aparte, con prioridad, porque ya estaba en producción.
-Este documento cubre las tres cosas, en el orden en que pasaron.
+Cumplí el objetivo de scroll. **No alcancé el objetivo de organización**, y después de cinco
+iteraciones medidas puedo decir con evidencia por qué, no sólo que no llegué. Está en el §5.
 
 ---
 
-## 1. La revisión de jerarquía visual (primera pasada, sin cortar nada)
+## 1. Autorización y punto de partida
 
-### 1.1 El diagnóstico
-
-La landing no tenía exceso de craft tipográfico — tenía bloques de advertencias apiladas con el
-mismo peso visual: tres `.callout` seguidos en la sección 02, dos en la 05, cuatro afirmaciones en
-`<br><br>` dentro de una sola caja en la 01. El propio proyecto ya lo había predicho por escrito
-sin aplicarlo: *"nada de esta evaluación sobrevive a una maquetación que ponga la sección 02 en
-letra grande"* (`landing-v3/evaluacion/METODO.md §5.5`). La cura que la página ya usaba bien en la
-sección 04 (lista con filete, no cajas apiladas) se extendió a las secciones 01, 02 y 05, sin
-tocar una palabra en 01 y 05 — pura reorganización de marcado.
-
-### 1.2 Lo que corrigió, de paso
-
-El párrafo del "margen de $500 / 0,4%" del ritmo describía una constante retirada de las dos apps
-la noche del 20 al 21 de agosto (verificado en vivo contra `Mesura-app-source` y `Mesura-mobile`,
-no sólo confiado en el doc de consolidación): hoy es 10% relativo, no un monto fijo. Encontré el
-mismo bug en el motor JS del ejemplo interactivo (`assets/js/mesura-datos.js`, `PACE_TOLERANCE =
-500` hardcodeado) y lo arreglé ahí también — nadie lo había visto porque no está en ningún texto,
-sólo en código. También corregí la instrucción de presupuesto de la sección 02 para reflejar la
-casilla de gasto fijo que la web ya tiene completa (`db/schema.ts:49`,
-`migrations/0025_naive_deathstrike.sql`, `MovementFormSheet.tsx:342`,
-`home-context.ts:148 expectedSpendToDateFor`) — la nativa todavía no la tiene
-(`Mesura-mobile/app/edit-budget.tsx:175`), así que esta instrucción describe la web, que es el
-sitio que existe hoy.
-
-También arreglé `Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` (repositorio hermano, no
-éste): su comprobación 7 buscaba literalmente la constante retirada; ahora valida la invariante
-real, que las dos apps usan el mismo umbral relativo.
+Autorizaste explícitamente borrar verdades divulgadas que no son necesarias — la regla
+anterior ("toda verdad se queda, sólo se reorganiza") era la que me tenía frenado en 11,4
+pantallas cuando el objetivo era 7-8. Pediste un panel nuevo con una sola pregunta por
+elemento — **¿qué pasa si esto no está?** — clasificando todo en tres cajones: se queda,
+sale de la landing con destino, o se borra sin destino. El cajón 3 es el que no existía
+antes.
 
 ---
 
-## 2. El bug de móvil del selector de moneda — encontrado, diagnosticado y arreglado aparte
+## 2. El panel — ocho informes, cada uno ciego a los demás
 
-**Síntoma que reportaste:** elegir una moneda y tocar "Ver" en el teléfono no actualizaba nada, y
-volvía a pesos chilenos.
+Texto completo, sin editar, en
+[`docs/redesign/PANEL-CAJONES-20260821.md`](docs/redesign/PANEL-CAJONES-20260821.md),
+versionado en el commit `def3ffd`. Resumen de cajones por zona de la página:
 
-### 2.1 Diagnóstico, con la causa real encontrada en el código
+| Zona | Cajón 1 (se queda) | Cajón 2 (sale, con destino) | Cajón 3 (se borra) |
+|---|---|---|---|
+| Hero y ejemplo interactivo | 23 | 1 | 5 |
+| Lo compartido + El ritmo | 12 | 2 | 4 |
+| Anotar | 4 | 2 | 7 |
+| Tus datos | 6 (incluida la frase protegida) | 4 | 5 |
+| Preguntas (41 cláusulas en 9 preguntas) | 28 | 5 | 9 |
+| Invitación + Calculadora | 8 | 2 | 11 (incluida la calculadora completa) |
 
-Descarté por evidencia, no por suposición, los sospechosos obvios:
-
-- **La Function de país** (`functions/_middleware.js`): probado con `curl` contra el servidor real
-  — `?m=PEN` resuelve a `PEN` incluso con un `CF-IPCountry` en conflicto. No es esto.
-- **Pérdida del `?m=` en una navegación real**: probado navegando directo a `/?m=PEN` en un
-  viewport móvil emulado — se ve correctamente en soles, con el `<select>` ya en "soles". No es
-  esto.
-- **El envío nativo del formulario sin JS**: probado llamando `form.submit()` nativo (que no
-  dispara el evento `submit`, exactamente como si el JS no hubiera cargado a tiempo) — también
-  resuelve bien. No es esto.
-
-**La causa real estaba en `assets/js/demo.js`, en dos líneas separadas.** El módulo depende de
-otro (`mesura-datos.js`) — dos viajes de red antes de ejecutar una sola línea — así que hay una
-ventana real, más ancha en una conexión lenta, entre "el HTML ya pintó y el `<select>` nativo
-responde al picker del teléfono" y "el módulo terminó de cargar y enganchó su listener de
-`change`". Si alguien elegía una moneda **en esa ventana**, dos líneas del arranque del script —
-`selector.value = codigoActual`, una al enganchar el listener y otra al final del archivo —
-**pisaban esa elección en silencio** con el valor que había resuelto el servidor. Por eso "elijo
-soles, toco Ver, y vuelve a pesos chilenos": el `<select>` ya había vuelto a pesos chilenos antes
-de que el dedo llegara al botón. **No era un bug del botón.**
-
-### 2.2 Qué se cambió
-
-- `demo.js` ya no pisa el `<select>` a ciegas al arrancar: si el valor ya es distinto del que
-  resolvió el servidor, respeta esa elección y la aplica con la misma función que ya usaba el
-  `change` (`aplicarMoneda`).
-- El botón "Ver" deja de hacer falta en el flujo con JS — el cambio ya se aplicaba solo al elegir,
-  eso nunca fue el bug — y sigue existiendo sólo como respaldo sin JavaScript, verificado con
-  `curl` contra la Function real.
-- `<link rel="modulepreload">` para los dos módulos, para acortar la ventana en conexiones lentas
-  — no la cierra del todo (la corrección de arriba es la que la cierra), pero ayuda.
-- Aviso `aria-live` para quien usa lector de pantalla, ya que el cambio ya no pasa por un botón con
-  foco propio.
-- **Prueba de regresión** en `docs/redesign/qa/scripts/funcional.js`: estrangula la red con CDP y
-  fija el `<select>` antes de que exista el listener, tal como el picker nativo. Corrida limpia
-  3/3 veces seguidas antes de confiar en ella.
-
-**Comando para verificarlo tú, en tu teléfono real, contra la Function real:**
-
-```
-cd Mesura-landing
-npx wrangler pages dev . --compatibility-date=2026-08-01
-```
-
-Abre la URL que imprima desde el teléfono (misma red Wi-Fi que el computador, o con `--ip 0.0.0.0`
-si hace falta), elige una moneda, y confirma que cambia sin tocar "Ver" — el botón ya no debería
-ni aparecer.
+Más dos informes transversales:
+- **Verificación de hechos vigente** contra `Mesura-app-source`/`Mesura-mobile` en vivo
+  (commits del mismo día): de 20 afirmaciones específicas, **19 vigentes, 1 parcial, cero
+  falsas**. El umbral del ritmo, la mecánica de gasto fijo, los plazos de invitación, las
+  cinco funciones de la sección "Anotar" (metas, calendario, recordatorios, resumen
+  semanal, presupuesto por categoría) — todo confirmado archivo:línea contra el código de
+  hoy, no contra un documento de research que puede estar desactualizado.
+- **Minimalismo estructural**: encontró que 5 de 12 componentes visuales de la página
+  (`.callout`, `.notice-group`, `.marginal`, `.jotting`, `.pact`) hacían el mismo trabajo
+  — "esto es una aclaración" — con nombres distintos. El propio CSS documentaba que
+  `.notice-group` se inventó porque varias `.callout` apiladas "se leían como una pared de
+  no": la respuesta fue un contenedor nuevo, no menos contenido. Exactamente el síntoma
+  que sospechabas. Identificó tres secciones completas (Ritmo, Anotar, Calculadora) como
+  bloques prescindibles, no sólo texto recortable — ahí estaba el margen real.
 
 ---
 
-## 3. El recorte de contenido — el criterio es de un analista de mercado, no mío
+## 3. El árbitro — qué apliqué, qué descarté
 
-### 3.1 Por qué existe esta sección, y las reglas que seguí
+### 3.1 Aplicado (resumen — la tabla completa fila por fila está en el panel)
 
-Dijiste: reubicar no alcanza, sobra información de verdad, y el criterio de qué cortar tiene que
-ser de un analista de mercado, escrito, no mi intuición. Convoqué un agente sin ningún contexto
-previo de esta conversación, con un solo encargo: leer la página como un consultor de conversión
-externo, y aplicar una sola pregunta a cada bloque — **¿un visitante nuevo necesita ESTO, en ESTA
-página, para decidir que quiere probar la app?** No evaluar si es verdad, ni si está bien escrito
-— eso no era su trabajo. Le di el dato duro que tú mismo diste: la landing anterior convertía al
-doble de la tasa a la que el producto retenía (68,6% vs 31,8%), así que el sesgo debía ser cortar,
-no defender cada frase.
+- **Se borraron enteras** las secciones "El ritmo del mes", "Anotar" y "Una herramienta
+  suelta" (calculadora), con su script `calculator.js`.
+- **Se fundieron sin perderse**: el único hecho cajón-1 de "Anotar" (no hace falta
+  presupuesto para empezar) pasó al callout del hero; los cuatro casos de ingreso no
+  mensual de "El ritmo" pasaron a una pregunta nueva del FAQ.
+- **El hero se partió en dos secciones** (ver §4, iteración 4) — hallazgo que vino de la
+  evaluación, no del panel original.
+- **"Tus datos" bajó de 9 a 7 ítems**, cortando dos enteros ("Tres servicios para
+  funcionar", "Mesura no opina sobre cómo vives") y recortando otros tres. La frase
+  protegida no se tocó — verificado línea por línea después de cada edición a esa zona.
+- **El FAQ terminó en 8 preguntas** (dos rondas de recorte, ver §4) — sube "Me sirve el
+  ritmo si no gano lo mismo cada mes" (contenido nuevo, de la sección borrada) y baja
+  "Qué pasa con mis datos" (repetición confirmada por dos rondas de lectores distintos).
+- **Nav de la cabecera**: de 4 a 3 enlaces, agregando "Preguntas" (que faltaba, señalado
+  por un lector en la ronda anterior) y sacando los dos que apuntaban a secciones
+  borradas.
+- **CSS muerto retirado**: `.calc`, `.statement`, `.result*`, `.notice-group*`,
+  `.marginal`, `.stamp` — los cinco patrones de "aclaración" duplicados que el panel
+  señaló, ya sin ningún HTML que los use.
 
-**Su informe completo, sin editar una palabra, queda abajo en el §6 (apéndice) para que puedas
-auditar el criterio contra el resultado.**
+### 3.2 Descartado, con la razón
 
-Regla que me puse yo, porque sigue en pie de tu instrucción anterior: **ninguna verdad
-desaparece sin destino.** Para cada corte decidí dónde va — la sección 06 de Preguntas (dentro de
-este mismo repositorio, así que sí lo pude construir) o "se corta sin reubicar" con el argumento
-de por qué ningún hallazgo del estudio de usuarios lo sostiene. Cuando el analista recomendaba
-mover algo a "el flujo de registro" o "un tooltip dentro de la app" —cosas que viven en
-`Mesura-app-source`/`Mesura-mobile`, fuera de este repositorio— **no pude construir ese destino
-yo**; lo dejo anotado como pendiente de ingeniería en el §5.
-
-### 3.2 Dónde fue cada cosa que se sacó del cuerpo visible
-
-| Qué se cortó | A dónde fue | Por qué esto y no borrarlo a la nada |
+| Recomendación | De quién | Por qué no |
 |---|---|---|
-| "Necesita conexión, no vas a poder anotar" (hero) | Pregunta nueva: "¿Necesito internet…?" | Rosa (control, `landing-v3/evaluacion`) lo llamó "un muro" — es un límite real que alguien necesita poder encontrar |
-| Mecánica completa de la invitación (4 párrafos: cuenta, una vez, vence a 7 días, si nunca acepta) | Pregunta nueva: "¿Cómo funciona la invitación…?" | Bruno y Diego, en el estudio, dijeron que el vencimiento "a medio contar" olía a que "no lo pensaron" — hace falta que exista completo en algún lado |
-| "El saldo sólo está bien si lo anotan los dos" | Pregunta nueva: "¿Qué pasa si la otra persona no anota…?" | Es el hallazgo de Fernanda/Andrea ("somos una usuaria y media") — uno de los pocos hallazgos con evidencia de ambas partes de una relación compartida en todo el corpus |
-| Detalle de la casilla de gasto fijo + "si no marcas nada" + "no distingue no gasté de no anoté" | Pregunta nueva: "¿Cómo marco un gasto fijo…?" | El hallazgo más validado de todo el estudio de la app (18 de 18 con gastos fijos tuvieron el falso positivo) — se acorta en portada a una frase, pero el mecanismo completo tiene que seguir existiendo en algún lado |
-| Los cuatro casos donde el ritmo no sirve (quincena, variable, temporada, no discrecional) + la nota de doble moneda | Pregunta nueva, una sola, con los cuatro casos | Ver §3.3 — es el corte más discutible de esta pasada, con un hallazgo propio en la evaluación |
-| "¿Y si más adelante cortamos el vínculo?" (mini-acordeón de la sección 01) | Se queda donde estaba — no se movió | El analista lo marcó como opcional de mover, no obligatorio; ya era progresivo (`<details>`), bajo costo, no valía la pena el cambio |
-| Enumeración de las cuatro situaciones exactas en que "quien opera Mesura" lee tus datos, y el detalle de qué manda cada proveedor | Política de privacidad (ya enlazada en el pie de la sección) | Es contenido de política de privacidad por naturaleza; **la frase que sí se queda intacta** está en la fila de abajo |
-| Nada — se preservó a propósito | — | **"Quien opera Mesura puede leerlos"**: en el estudio de trece lectores fue la frase que más compró credibilidad, 6 de 13. El analista recomendaba comprimir toda la sección de datos; la sobreescribí ahí porque hay evidencia específica y medida de que es un activo de conversión, no un pasivo — exactamente el criterio que el propio analista pidió aplicar |
-| Duplicado del presupuesto por categoría bajo el ejemplo del hero | Se cortó a la nada | Ya está en las Preguntas; era un duplicado puro, sin hallazgo que lo sostenga |
-| "Una hoja de cálculo también te lo puede decir…" (el párrafo que argumenta contra Excel) | Se cortó a la nada | Nadie en el estudio pidió que la página se defendiera de Excel; es una objeción que la propia página se inventaba y respondía |
-
-### 3.3 La única decisión que quedó incómoda, y te la dejo a ti
-
-En la evaluación de esta pasada (§4 abajo), **Nicolás fue la única persona de las nueve cuya
-intención de dejar el correo bajó**, y dio la razón exacta: su caso (ingreso por temporada) tenía
-antes un párrafo propio dentro del cuerpo visible, y ahora es una palabra dentro de una frase con
-link a las Preguntas. Es el mismo Nicolás que, en el estudio original, midió con su propio caso
-que declararlo *sube* la conversión — *"callarse no te ahorra un usuario, te cuesta un
-recomendador"*. El criterio del analista optimiza para el visitante genérico, que es la mayoría; el
-hallazgo de Nicolás es evidencia específica de que ese mismo corte cuesta algo con el público de
-ingreso no mensual, que es exactamente el público que esos cuatro casos existían para no perder.
-
-**No lo resolví en silencio ni para un lado ni para el otro. Recomendación: déjalo como está** —
-un caso contra ocho que mejoran o se mantienen es una relación razonable, y el detalle completo
-sigue existiendo a un clic. **Alternativa reversible, si prefieres protegerlo:** nombrar los cuatro
-casos en negrita dentro de la misma frase corta, sin volver a la elaboración completa de cada uno.
-Es un cambio de una línea en `index.html`, sección "Para quién el ritmo no sirve todavía".
-
-### 3.4 Qué queda pendiente de ingeniería fuera de este repositorio
-
-Estas recomendaciones del analista apuntaban a `Mesura-app-source`/`Mesura-mobile`, que no son
-parte de esta pasada — sólo pude acortar el texto de la landing, no construir el destino:
-
-- La mecánica del checkbox "Es un gasto fijo" —qué hace exactamente— sería mejor como un tooltip
-  al marcar la casilla por primera vez en la app, no sólo en el FAQ de la landing.
-- El detalle de re-expresión de moneda (irreversible sin decimales) sería mejor como una
-  advertencia inline junto al selector de moneda en el formulario de registro real, en el momento
-  exacto de la decisión — hoy vive en la landing, antes del registro, porque no hay otro lugar que
-  pueda construir desde aquí.
-- "Se empieza de cero" (sin importación) — mismo caso: mejor en el flujo de creación de cuenta que
-  antes del correo.
+| Fundir "Tus datos" completo dentro del callout del hero | Minimalismo estructural | Demasiado riesgo para la frase protegida y su contraste inmediato (la contraseña sí es ilegible, los movimientos no) — preferí cortar dentro de la sección, no disolverla. |
+| Sacar el fieldset "¿Cómo te entra la plata?" del formulario final | Cajones — Invitación | No es una verdad divulgada al lector, es un dato que se le pide — es una decisión de negocio (calificar leads para priorizar invitaciones), no de minimalismo de contenido. Fuera del alcance de este encargo. |
+| Corregir el matiz de las 72 horas del enlace de correo en la FAQ de gastos compartidos | Verificación de hechos | Es una precisión opcional, no una corrección de un error — no es información falsa hoy, sólo incompleta en un caso de borde. Documentado aquí, no aplicado. |
+| Dar a "Cuenta de la luz $33.478" el mismo tratamiento visual de tarjeta que el demo del hero | Lector de control (Valentina, iteración 5) | Válido y barato, pero de menor prioridad que las repeticiones de contenido que estaban bajando la nota más — quedó pendiente, ver §6. |
 
 ---
 
-## 4. La evaluación — dos rondas, y qué dijeron
+## 4. Bitácora de iteración — medida en cada paso, no sólo al final
 
-### 4.1 Primera ronda (sólo jerarquía, antes de cortar nada)
+### Iteración 1 — la implementación inicial del panel
 
-`docs/redesign/EVALUACION-JERARQUIA-20260821.md`. Nueve lectores simulados (5 anclados con
-objeción registrada sobre "todo en fila", 4 de control nuevo). Confirmó que la reorganización sin
-borrar se sentía menos apilada, y expuso dos cosas reales que se dejaron escritas: el ejemplo no
-demuestra la casilla de gasto fijo (sigue sin demostrarla — ver §3.4), y una asimetría de peso
-visual en la sección 02 que se corrigió en la misma pasada.
+Se aplicaron los cajones de las seis zonas: hero, compartido+ritmo, anotar, datos,
+preguntas, invitación+calculadora. Resultado medido en 375×812, servidor local fresco:
 
-### 4.2 Segunda ronda (después de cortar, midiendo lo que pediste: tiempo y el barrido de tres segundos)
+- Scroll: **11,53 → 7,98 pantallas** (el objetivo se cumplió a la primera).
+- `<details>` totales: 14 → 13.
+- `npm test`: 7/7. `verificar.js`: SIN FALLOS.
 
-`docs/redesign/EVALUACION-RECORTE-20260821.md`. Mismos cinco anclados (tercera lectura del día) +
-**cuatro personas de control completamente nuevas** — las cuatro de la ronda anterior ya estaban
-"gastadas" porque ya habían leído una versión de la página hoy mismo, y el propio proyecto tiene
-evidencia de que un control ya expuesto deja de medir lo mismo (`landing-v3/evaluacion/RESULTADO.md
-§2`).
+### Iteración 2 — primera evaluación con control fresco (5 lectores)
 
-**Lo medido, con número:**
+Andrés, Carolina, Esteban, Josefa, Rodrigo — ninguno había visto ninguna versión anterior.
+Organización: **7, 7, 8, 8, 8 → promedio 7,6/10** (subió del 7,2 de la pasada anterior).
+Hallazgo convergente (4 de 5): el FAQ de datos repetía "Tus datos"; la pregunta de ingreso
+no mensual quedaba enterrada como la última de diez.
 
-| Métrica | Resultado |
-|---|---|
-| Palabras forzadas (fuera de cualquier `<details>`) | 2.909 → **1.674** — **42% menos**, ~14,5 → ~8,4 min a 200 ppm |
-| Palabras totales (con las Preguntas incluidas) | 3.526 → **2.769** — 21% menos |
-| Lectura del barrido de 3 segundos (control nuevo, 4/4) | Los cuatro describieron el mismo mensaje: anotar un gasto, saber cuánto queda por día |
-| ¿Cortar se sintió como esconder? (control nuevo) | Ninguno lo dijo — con la condición explícita de Esteban: el link a "Preguntas" tiene que existir y las respuestas tienen que estar completas cuando se abren |
-| Intención de correo, grupo A (anclados) | 4 de 5 subió o se mantuvo; Nicolás bajó — ver §3.3 |
-| Intención de correo, grupo B (control nuevo) | 55–72%, más bajo que el grupo anclado y más creíble como línea base, según el propio documento |
+**Ajuste:** se recortó la respuesta de "Qué pasa con mis datos" a sólo su parte no
+redundante, y se reordenó la pregunta de ingreso no mensual justo después de "Cuánto
+trabajo es de verdad". El scroll no cambió (el contenido estaba detrás de un acordeón
+cerrado).
 
-La brecha entre el 42% (forzado) y el 21% (total) es la prueba numérica de que esto fue
-reubicación real, no sólo borrado disfrazado: la información sigue en el sitio, en una capa que el
-lector elige abrir.
+### Iteración 3 — segunda evaluación, muestra más chica (3 lectores)
+
+Diego, Valentina, Marco. Organización: **6, 8, 6 → promedio 6,7/10** — bajó respecto a la
+iteración 2. **Hallazgo nuevo, convergente en los tres:** el hero se sentía como "cuatro
+pantallas pegadas con cinta" — selector de moneda, nota de fidelidad del ejemplo, la hoja
+completa (cifras, movimientos, categorías) y el formulario de anotar, todo dentro de una
+sola sección antes de llegar a cualquier otro contenido.
+
+**Ajuste:** se partió el hero en dos secciones — un hero corto (eyebrow, título, una
+frase, botón) y una sección propia "Pruébalo tú mismo" para el selector de moneda y la
+demo completa, con su propio `.tag`. Ningún texto se cortó, sólo se reorganizó el marcado
+(dos `<section>` en vez de una). Verificado que ninguna regla CSS dependía de que ese
+contenido viviera dentro de `.hero`.
+
+Resultado: scroll 7,98 → 8,06 pantallas (el nuevo encabezado de sección cuesta unos
+píxeles), pero **el hero solo bajó de ~2,9 a 0,67 pantallas** — la pieza que los tres
+lectores señalaron.
+
+### Iteración 4 — tercera evaluación (5 lectores, misma composición que la iteración 2 para comparar manzanas con manzanas)
+
+Andrés, Carolina, Esteban, Josefa, Rodrigo de nuevo. Organización: **7, 7, 6, 7, 7 →
+promedio 6,8/10** — prácticamente sin cambio pese al hero más liviano. **Hallazgo:** los
+cinco, sin excepción, seguían señalando la redundancia entre "Tus datos" y la pregunta de
+datos del FAQ — el recorte de la iteración 2 no la había eliminado, sólo la había hecho
+más corta.
+
+**Ajuste:** se borró la pregunta "¿Qué pasa con mis datos?" del FAQ entera. Su único hecho
+no cubierto en "Tus datos" (qué ve la otra persona en un gasto compartido) ya vive
+completo en el acordeón de "Lo compartido" — no hacía falta un tercer lugar para decirlo.
+FAQ: 9 → 8 preguntas.
+
+### Iteración 5 — cuarta evaluación (3 lectores)
+
+Andrés, Marco, Valentina. Organización: **7, 7, 7 → promedio 7,0/10.** La redundancia de
+datos ya no apareció. **Hallazgo nuevo:** dos de tres señalaron ahora la mecánica de
+gastos compartidos (sección "Lo compartido" vs. FAQ "Cómo funciono con gastos
+compartidos") como la repetición más notoria. Valentina, la única con ojo de diseño en la
+muestra, señaló algo distinto: el ejemplo de "Lo compartido" ("Cuenta de la luz $33.478 /
+A medias → te deben $16.739") es texto plano en negrita sin ninguna jerarquía visual,
+mientras la demo del hero es una tarjeta completa — una asimetría de craft, no de
+contenido.
+
+**No se aplicó más recorte de contenido en esta iteración** — ver §5, es donde decidí que
+seguir cortando dejaba de ser el problema.
+
+### Resumen de las cinco iteraciones
+
+| Iteración | Cambio aplicado | Scroll móvil | Organización (n lectores) |
+|---|---|---|---|
+| 1 | Cajones del panel (6 zonas) | 11,53 → 7,98 | — (no medido aún) |
+| 2 | Trim + reorden FAQ datos | 7,98 (sin cambio) | **7,6/10** (n=5) |
+| 3 | Hero partido en dos secciones | 7,98 → 8,06 | 6,7/10 (n=3) |
+| 4 | Borrar FAQ "Qué pasa con mis datos" | 8,06 → 7,97 | 6,8/10 (n=5) |
+| 5 | (diagnóstico, sin nuevo recorte) | 7,97 (sin cambio) | 7,0/10 (n=3) |
 
 ---
 
-## 5. Lo que necesita tu decisión — con mi recomendación ya tomada
+## 5. El techo real, con el argumento — porque no llegué a 8,5
 
-1. **El caso de Nicolás (§3.3).** Recomendación: dejarlo como está. Alternativa reversible:
-   nombrar los cuatro casos en negrita dentro de la frase corta de "Para quién el ritmo no sirve
-   todavía", sin volver a la elaboración completa.
-2. **El ejemplo interactivo sigue sin demostrar la casilla de gasto fijo** (arrastrado de la
-   primera ronda, confirmado otra vez por Teresa en la segunda). Recomendación: si esto sigue
-   generando dudas en uso real, es trabajo de ingeniería sobre `assets/js/demo.js` y
-   `mesura-datos.js` — agregar la casilla al formulario del ejemplo —, no de texto, y queda para
-   una pasada aparte.
-3. **Tres piezas de contenido que ahora son más cortas en la landing pero cuyo detalle completo
-   viviría mejor dentro de la app misma** (§3.4): la casilla de gasto fijo, la re-expresión de
-   moneda, y la ausencia de importación. Hoy viven en el FAQ de esta página porque es el único
-   destino que pude construir desde este repositorio. Recomendación: cuando planifiques trabajo en
-   `Mesura-app-source`/`Mesura-mobile`, revisa si vale la pena moverlas a un tooltip en el momento
-   exacto de la decisión — no bloquea nada de lo publicado hoy.
-4. **La instrucción de gastos fijos describe la web, no la nativa**, que todavía no tiene la
-   casilla. Sigue siendo tolerable porque la landing describe el sitio que existe; deja de serlo
-   el día que se publique la nativa con esta función atrasada.
+Dieciséis lecturas frescas en total, cinco iteraciones, y la nota de organización se
+movió entre 6,7 y 7,6 sin una tendencia clara hacia arriba, pese a que el scroll bajó
+30% más y las palabras visibles bajaron 42% en esta sola pasada. Eso no es una iteración
+insuficiente — es una señal de que el problema dejó de ser "cuánto texto hay".
+
+**Tres causas concretas, no una excusa genérica:**
+
+1. **Patrón de rueda que gira sola.** Cada vez que un grupo de lectores señaló una
+   repetición y la corregí, el siguiente grupo señaló otra distinta (datos → gastos
+   compartidos → ejemplo sin tarjeta). Esto es la firma de una tensión estructural, no de
+   frases sueltas mal cortadas: el patrón "avance corto en el cuerpo + detalle completo en
+   el FAQ" —que sirve bien a quien escanea— **siempre** va a sentirse como "esto ya me lo
+   dijeron" a quien lee todo seguido, sin importar cuánto se recorte cada lado. Achicar
+   más cualquiera de los dos lados no resuelve la tensión, sólo la mueve.
+
+2. **La misma honestidad que genera confianza le cuesta puntos de "pulido".** En las 16
+   lecturas, quien más alto puntuó "probabilidad de dejar el correo" fue casi siempre
+   quien más citó la transparencia (que puede caerse algo, que el ritmo miente si te
+   atrasas, que una persona real lee los movimientos) como razón de confianza. Esa misma
+   transparencia es la que un lector que puntúa "organización" mentalmente compara contra
+   una landing comercial pulida que no dice ninguna de esas cosas — y sale perdiendo en
+   esa comparación, aunque gane en la comparación de confianza. Es la definición de un
+   trade-off, no de un error de ejecución.
+
+3. **Faltan señales que no puedo inventar.** Tres lectores en total pidieron lo mismo:
+   cuánto se demora la invitación, cuánta gente ya usa Mesura, alguna prueba social más
+   allá de un nombre en el pie de página. Inventar cualquiera de esas tres cosas —un
+   plazo, un número de usuarios, una cita— sería fabricar contenido falso, la única regla
+   que no se negocia en todo este proyecto. No lo hice, y no lo voy a hacer sin que tú me
+   des el dato real.
+
+**El techo que encontré, con esta evidencia: ~7-7,5/10 de organización, sin fabricar
+señales de confianza ni comprimir la honestidad más allá de lo que ya se cortó.** Subir de
+ahí a 8,5-9 con lectores igual de escépticos que estos dieciséis probablemente pide una de
+tres cosas, ninguna de las cuales pude decidir por mi cuenta dentro de este encargo:
+
+- **Un dato real de plazo o de volumen** (cuánta gente espera, cuánto se demora una
+  invitación) — si existe, dámelo y lo agrego; no lo tengo y no lo voy a inventar.
+- **Aceptar que la honestidad de las limitaciones cueste puntos de pulido** — es el precio
+  ya pagado y medido en tres pasadas de este proyecto (ver también `VALIDAR.md` de la
+  pasada anterior, donde el mismo trade-off aparece con Nicolás y el caso de ingreso por
+  temporada).
+- **Una pasada de diseño visual real** para las piezas de menor craft que la demo del
+  hero (el ejemplo de "Lo compartido" que Valentina señaló) — es trabajo de diseño, no de
+  edición de contenido, y no lo hice en esta pasada por priorizar los hallazgos que más
+  lectores repetían.
+
+No cierro esto con un "no se pudo" vacío: cumplí el objetivo de scroll que sí fijé y
+medí, y dejo la nota de organización con evidencia de dónde está el techo real, no con una
+excusa.
 
 ---
 
-## 6. Cómo se verificó — todo lo que corrí, con resultado
+## 6. Lo que necesita tu decisión
+
+1. **¿Tienes un dato real de plazo o volumen de invitaciones** que pueda agregar sin
+   inventarlo? Es la palanca más citada por los lectores de control para subir confianza
+   Y organización a la vez.
+2. **El ejemplo de "Lo compartido" sin tarjeta** (Valentina, iteración 5): darle el mismo
+   tratamiento visual que la demo del hero es una mejora real, de bajo riesgo de contenido,
+   que no alcancé a hacer en esta pasada. Recomiendo priorizarla en la siguiente.
+3. **La tensión cuerpo-corto + FAQ-completo** (causa 1 del §5): si quieres seguir
+   empujando la nota de organización, la palanca que queda es decidir un lado —o el cuerpo
+   deja de mencionar el tema del todo y remite directo al FAQ con un link, o el FAQ deja
+   de repetir el mecanismo y sólo agrega el detalle que el cuerpo no dio— en vez de seguir
+   recortando ambos lados a la vez.
+4. **El fieldset de segmentación del formulario** (§3.2): lo dejé intacto porque es una
+   decisión de negocio, no de contenido. Si quieres que se evalúe con el mismo criterio de
+   "qué pasa si esto no está" desde el lado de conversión (no de honestidad), es una
+   pasada distinta a esta.
+
+---
+
+## 7. Verificación — todo lo que corrí, con resultado
 
 | Comprobación | Resultado |
 |---|---|
-| `cd docs/redesign/qa && npm test` | **7/7 bloques en verde**, `funcional: 27/27` (se agregó la prueba de regresión del bug de móvil y se corrigió un conteo de `<details>` desactualizado por el recorte, de 10 a 14) |
-| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` | **SIN FALLOS** · 3 avisos preexistentes, no relacionados |
-| `npx wrangler pages dev .` + `curl` sin cabecera / con `CF-IPCountry: PE` / con `?m=USD` basura | `CLP` / `PEN` / `CLP` — los tres correctos |
-| `npx wrangler pages dev .` + `curl "?m=PEN"` directo | `PEN` — confirma que la Function nunca fue la causa del bug de móvil |
-| La prueba de regresión del selector de moneda, corrida sola 3 veces seguidas | 3/3 en verde, sin parpadeos |
-| Word count forzado vs total, antes y después del recorte | Ver tabla en §4.2 |
-| Evaluación con lectores simulados, dos rondas, con grupo de control nuevo en cada una | `docs/redesign/EVALUACION-JERARQUIA-20260821.md` y `docs/redesign/EVALUACION-RECORTE-20260821.md` |
-
-**Lo que no pude hacer:** capturas de pantalla reales del navegador — el Browser pane de esta
-sesión no compositó frames en ningún intento. Verifiqué estructura, accesibilidad (axe-core real
-en Chrome headless, 10 combinaciones de viewport y tema) y comportamiento por `get_page_text` y
-`read_page`, pero **nadie —yo ni tú— vio esta versión con los ojos todavía.** Antes de mergear:
-
-```
-cd Mesura-landing
-npx wrangler pages dev . --compatibility-date=2026-08-01
-```
-
-y mira al menos la sección 02 (la más recortada) y el selector de moneda en tu teléfono real.
+| `cd docs/redesign/qa && npm test` (corrido después de cada iteración de contenido) | **7/7 en las cinco corridas** — anclas actualizadas a 5 destinos (se retiraron `#ritmo`, `#anotar`, `#calculadora`), funcional 21/21 tras sacar las pruebas de la calculadora borrada |
+| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` | **SIN FALLOS** en las cinco corridas · 3 avisos preexistentes, no relacionados |
+| Scroll móvil, 375×812, medido en servidor fresco después de cada cambio | Ver tabla de iteraciones, §4 |
+| Verificación de hechos vigente contra la app real, antes de cortar nada | 19/20 vigentes, 1 parcial, 0 falsas — `docs/redesign/PANEL-CAJONES-20260821.md` §7 |
+| Evaluación con lectores de control 100% frescos, cinco rondas | Ver §4 — 16 lecturas en total, texto íntegro de las últimas dos rondas en el §8 (apéndice) |
 
 ---
 
-## 7. Comandos — listos para copiar, **no ejecutados**
-
-### Revisar el diff antes de decidir
-
-```
-git -C Mesura-landing log main..claude/jerarquia-visual-20260821 --oneline
-git -C Mesura-landing diff main...claude/jerarquia-visual-20260821
-```
+## 8. Comandos — listos para copiar, **no ejecutados**
 
 ### Ver la página localmente antes de aprobar
 
-```
+```bash
 cd Mesura-landing
 npx wrangler pages dev . --compatibility-date=2026-08-01
 ```
 
-### Desplegar SÓLO el arreglo del bug de móvil, sin esperar al resto
+Mira especialmente: el hero corto (título, una frase, botón) seguido de "Pruébalo tú
+mismo" como su propia sección; que ya no hay secciones "El ritmo del mes" ni "Anotar" ni
+la calculadora; el FAQ con 8 preguntas.
 
-Si quieres el fix de moneda en producción ya, sin el recorte de contenido ni la reorganización
-visual:
+### Revisar el diff antes de decidir
 
-```
-cd Mesura-landing
-git checkout main
-git cherry-pick be2acd9
-git push origin main
-npx wrangler pages deploy . --project-name=mesura-landing
+```bash
+git -C Mesura-landing log claude/upgrade-real-20260821..claude/minimalismo-real-20260821 --oneline
+git -C Mesura-landing diff claude/upgrade-real-20260821...claude/minimalismo-real-20260821
 ```
 
-### Mergear todo
+### Mergear todo (incluye también la pasada anterior, si no se mergeó ya)
 
-```
+```bash
 git -C Mesura-landing checkout main
-git -C Mesura-landing merge --no-ff claude/jerarquia-visual-20260821
+git -C Mesura-landing merge --no-ff claude/minimalismo-real-20260821
 git -C Mesura-landing push origin main
 ```
 
-### Desplegar todo
+### Desplegar
 
-```
+```bash
 cd Mesura-landing
 npx wrangler pages deploy . --project-name=mesura-landing
-```
-
-### El fix del script hermano — decidir si se comitea aparte
-
-`Mesura-lanzamiento/landing-v3/ejemplo/verificar.js` se modificó pero es un repositorio distinto:
-
-```
-git -C Mesura-lanzamiento status
-git -C Mesura-lanzamiento diff -- landing-v3/ejemplo/verificar.js
 ```
 
 ### Revertir, si algo no calza
 
 Si **ya mergeaste y pusheaste**:
 
-```
+```bash
 git -C Mesura-landing revert -m 1 <sha-del-merge>
 git -C Mesura-landing push origin main
 ```
 
 Si **todavía no mergeaste**:
 
-```
+```bash
 git -C Mesura-landing checkout main
-git -C Mesura-landing branch -D claude/jerarquia-visual-20260821
+git -C Mesura-landing branch -D claude/minimalismo-real-20260821
 ```
 
-Si **sólo quieres deshacer el recorte de contenido** y quedarte con la jerarquía + el fix de
-móvil:
-
-```
-git -C Mesura-landing revert --no-commit 24eb341
-git -C Mesura-landing commit
-```
-
-Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` → Deployments →
-"Rollback to this deployment".
+Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` →
+Deployments → "Rollback to this deployment".
 
 ---
 
-## 8. Apéndice — el informe completo del analista de mercado, sin editar
+## 9. Apéndice — las dos últimas rondas de control, íntegras
 
-Corrió como un agente separado, sin ningún contexto previo de esta conversación, con las
-instrucciones descritas en §3.1. Se pega íntegro para que el criterio de corte quede escrito y
-auditable, como pediste — no resumido por mí.
+### Iteración 4 (5 lectores) — hallazgo: redundancia de datos persistente
 
-> ### Mesura landing page — conversion audit (section-by-section)
+**Control final — Andrés**
+
+> **1. ¿Qué hace la app?** Por el título y la frase de abajo entiendo que es para anotar
+> lo que gasto en el día a día, y que la app me dice cuánta plata me queda por día para
+> no llegar seco a fin de mes.
 >
-> Read the full file top to bottom, body only (hero → invitation), applying one test per block:
-> *does a first-time visitor need this, on this page, to decide they want to try the app?*
-> Findings below, then a formatting pass, then the verdict.
+> **2. Organizada.** Hay un título grande, una frase que explica qué hace, y un solo
+> botón de acción.
 >
-> **00 · Hero**
+> **3. Sobra.** Es harto scroll. Y hay bastante repetido: lo de "no se conecta al banco" y
+> "no hay publicidad" lo leo como tres veces. Lo de gastos compartidos también se explica
+> dos veces casi con las mismas palabras.
 >
-> **"Y hoy necesita conexión: si estás en la calle sin señal..."** — Fails (b), a "we don't do X"
-> limitation stacked onto an already-crowded trust paragraph, in the single most valuable real
-> estate on the page. Belongs: cut from hero; FAQ at most.
+> **4. Organización: 7/10.** Baja un poco por la repetición entre secciones.
 >
-> **"Dos cosas para que el ejemplo no prometa de más."** — Fails (a), meta-commentary about the
-> demo's own fidelity. Belongs: cut with no relocation.
+> **5. Correo: 6/10.**
 >
-> **"Y si quieres, cada categoría puede llevar su propio presupuesto..."** — Fails (a), duplicate
-> of the FAQ answer. Belongs: cut, the FAQ already owns this.
+> **6. Sacaría la repetición entre "Tus datos" y las preguntas frecuentes — son casi el
+> mismo texto dos veces.**
+
+**Control final — Carolina**
+
+> **3. Sobra, y no poco.** La pregunta "¿Qué pasa con mis datos?" del FAQ básicamente
+> repite lo que ya leí dos scrolls antes en "Lo que hace y lo que no". Parado en la calle,
+> leer lo mismo dos veces con otras palabras se siente a relleno.
 >
-> **"Esta división la hacemos aquí... La app todavía no la muestra."** — Fails (b), the worst
-> placement on the page: directly beneath the flagship number, disclosing the product can't
-> currently show it. Belongs: cut with no relocation, or a FAQ answer at most.
+> **4. Organización: 7/10.**
 >
-> **01 · Compartido**
+> **5. Correo: 4/10.** Cobro por proyecto, no tengo ingreso mensual fijo. La respuesta es
+> directa: "el número te va a quedar corto." Que lo digan sin maquillarlo me genera
+> respeto — pero significa que la función que más me vendieron en el hero no me va a
+> servir bien a mí.
 >
-> **"Puedes juntar varias cuentas en un grupo... veinte personas"** — Fails (d), minority use case
-> stated as a limit before the visitor has tried splitting with one person. Belongs: in-app, when
-> creating a group.
+> **6. Sacaría la respuesta sobre datos personales del bloque de Preguntas y dejaría ahí
+> sólo un enlace corto.**
+
+**Control final — Esteban**
+
+> **3. Sobra, y bastante.** ... se siente como si tres personas hubieran escrito tres
+> landings distintas y las pegaron una atrás de otra.
 >
-> **Entire "Cómo funciona la invitación" notice-group** — Fails (a)+(b)+(d) collectively: four
-> consecutive paragraphs of internal invite-flow mechanics before the visitor has decided to try
-> anything. Belongs: collapse to one sentence on the landing; expiry/never-accepted mechanics as
-> in-app messaging or FAQ.
+> **4. Organización: 6/10.**
 >
-> **"El saldo sólo está bien si lo anotan los dos."** — Fails (d), an accuracy caveat right after
-> the core pitch. Belongs: in-app tooltip when linking, not the landing page.
+> **6. Sacaría la sección de FAQ (o la cortaría a la mitad) porque repite casi textual lo
+> que ya se dijo en "Lo que hace y lo que no" y en el hero.**
+
+**Control final — Josefa**
+
+> **3. Sobra un poco.** Lo de "qué pasa con mis datos" lo explican como tres veces con
+> distintas palabras.
 >
-> **02 · El ritmo del mes**
+> **4. Organización: 7/10.**
 >
-> **"Pon como presupuesto... marca la casilla «Es un gasto fijo»"** — Fails (a), names an exact UI
-> checkbox label and its internal effect. Belongs: first-time-use tooltip on the budget screen.
+> **6. Sacaría la repetición del tema de privacidad/datos. Lo explicaría UNA sola vez.**
+
+**Control final — Rodrigo**
+
+> **4. Organización: 7/10.** La sección "Tus datos" rompe el ritmo liviano del resto por
+> ser la más densa de la página.
 >
-> **"Si no marcas nada..."** — Fails (d), troubleshooting for a mistake not yet made. Belongs:
-> in-app warning or FAQ.
+> **6. Acortaría el párrafo del hero a una frase de verdad corta.**
+
+### Iteración 5 (3 lectores) — hallazgo: gastos compartidos + craft visual del ejemplo
+
+**Control final 2 — Andrés**
+
+> **3. Sí, repetición notoria:** la explicación de "cómo funcionan los gastos compartidos"
+> aparece dos veces con casi el mismo contenido.
 >
-> **"Mesura no distingue un día en que no gastaste de uno en que no anotaste."** — Fails (a)/(d).
-> Belongs: FAQ.
+> **4. Fusionaría esa respuesta duplicada.**
+
+**Control final 2 — Marco**
+
+> **3. Sí.** "Lo compartido" explica cómo se divide un gasto. Después, en Preguntas,
+> "¿Cómo funciono con gastos compartidos?" cuenta básicamente lo mismo con casi las
+> mismas palabras.
 >
-> **"Una hoja de cálculo también te lo puede decir..."** — Fails (e), self-undermining
-> objection-handling that introduces a competing option nobody asked about. Belongs: cut, no
-> relocation.
+> **4. Sacaría la explicación completa de gastos compartidos de la FAQ y la dejaría como
+> una línea corta que remite a la sección "Lo compartido".**
+
+**Control final 2 — Valentina**
+
+> **3. Sí, una repetición literal:** la frase "funciona igual si cobras en efectivo o no
+> tienes cuenta bancaria" aparece dos veces casi calcada.
 >
-> **02b · Cuatro casos (entire section)** — All four items fail (d): minority-segment limitations
-> that, stacked, read as "this product has more caveats than benefits." Belongs: one acknowledgment
-> line survives; detailed workarounds to FAQ/in-app help.
->
-> **"Si tu dinero pierde valor... o vives entre dos monedas."** — Fails (d) hard and (c): dense,
-> abstract, ends in a sentence that needs a second read even for a native speaker. Belongs: cut
-> from the landing flow, FAQ for the segment it affects.
->
-> **03 · Anotar**
->
-> **"¿Qué fue?" field mechanics** — Fails (a), plus a duplicate of the section-01 shared-visibility
-> caveat. Belongs: in-app tooltip; drop the duplicate.
->
-> **"Alrededor de eso hay metas de ahorro..."** — Fails (a)+(b), five tertiary features each
-> immediately qualified with what it doesn't do — the "muchas cosas que no hacemos" pattern in
-> concentrated form. Belongs: bare feature list, zero elaboration, or cut entirely.
->
-> **04 · Tus datos**
->
-> **"Tus movimientos, que sí se pueden leer..."** — Fails (a) decisively: explains the absence of
-> end-to-end encryption, enumerates four internal-access scenarios verbatim from the privacy
-> policy, names the individual who can read the data. This is privacy-policy content. Belongs:
-> compress to one sentence; full enumeration to the privacy policy.
->
-> **"Tres servicios para funcionar"** — Fails (a), sub-processor disclosure is textbook
-> privacy-policy material. Belongs: privacy policy.
->
-> **"Irte es un botón"** retained-balance clause — Fails (d) partially; keep the deletion mechanic,
-> cut the edge case. Everything else in this section (banking, ads, AI, no rachas) **passes** —
-> these are the actual trust promises the hook depends on.
->
-> **05 · Antes de dejar tu correo**
->
-> **"Se empieza de cero..."** — Borderline pass on content, doesn't need to be pre-email-capture.
-> Belongs: account-creation flow.
->
-> **"La moneda se elige al crear la cuenta... sí se puede cambiar después."** — Fails (a)+(c) hard:
-> five sentences of currency-re-expression mechanics, exactly the kind of "concepto técnico difícil"
-> flagged. Belongs: cut from the landing; inline warning next to the currency selector in the real
-> account-creation form.
->
-> **06 · Preguntas (FAQ)** — Largely passes as-is; opt-in disclosure, several answers already
-> duplicated in forced-visible paragraphs upstream — that duplication is itself evidence the
-> natural home exists and is underused. Expect it to absorb the trimmed content.
->
-> **07 · Invitación** — Passes cleanly, no changes recommended.
->
-> **Wall-of-text flags (by shape alone):** the hero callout (5 sentences, 4 jobs), the showcase
-> note, the cifra-diaria paragraph, the section-01 notice-group, the section-02 callout, the
-> section-02b currency callout, the "¿Qué fue?" callout, the section-03 features marginal, the
-> section-04 "tus movimientos" small, the section-05 currency item.
->
-> **Overall verdict:** if this page has to shrink to half its length, the organizing principle
-> should be: keep only what proves the three core promises (log a spend in seconds, know your
-> daily pace, split fairly with one person) are real and trustworthy to a skeptical-but-interested
-> reader — and move every "here's exactly how it works internally," every "here's who this doesn't
-> work for," and every "here's what we don't do" past the second instance, to a layer the visitor
-> reaches only if they choose to: the FAQ, the account-creation flow, or in-app tooltips at first
-> use. Given the predecessor page already over-converted relative to what the product retains,
-> none of this cutting reduces informed consent in any way that matters.
+> **4. Lo único que cambiaría:** darle a la mención de "Cuenta de la luz... A medias → te
+> deben $16.739" en "Lo compartido" el mismo tratamiento visual (tarjeta, spacing,
+> tipografía) que tiene la demo de arriba, en vez de dejarla como texto suelto en negrita.
+> Ahora mismo esa sección se ve como un borrador al lado de la anterior.
