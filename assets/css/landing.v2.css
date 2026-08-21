@@ -677,18 +677,23 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   color: var(--muted);
 }
 
-/* Cuerpo de la hoja: una sola columna. Era dos —movimientos + categorías al
-   margen— hasta que "En qué se ha ido" se quitó el 21 de agosto ("se ve
-   molesto y no aporta"); dejar el grid de dos columnas habría abierto un
-   hueco vacío a la derecha en escritorio, justo el defecto que se está
-   corrigiendo en otras partes de la página. */
+/* Cuerpo de la hoja: movimientos a la izquierda, categorías al margen.
+   "En qué se ha ido" se había quitado el 21 de agosto por la mañana y se
+   restauró esa misma tarde: a Matías no le molestaban las categorías, le
+   molestaba que fueran un desplegable ("las categorias me gustaban, no me
+   gustaba que fueran desplegables"). Vuelven siempre visibles, como
+   estaban antes de cualquiera de las dos pasadas de recorte. */
 .sheet__body {
   display: grid;
   grid-template-columns: 1fr;
   border-top: 1px solid var(--rule);
 }
-.sheet__ledger { padding: 20px 18px 24px; }
-@media (min-width: 768px) { .sheet__ledger { padding: 24px; } }
+@media (min-width: 900px) {
+  .sheet__body { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .sheet__ledger { border-right: 1px solid var(--hair); }
+}
+.sheet__ledger, .sheet__aside { padding: 20px 18px 24px; }
+@media (min-width: 768px) { .sheet__ledger, .sheet__aside { padding: 24px; } }
 
 .block-title {
   font-family: var(--mono);
@@ -737,6 +742,28 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   to   { opacity: 1; transform: none; background: transparent; }
 }
 
+/* Categorías: filete + barra fina, sin caja. Restaurada el 21 de agosto,
+   siempre visible (no volvió a envolverse en un <details>). */
+.cats { list-style: none; }
+.cats li { padding: 12px 0; border-bottom: 1px solid var(--hair-soft); }
+.cats li:last-child { border-bottom: 0; }
+.cats__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+}
+.cats__name { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.cats__dot { width: 9px; height: 9px; flex: none; border: 1px solid var(--ink); }
+.cats__amount {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.cats__bar { height: 4px; margin-top: 8px; background: var(--hair-soft); }
+.cats__bar span { display: block; height: 100%; transition: width .5s cubic-bezier(.22, .9, .3, 1); }
 
 /* Control de "anotar gasto": la pieza que convierte la hoja en demostración. */
 .jot {

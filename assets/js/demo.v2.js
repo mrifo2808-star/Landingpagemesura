@@ -73,6 +73,7 @@ var el = root ? {
   tick: document.getElementById("demo-tick"),
   detail: document.getElementById("demo-detail"),
   entries: document.getElementById("demo-entries"),
+  cats: document.getElementById("demo-cats"),
   form: document.getElementById("demo-form"),
   amount: document.getElementById("demo-amount"),
   error: document.getElementById("demo-error"),
@@ -198,9 +199,50 @@ function renderEntries(freshIndex) {
   });
 }
 
+function renderCats() {
+  if (!el) return;
+  var spent = totalSpent();
+  el.cats.innerHTML = "";
+  e.cats.forEach(function (c) {
+    var value = state.cats[c.clave] || 0;
+    var share = spent > 0 ? (value / spent) * 100 : 0;
+
+    var li = document.createElement("li");
+    var row = document.createElement("div");
+    row.className = "cats__row";
+
+    var name = document.createElement("span");
+    name.className = "cats__name";
+    var dot = document.createElement("i");
+    dot.className = "cats__dot";
+    dot.style.background = c.color;
+    name.appendChild(dot);
+    name.appendChild(document.createTextNode(c.etiqueta));
+
+    var amount = document.createElement("span");
+    amount.className = "cats__amount";
+    amount.textContent = e.f(value);
+
+    row.appendChild(name);
+    row.appendChild(amount);
+
+    var bar = document.createElement("div");
+    bar.className = "cats__bar";
+    var seg = document.createElement("span");
+    seg.style.width = share.toFixed(1) + "%";
+    seg.style.background = c.color;
+    bar.appendChild(seg);
+
+    li.appendChild(row);
+    li.appendChild(bar);
+    el.cats.appendChild(li);
+  });
+}
+
 function renderAll(freshIndex) {
   renderFigures();
   renderEntries(freshIndex);
+  renderCats();
   fillTokens();
 }
 
