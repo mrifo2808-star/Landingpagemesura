@@ -1,219 +1,332 @@
-# Validar — correcciones del 21 de agosto de 2026: el bug del selector, la calculadora vuelve, y el criterio nuevo del FAQ
+# Validar — se anula el reporte anterior, se agrega un identificador de build, y la calculadora se muda al FAQ
 
-Rama: `claude/correcciones-21-agosto-v2`, sobre `main` (que ya tenía mergeada la pasada de
-minimalismo real). Dos commits, como pediste:
+Rama: `claude/reparacion-real-20260821`, sobre `main` (que tenía mergeada la pasada de
+correcciones anterior, `56f4b00`). Siete commits en total; los primeros dos (`0ad369f`,
+`6517de2`) y su VALIDAR.md (`4efe5f4`) son de la ronda pasada, ya entregada. Esta entrega
+cubre los cuatro de después:
 
-1. `c0db133` — el arreglo del selector de moneda, solo.
-2. `4d307d5` — el resto de la lista: calculadora de vuelta, cortes de contenido, FAQ
-   reescrito, corrección de la demo, layout de escritorio.
+1. `52d75ef` — revierte por completo el commit `6517de2` (categorías, cuadro vacío):
+   se hizo sobre una premisa falsa.
+2. `1ade16a` — identificador de build visible, para no repetir esta clase de confusión.
+3. `c2daca3` — mueve la calculadora al FAQ, con estudio de lectores nuevos de por medio.
+4. `2633dff` — corrige dos fallos que la propia batería encontró después de los dos
+   commits anteriores (contraste de color, título de ancla).
 
 No se hizo merge, no se desplegó, no se tocó ningún secreto.
 
 ---
 
-## 1. El selector de moneda — diagnosticado a fondo, no parcheado a ciegas
+## 0. Se anula el reporte anterior — esto no era un bug
 
-Reportaste que no cambiaba nada al elegir moneda ni al apretar "Ver", y que el botón "Ver"
-seguía apareciendo cuando debería haber desaparecido. Antes de tocar una línea, probé
-contra el **sitio real desplegado**, no contra una copia local:
+Matías abrió la landing en una ventana de incógnito (sin caché) y confirmó: la calculadora
+no estaba rota, las categorías del ejemplo sí estaban presentes, y no había ningún cuadro
+vacío. El 4/10 de la ronda pasada era enteramente un efecto de caché de navegador — el
+diagnóstico del `_headers` con `immutable` sigue siendo correcto (`c0db133`, ya en `main`,
+es el arreglo que hacía falta), pero la conclusión que saqué de ahí — que había que
+restaurar categorías y corregir un hueco de layout — estaba construida sobre una versión
+vieja cacheada, no sobre el estado real del ejemplo.
+
+**Se revirtió por completo** el commit `6517de2`: `index.html`, `assets/css/landing.v2.css`,
+`assets/js/demo.v2.js` y la prueba de comportamiento que se había agregado en
+`funcional.js` vuelven al estado de después de `0ad369f`. El arreglo de caché (el
+renombrado a `.v2`) **no se tocó** — ese diagnóstico fue confirmado como correcto, y
+renombrar los archivos sigue siendo la única forma de que un navegador que ya cacheó una
+versión vieja bajo `immutable` reciba la nueva sin que nadie tenga que vaciar caché a
+mano.
+
+---
+
+## 1. Un identificador de build — para no repetir esta ronda completa la próxima vez
+
+El problema de fondo no era sólo el caché: era que **no había forma de saber qué versión
+estaba viendo alguien** sin una investigación completa de red y caché cada vez que llega
+un reporte. Eso es lo que costó una ronda entera de trabajo sobre un fantasma.
+
+`functions/_middleware.js` ahora expone el commit real de cada deploy en tres lugares:
+
+| Dónde | Para qué |
+|---|---|
+| Header de respuesta `X-Mesura-Build` | En toda petición, incluidos JS/CSS/fuentes — para que yo pueda diagnosticar rápido con una sola petición, sin tener que inspeccionar caché de navegador |
+| Atributo `data-build` en `<html>` | Para revisar por consola/DevTools sin tener que buscar en el pie de página |
+| Texto visible en el pie de página: «Compilación `<sha>` (`<rama>`)» | Para que **Matías** pueda leerlo y decírmelo en un mensaje, sin necesitar DevTools |
+
+Usa `CF_PAGES_COMMIT_SHA` y `CF_PAGES_BRANCH`, que Cloudflare Pages expone automáticamente
+en cada deploy — no hay build step que configurar ni un número que alguien tenga que
+acordarse de subir a mano en cada ronda. En local (`wrangler pages dev`) esas variables
+existen igual, simuladas con el commit de git actual, así que se ve el sha real incluso en
+desarrollo; sólo cae a **"Compilación local"** si el HTML se sirve sin pasar por la
+Function (el servidor estático plano del arnés de QA, que no ejecuta
+`functions/_middleware.js` — es una limitación conocida y documentada del arnés, no un
+error nuevo).
+
+**Verificado contra `wrangler pages dev` real** (no sólo leído el código): el header, el
+atributo y el texto del pie coincidieron los tres con el commit y la rama reales del
+repo en ese momento. Una petición a un asset no-HTML (`landing.v2.css`) recibió el header
+sin error — hubo que reenvolver la respuesta antes de poder agregar el header, porque los
+headers de lo que devuelve `context.next()` vienen inmutables (salen del asset store de
+Pages) y escribir directo tira `TypeError`.
+
+**La próxima vez que llegue un reporte de "esto está roto"**, el primer paso es pedirle a
+Matías que copie lo que dice el pie de página, y comparar ese commit contra `main` antes
+de investigar nada más. Si no coinciden, es caché — no hace falta repetir esta ronda.
+
+---
+
+## 2. La calculadora se mudó al FAQ — medido, no decidido por intuición
+
+Matías preguntó por qué "Una herramienta suelta" quedó al final de la página, y si convenía
+moverla justo antes del formulario de correo (el momento de mayor intención, después de
+calcular un número personal). Pidió medirlo con lectores nuevos en vez de decidirlo por
+intuición.
+
+### 2.1 Método — y sus límites, dichos de entrada
+
+Se armaron cuatro lectores simulados (dos personas × dos variantes), cada uno con contexto
+nuevo, sin ver la otra variante y sin saber que existía una hipótesis a favor de mover la
+calculadora:
+
+| Variante | Orden |
+|---|---|
+| **A — actual** | FAQ → CTA de invitación → calculadora (al final de la página) |
+| **B — propuesta** | FAQ → calculadora → CTA de invitación |
+
+Personas: **Valentina**, 29, diseñadora freelance, pagando dos tarjetas; **Jorge**, 41,
+técnico en refrigeración, dos créditos de consumo. A cada quien se le mostró el texto real
+de la página (copiado tal cual de `index.html`, sin maquetación) desde el FAQ hasta el
+final, y se le pidió: en qué momento sintió más ganas de dejar el correo, si notó la
+calculadora y si la habría abierto, un puntaje de 1 a 10 de probabilidad de dejar el correo,
+y si algo se sintió fuera de lugar.
+
+**Lo que esto NO puede decir, heredado de la convención de este proyecto para estudios de
+lectores simulados**: nadie leyó la página real, maquetada. n=2 por variante es
+extremadamente poco — esto es una señal de dirección, no una predicción de conversión. El
+sesgo más grande es que quien diseñó el estudio también tenía una hipótesis propia (que
+"antes del CTA" sonaba razonable) — se mitigó dejando que el resultado la contradijera sin
+forzar nada, y ese es exactamente lo que pasó.
+
+### 2.2 Resultado — la hipótesis inicial no se sostuvo
+
+| | Variante A (actual) | Variante B (antes del CTA) |
+|---|---|---|
+| Valentina | **7**/10 | **6**/10 |
+| Jorge | **5**/10 | **5**/10 |
+| Promedio | **6** | **5.5** |
+
+Poner la calculadora justo antes del CTA **no subió el puntaje** — si acaso bajó un poco
+(diferencia mínima, dentro del ruido de n=2, pero desde luego no confirma la hipótesis).
+Más informativo que el número: **en ambas variantes**, ambos lectores describieron la
+calculadora como mal ubicada, pero por razones distintas según dónde estaba:
+
+- En A (al final): "la calculadora al final se siente como un anexo, no como parte de lo
+  mismo" (Jorge) — "debería ir antes del CTA de invitación, no después" (Valentina).
+- En B (antes del CTA): "la calculadora se siente pegada con scotch tape ahí en medio...
+  llega tarde para generar confianza" (Valentina) — "meter la calculadora justo entre el
+  FAQ y el bloque de invitación — corta el ritmo. Uno ya iba encaminado a dejar el correo y
+  de repente aparece una herramienta suelta" (Jorge).
+
+**Y sin que se les preguntara por una tercera opción, dos lectores distintos —Jorge en
+ambas variantes— propusieron lo mismo**: agruparla con la pregunta de gastos fijos dentro
+del FAQ, en vez de como paso previo al CTA o como sección final aislada. Cita textual,
+variante B: *"La habría puesto antes, junto con lo de gastos fijos, o derechamente
+afuera."* Cita textual, variante A: *"encontré raro que las preguntas técnicas... vengan
+antes de pedirme el correo"*, apuntando en la misma dirección.
+
+**Decisión**: no se implementó la hipótesis original (calculadora justo antes del CTA) —
+la evidencia, aunque escasa, apunta en contra. Se implementó la alternativa que los propios
+lectores sugirieron sin que se les preguntara: la calculadora pasa a ser el **último ítem
+del FAQ** ("06 · Preguntas"), agrupada temáticamente cerca de "¿Cómo marco un gasto fijo?",
+en vez de tener su propia sección entre el FAQ y el CTA.
+
+### 2.3 Las cuatro respuestas completas, sin editar
+
+<details>
+<summary>Valentina — Variante A (calculadora al final, como está hoy)</summary>
+
+> 1. El momento donde más sentí ganas de dejar el correo fue en "Hoy sólo se entra con
+> invitación" — lo de "línea directa para pedir lo que te falte" me llegó, porque es
+> literal lo que quiero: no otra app genérica, sino alguien que me escuche si algo no
+> funciona. También ayudó bastante el "no hay planes de pago, ni compras dentro de la app"
+> de las preguntas, porque llego cansada de apps que después de dos semanas te tiran un
+> paywall.
+>
+> 2. Sí la noté, pero la habría saltado. Para cuando llego ahí ya decidí si dejo el correo
+> o no — y de hecho ya lo dejé arriba, así que la calculadora se siente como un extra que
+> llegó tarde. Si la hubiera visto ANTES del formulario de invitación, sí la habría
+> abierto, porque lo de "cuánto ya está comprometido" me toca directo (tengo dos
+> tarjetas). Pero después del CTA principal, mi cabeza ya cerró el capítulo.
+>
+> 3. Le pongo un 7. Lo que me convence es el tono honesto (que digan "aunque sea para
+> decirte que todavía no" me da confianza, no me vende humo) y que no soy la única que
+> necesita esto de gastos compartidos. Me resta puntos no saber cuánto voy a esperar.
+>
+> 4. Sí: el orden. Las preguntas de instalación / gastos compartidos / gasto fijo son
+> cosas que yo me pregunto DESPUÉS de decidir que me interesa, no antes de dejar el
+> correo — se sienten puestas ahí como para llenar espacio antes del formulario. Y la
+> calculadora, como dije, debería ir antes del CTA de invitación, no después: como está,
+> parece un "ah, y también esto" que nadie va a abrir.
+
+</details>
+
+<details>
+<summary>Valentina — Variante B (calculadora justo antes del CTA)</summary>
+
+> 1. El momento de más ganas fue "Si algún día hay una versión pagada, avisamos antes — y
+> primero a quienes estén en esta lista". Ahí sentí que no me van a colar una sorpresa de
+> cobro, que es justo lo que me tiene paranoica con las apps de finanzas.
+>
+> 2. Sí la noté, pero por accidente casi la salto — está metida como bloque suelto entre
+> el FAQ y el CTA final, sin conexión con nada de antes. La habría abierto solo porque
+> "cuánto está comprometido antes de que empiece el mes" me pegó fuerte (ando con dos
+> tarjetas), pero si hubiera estado más cansada del scroll la habría ignorado. Que diga
+> "nada se guarda, no se envía a ninguna parte" ayuda, pero llega tarde para generar
+> confianza — debería estar antes, no como nota al pie.
+>
+> 3. Un 6. El "te escribimos aunque sea para decirte que todavía no" y el "no se lo
+> pasamos a nadie" bajan mi guardia de golpe. Pero no es un 8 o 9 porque toda la página me
+> vendió control de mis gastos compartidos y fijos, y de repente aterriza en "necesitamos
+> tu correo para avisarte cuando podamos abrirte una cuenta" — o sea ni siquiera me
+> aseguran que entro.
+>
+> 4. Sí: la calculadora se siente pegada con scotch tape ahí en medio, como si alguien la
+> hubiera puesto donde cupiera. Y las preguntas del FAQ sobre gastos compartidos y gasto
+> fijo son lo más "quiero probar esto ya" de toda la página — deberían estar más arriba o
+> más cerca del formulario final, no enterradas antes de la herramienta suelta.
+
+</details>
+
+<details>
+<summary>Jorge — Variante A (calculadora al final, como está hoy)</summary>
+
+> 1. El momento en que más ganas me dieron de dejar el correo fue en «Déjanos dónde
+> escribirte y te avisamos cuando podamos abrirte una», justo después de leer «Lo que
+> digan estas primeras personas define lo que se construye después». Ahí uno siente que
+> no es un formulario más, que si entro ahora puedo pedir que agreguen algo que a mí me
+> sirva. Pero al tiro después dice «Te escribimos, aunque sea para decirte que todavía
+> no», y ahí bajó un poco el entusiasmo — o sea, ni siquiera me aseguran que voy a poder
+> entrar altiro. Eso me deja como con las ganas a medias.
+>
+> 2. Sí la noté, pero la habría saltado. Está metida detrás de un acordeón que dice
+> «Calcula cuánto ya está comprometido →», y para cuando llegué ahí ya había leído hartas
+> preguntas y el formulario de arriba. Si de verdad no guardan nada, como dicen, capaz la
+> uso otro día, pero en el momento no tenía ánimo de ponerme a hacer cálculos, sobre todo
+> con las cuotas que tengo — a veces uno prefiere no ver el número.
+>
+> 3. Le pondría un 5. Me gusta que sean claros con la plata (que no cuesta nada) y con lo
+> del correo (que no mandan spam), pero lo de «en pruebas» y que todavía ni está en Google
+> Play me hace dudar si vale la pena meter mi correo ahora o esperar a que esté más
+> asentada.
+>
+> 4. Sí, encontré raro que las preguntas técnicas — cómo se instala, gastos compartidos,
+> gasto fijo — vengan ANTES de pedirme el correo. Como que primero me convencen con el
+> funcionamiento y después me piden el dato, en vez de enganchar primero y explicar
+> después. Y la calculadora al final se siente como un anexo, no como parte de lo mismo.
+
+</details>
+
+<details>
+<summary>Jorge — Variante B (calculadora justo antes del CTA)</summary>
+
+> 1. El momento con más ganas de dejar el correo fue en la sección de "Cómo funciono con
+> gastos compartidos" — eso de que el otro recibe una solicitud automática y no hay que
+> andar cuadrando cuentas por WhatsApp me convenció más que el formulario final. Ahí pensé
+> "esto me sirve de verdad". Lo del formulario final ("Déjanos dónde escribirte") se sintió
+> más como trámite que como ganas.
+>
+> 2. Sí la vi, pero la habría saltado. Venía bajando para llegar al final y ver qué tenía
+> que hacer, y un acordeón colapsado que dice "Calcula cuánto ya está comprometido" me da
+> paja hacer clic — como que ya sé más o menos cuánto debo, no necesito que una página me
+> lo confirme con un formulario. Si la hubiera abierto habría sido por curiosidad nomás, no
+> porque la necesitara.
+>
+> 3. Como un 5. Las respuestas del FAQ me bajaron harto la desconfianza (que no piden
+> tarjeta, que no venden el correo, que avisan antes de cobrar), pero "en pruebas" y
+> "todavía no está en Google Play" me frena. Yo ya me quemé con apps a medio hacer. Si
+> tuviera que decidir ahí mismo, capas que sí, pero lo pensaría un rato.
+>
+> 4. Lo que sí se siente raro es meter la calculadora justo entre el FAQ y el bloque de
+> invitación — corta el ritmo. Uno ya iba encaminado a dejar el correo y de repente aparece
+> una herramienta suelta que no tiene mucho que ver. La habría puesto antes, junto con lo
+> de gastos fijos, o derechamente afuera.
+
+</details>
+
+### 2.4 Lo que se implementó
+
+La calculadora dejó de tener su propia `<section class="section--band" id="calculadora">`
+(con tag, encabezado y separación propia) y pasó a ser el último `<details>` de "06 ·
+Preguntas", con el mismo resumen de siempre — "Calcula cuánto ya está comprometido →", que
+la distingue de una pregunta real por terminar en flecha y no en signo de interrogación —
+y el mismo contenido y comportamiento. El total de `<details>` en la página sigue siendo 8;
+sólo cambió cuál bloque contiene el de la calculadora.
+
+El `id="calculadora"` se movió del `<section>` al propio `<details>` — ya no hay un
+contenedor aparte — así que se actualizó el selector en `funcional.js` (de
+`"#calculadora details"` a `"#calculadora"`).
+
+El texto "Saber cuánto es sirve **para lo de arriba**" dependía de la posición anterior
+(el ejemplo del hero, arriba en el scroll, cuando la calculadora estaba al final de la
+página). Se reescribió sin esa referencia posicional, ahora que la posición cambió:
+
+> "La parte de tu ingreso que se va en cuotas y créditos está decidida antes de que
+> empiece el mes. Saber cuánto es cambia lo que de verdad puedes prometerte: lo que queda
+> es lo que administras mes a mes."
+
+---
+
+## 3. Lo que la propia batería encontró después de estos cambios — y cómo se corrigió
+
+`npm test` bajó a **5/7** justo después de los commits de arriba. Dos fallos reales:
+
+- **axe-core, color-contrast** en `.foot__build` (el sello de compilación nuevo): el
+  `opacity: .6` sobre `var(--muted)` mezclaba el texto con el fondo del pie y lo dejaba por
+  debajo de AA. `var(--muted)` sola, sin opacity, ya pasa cómodo (~5.4:1 en tema claro) — el
+  tamaño de fuente (10px contra los 11px de una nota real) ya lo distingue visualmente, no
+  hacía falta bajarle además el contraste.
+- **anclas**: `#calculadora` (ahora un `<details>` sin encabezado propio, al final de una
+  lista larga de preguntas) hacía caer el chequeo de "título visible bajo la barra" al
+  contenedor completo — el `<h2>`"Tus dudas." de toda la sección de Preguntas, que puede
+  quedar muy por encima en la pantalla de un ítem al final de la lista. Se corrigió el
+  script (`anclas.js`): un `<summary>` ahora cuenta como título cuando el destino ES un
+  `<details>`, porque es la etiqueta visible de un desplegable colapsado y cumple el mismo
+  papel que un encabezado para quien llega por ese enlace.
+
+Ambos se corrigieron en un commit aparte (`2633dff`). `npm test` volvió a **7/7**.
+
+Esto es exactamente el tipo de comportamiento que la crítica de la ronda pasada pedía:
+la batería atrapó dos regresiones reales que una revisión visual sola podría no haber
+notado (contraste de color y geometría de scroll en un ancla que nadie usa a diario).
+
+---
+
+## 4. Verificación
 
 | Comprobación | Resultado |
 |---|---|
-| `demo.js` en producción, línea por línea | El fix de `be2acd9` está intacto — la protección contra el pisado de la elección del usuario sigue ahí |
-| `functions/_middleware.js` vía curl directo a `mesura-landing.pages.dev` | `?m=PEN` resuelve a PEN, `?m=USD` (basura) cae a CLP, ambos correctos |
-| Disparar `change` a mano sobre el `<select>` real de producción | La hoja se recalcula a soles sin problema — el código responde bien |
-| Estado del botón "Ver" en producción, con JS activo | `display:none`, oculto correctamente |
-
-**El código estaba bien. La causa era otra**, y la encontré en `_headers`:
-
-```
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-```
-
-El propio comentario de esa línea decía la condición bajo la cual es segura: *"mientras
-los nombres no se reciclen con otro contenido"*. Esa condición nunca se cumplió en este
-proyecto — `demo.js`, `mesura-datos.js` y `landing.css` cambian de contenido bajo el mismo
-nombre de archivo en casi cada pasada. `immutable` le dice al navegador que **ni siquiera
-revalide con el servidor**: quien haya visitado la página antes de un deploy se queda con
-el JS viejo cacheado, sin que un refresh normal alcance a pedir la versión nueva.
-
-**Esto explica por qué "vuelve a pasar" sin que sea una regresión real**: no es que el
-código se rompiera dos veces — es que tu navegador nunca llegó a pedir el código
-corregido después de la primera vez que lo viste.
-
-### La corrección
-
-Separé la política de caché por tipo de archivo en `_headers`:
-
-- **Fuentes e imágenes** (contenido que de verdad no cambia una vez publicado): se quedan
-  con `immutable` y un año de caché.
-- **JS y CSS** (cambian de contenido bajo el mismo nombre cada pasada): pasan a
-  `max-age=0, must-revalidate`. Como ya se sirve un `ETag`, esto es un `304` casi gratis
-  cuando el archivo no cambió, y contenido nuevo de inmediato cuando sí — sin que nadie
-  tenga que limpiar caché a mano.
-
-**No toqué ninguna línea de `assets/js/demo.js`**: no hacía falta, el código ya estaba
-correcto. Para que veas el cambio surta efecto en tu propio teléfono ahora mismo, antes de
-que este fix se despliegue, necesitas un refresh que ignore caché (mantener presionado el
-botón de recargar y elegir "vaciar caché y recargar", o cerrar y volver a abrir en una
-pestaña de incógnito) — un refresh normal no alcanza porque `immutable` le dijo a tu
-navegador que ni siquiera pregunte.
-
-### Sobre el campo de monto sin control
-
-No pude reproducir "dice ingresa un monto, pero no está la opción de ingresarlo" en el
-sitio real (probé en escritorio y en móvil, con una sesión sin caché previa: el campo
-existe, mide lo que debe medir, y se ve). Por la misma explicación de arriba, es
-consistente con el mismo origen — una versión de HTML/CSS/JS cacheados por separado y
-desincronizados entre sí puede producir exactamente este tipo de síntoma (una etiqueta de
-un lado, un control roto del otro). Con el fix de caché, esta clase de bug no debería
-volver a aparecer. Si después de vaciar caché lo sigues viendo, avísame con el modelo de
-teléfono y navegador exactos — a esta altura sería un bug genuinamente nuevo, no el mismo.
+| `cd docs/redesign/qa && npm test` | **7/7** |
+| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` | **SIN FALLOS** · 3 avisos preexistentes en documentos históricos, no relacionados |
+| `wrangler pages dev` real, header/atributo/texto de build | Los tres coinciden con el commit y la rama reales |
+| Petición a un asset no-HTML (CSS) | Recibe `X-Mesura-Build` sin error |
+| Calculadora en su nueva posición (FAQ), escritorio y móvil | Abre, calcula 11,9% / $705.000 con 800.000 y 95.000, sin errores de consola |
+| Enlaces de navegación (masthead, footer) contra la página cargada | Los 4 anclas internas resuelven; ninguno apunta a una sección borrada |
+| Consola del navegador durante toda la verificación manual | Sin errores |
 
 ---
 
-## 2. Contenido retirado, tal como pediste
+## 5. Lo que necesita tu decisión
 
-| Qué se sacó | Tu razón |
-|---|---|
-| El desplegable "En qué se ha ido" (categorías del ejemplo) | "se ve molesto y no aporta" |
-| El párrafo del footer sobre español neutro / hecha por una persona sola | "me parece gratuito, no expliques que confundes" |
-| "Ninguna aplicación puede prometer seguridad absoluta, y ésta no lo hace..." | Reemplazado por tu propuesta: "Los términos de uso y la política de privacidad están disponibles para leerse." Nada más. |
-| La pregunta "¿Cómo te entra la plata?" del formulario final | "se lee mal" |
-
-Al sacar "En qué se ha ido" limpié también el código que quedaba sin usar: la función
-`renderCats()` completa en `demo.js`, las clases `.cats*` en `landing.css`. Al sacar el
-fieldset de ingreso, verifiqué que `functions/api/waitlist.js` ya trataba ese campo como
-opcional — hay un test existente, `"sin ingreso deberia guardarse null, no inventado"`, que
-ya cubría este caso — así que no hizo falta tocar el backend.
+1. **La calculadora quedó en el FAQ, no antes del CTA.** La evidencia (escasa, cuatro
+   lectores simulados) apunta en contra de la hipótesis original y a favor de esta
+   alternativa. Si preferís probarlo en producción de todos modos con lectores reales antes
+   de conformarte con esto, es reversible en un commit.
+2. **El identificador de build es nuevo y no tiene precedente en este proyecto.** Si en
+   algún momento no querés que el commit/rama sean visibles en el pie de página (por
+   ejemplo, si te preocupa que alguien externo vea qué rama está en producción), se puede
+   dejar sólo el header y el atributo (invisibles para un visitante normal) y sacar el
+   texto del pie — avisame y lo saco en un commit aparte.
 
 ---
 
-## 3. El FAQ — no sólo se acortó, cambió de criterio
-
-Dijiste algo importante que no es sólo "menos preguntas": **la landing deja de ser el
-lugar donde se enumeran las carencias.** Si una limitación importa, va en el registro o
-en el primer uso de la app, no en el escaparate — lo que no se puede es afirmar lo
-contrario de lo que es cierto.
-
-Con ese criterio, de las 9 preguntas que había, saqué dos que existían específicamente
-para catalogar un vacío de la app:
-
-- **"¿Necesito internet para usar Mesura?"** — tu propio ejemplo de lo que ya no debe
-  estar.
-- **"¿Me sirve el ritmo si no gano lo mismo cada mes?"** — misma categoría: es una
-  limitación real (el ritmo no calza bien con ingreso irregular), pero su lugar ya no es
-  la landing. **No se pierde silenciosamente**: la app real sigue comportándose igual
-  (verificado contra `Mesura-app-source` en la pasada anterior), y el destino natural de
-  esta información es el momento en que alguien configura su ingreso dentro de la app, no
-  antes de dejar el correo.
-
-Las cinco que quedaron se recortaron también, quitando la capa de justificación/disculpa
-que traían (ej. "¿cuánto trabajo es de verdad?" se sacó entera — era la pregunta que más
-explícitamente hablaba de abandono y reconstrucción de datos atrasados).
-
-**Título**: cambió de "Lo que la gente pregunta antes de dejar su correo" (tu comentario:
-"redactado de forma rara") a **"Tus dudas."**
-
-**Google Play**: se queda, como pediste, pero deja de insinuar que ya se puede descargar:
-
-> "Está en proceso: hoy se está preparando el envío a testing cerrado, como parte de esta
-> beta. Mientras tanto, Mesura se abre en el navegador..."
-
-Este texto refleja exactamente lo que me dijiste como estado real de hoy. Si esto cambia
-(se envía, lo aceptan, lo rechazan), esta frase queda desactualizada y hay que volver a
-tocarla — no es un estado que se mantenga solo.
-
-**Las cinco preguntas finales**: en pruebas, cuánto cuesta, instalación/Google Play,
-gastos compartidos, gasto fijo.
-
----
-
-## 4. La calculadora vuelve
-
-Restaurada completa desde el commit anterior a que se borrara (`def3ffd^`): el HTML, el
-CSS (`.calc`, `.statement*`, `.result*`) y `assets/js/calculator.js`. Sigue exactamente
-donde estaba — colapsada detrás de su propio acordeón, al final de la página, sin competir
-con la demo principal ni con el formulario de invitación. Probada de punta a punta
-(800.000 de ingreso, 95.000 de deuda → 11,9%, "Te quedan $705.000") con las cinco pruebas
-automatizadas que tenía antes, también restauradas.
-
----
-
-## 5. La demo dejó de decir algo que no es cierto
-
-Tenías razón: la tarjeta interactiva del hero no es la pantalla de Inicio de Mesura, es un
-ejemplo de cómo funciona. Corregido en dos lugares — el texto visible de la sección
-"Pruébalo tú mismo", y el `og:image:alt` del `<head>`, que hacía la misma afirmación para
-quien comparte el link en redes. La descripción de paso se acortó de dos párrafos a una
-frase: **"Ejemplo funcional, con datos inventados. Escribe un monto abajo y mira cómo se
-mueve."** — la demo en sí no cambió, seguís teniéndola tal como te gusta.
-
----
-
-## 6. Layout de escritorio
-
-### 6.1 El caso concreto que reportaste
-
-"Lo que pagaste tú, lo que puso el otro" no tenía ningún límite de ancho propio a nivel de
-sección — cada párrafo tenía su propio `max-width` en caracteres, pero nada agrupaba el
-contenido dentro del ancho real de 1240px del contenedor. El resultado en escritorio: una
-sola columna angosta pegada a la izquierda, con todo el resto del ancho vacío a la
-derecha — exactamente lo que describiste.
-
-**Corrección**: reestructuré la sección en dos columnas a partir de 900px de ancho,
-reusando `.evidence` — una clase que ya estaba definida en el CSS de una iteración
-anterior pero que ningún HTML usaba. Columna izquierda: el texto y el ejemplo de la
-cuenta de la luz. Columna derecha: las dos preguntas del acordeón. En móvil sigue
-apilado en el mismo orden que antes, sin ningún cambio.
-
-Medido en 1440px: antes, el bloque de texto ocupaba 345px de un contenedor de 1240px
-(895px vacíos a la derecha). Después, dos columnas de 536px y 656px que llenan el
-contenedor completo, con 48px de aire entre ambas — no vacío perdido.
-
-### 6.2 Lo que encontré revisando el resto, como pediste
-
-Al sacar "En qué se ha ido" (§2), la demo del hero se quedó con el mismo defecto: su grid
-de dos columnas (`sheet__body`) reservaba una segunda columna para las categorías que ya
-no existen, dejando exactamente el mismo hueco vacío a la derecha en escritorio. Lo
-corregí a una sola columna en el mismo commit — antes de que llegara a mostrarse.
-
-No encontré otros huecos equivalentes revisando el resto de las secciones (Tus datos,
-Preguntas, la invitación) — todas usan grids de dos columnas donde ambos lados tienen
-contenido real, sin columnas fantasma.
-
----
-
-## 7. Verificación — todo lo que corrí, con resultado
-
-| Comprobación | Resultado |
-|---|---|
-| `cd docs/redesign/qa && npm test` | **7/7** — funcional 25/25 (la calculadora recupera sus 5 pruebas, el conteo de `<details>` baja a 8: 2 en "Lo compartido" + 5 en "Preguntas" + 1 en la calculadora) |
-| `node verificar.js --contra-repo Mesura-app-source Mesura-mobile` | **SIN FALLOS** · 3 avisos preexistentes, no relacionados |
-| Selector de moneda, en el sitio real desplegado | Diagnóstico completo en §1 — el código funciona, la causa era caché |
-| Selector de moneda, calculadora, layout de "Lo compartido", local, escritorio (1440px) y móvil (375px) | Todo verificado con interacción real (no sólo lectura de HTML): cambiar a ARS recalcula toda la hoja; la calculadora da 11,9% con los números de prueba; "Lo compartido" llena las dos columnas sin hueco |
-| Scroll móvil (375×812) | **7,17 pantallas** — bajó desde 7,97 pese a que la calculadora volvió, porque los otros cortes (categorías, descripción de la demo) pesaron más |
-| Consola del navegador, en cada prueba | Sin errores |
-| Búsqueda de otro contenido en el mismo patrón (§2 de tu encargo) | Sólo quedó una frase con "todavía no" — es del formulario de invitación ("te escribimos, aunque sea para decirte que todavía no"), sobre el proceso de invitación, no sobre una carencia de la app; la dejé porque cumple una función distinta (evita quejas de "dejé mi correo y nunca supe más") |
-
----
-
-## 8. Lo que necesita tu decisión
-
-1. **La frase de Google Play** ("se está preparando el envío a testing cerrado") describe
-   un estado de hoy que vas a cambiar pronto. Cuando eso pase, hay que volver a esta línea
-   — no se actualiza sola.
-2. **Si el bug del selector/monto reaparece después de que despliegues el fix de caché**,
-   con caché ya vaciado de tu lado, es un bug genuinamente nuevo y hay que diagnosticarlo
-   de cero — dime el teléfono/navegador exacto.
-3. **La calculadora restaurada** vive exactamente donde estaba antes de borrarse. Si
-   prefieres otra ubicación (la pediste de vuelta pero no dijiste dónde), es un cambio de
-   una sección, no de contenido.
-
----
-
-## 9. Comandos — listos para copiar, **no ejecutados**
+## 6. Comandos — listos para copiar, **no ejecutados**
 
 ### Ver la página localmente antes de aprobar
 
@@ -222,38 +335,25 @@ cd Mesura-landing
 npx wrangler pages dev . --compatibility-date=2026-08-01
 ```
 
-Prueba especialmente: el selector de moneda (con una pestaña nueva, sin caché previa
-del puerto local), la calculadora al final de la página, "Lo compartido" en una ventana
-ancha, y el FAQ con 5 preguntas bajo el título "Tus dudas."
+Fijate en el pie de página: debería decir "Compilación `<sha corto>` (`claude/reparacion-real-20260821`)".
+Y en "Preguntas", la última pregunta debería ser "Calcula cuánto ya está comprometido →".
 
 ### Revisar el diff antes de decidir
 
 ```bash
-git -C Mesura-landing log main..claude/correcciones-21-agosto-v2 --oneline
-git -C Mesura-landing diff main...claude/correcciones-21-agosto-v2
+git -C Mesura-landing log 56f4b00..claude/reparacion-real-20260821 --oneline
+git -C Mesura-landing diff 56f4b00...claude/reparacion-real-20260821
 ```
 
 ### Mergear todo
 
 ```bash
 git -C Mesura-landing checkout main
-git -C Mesura-landing merge --no-ff claude/correcciones-21-agosto-v2
+git -C Mesura-landing merge --no-ff claude/reparacion-real-20260821
 git -C Mesura-landing push origin main
 ```
 
-### Desplegar sólo el fix de caché, sin esperar al resto
-
-Si quieres el arreglo del selector en producción ya, sin esperar los cortes de contenido:
-
-```bash
-cd Mesura-landing
-git checkout main
-git cherry-pick c0db133
-git push origin main
-npx wrangler pages deploy . --project-name=mesura-landing
-```
-
-### Desplegar todo
+### Desplegar
 
 ```bash
 cd Mesura-landing
@@ -273,7 +373,7 @@ Si **todavía no mergeaste**:
 
 ```bash
 git -C Mesura-landing checkout main
-git -C Mesura-landing branch -D claude/correcciones-21-agosto-v2
+git -C Mesura-landing branch -D claude/reparacion-real-20260821
 ```
 
 Si **ya desplegaste**: Cloudflare Pages guarda cada deploy — `mesura-landing` →

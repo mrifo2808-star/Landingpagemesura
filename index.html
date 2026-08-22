@@ -34,17 +34,29 @@
      tercero. Coherencia con lo que promete la sección "Tus datos". -->
 <link rel="preload" href="/assets/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrainsmono-var-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/landing.css">
+<link rel="stylesheet" href="/assets/css/landing.v2.css">
 
-<!-- El selector de moneda depende de dos módulos (demo.js → mesura-datos.js):
-     sin este adelanto, el HTML queda pintado e interactivo un instante antes
-     de que cualquiera de los dos termine de llegar, y en ese instante el
-     <select> nativo ya responde al picker del teléfono sin que haya ningún
-     listener escuchando. Es la ventana donde apareció el bug de móvil del
-     21 de agosto (ver el comentario en assets/js/demo.js, sección "Arranque"):
-     no lo cierra del todo, pero lo acorta en la conexión donde más importa. -->
-<link rel="modulepreload" href="/assets/js/mesura-datos.js">
-<link rel="modulepreload" href="/assets/js/demo.js">
+<!-- Los nombres de archivo llevan ".v2" desde el 21 de agosto, a propósito:
+     /assets/* se sirvió durante semanas con Cache-Control: immutable
+     (max-age de un año), así que cualquier navegador que hubiera visitado la
+     página una sola vez antes de esa fecha se quedó con el JS/CSS viejo
+     cacheado para siempre, sin volver a pedirlo nunca — ni con un refresh
+     normal. Cambiar el Cache-Control a futuro (ver _headers) no alcanza para
+     lo que ya está cacheado: sólo un cambio de URL fuerza a esos navegadores
+     a pedir el archivo de nuevo. Ésa es la única razón del ".v2"; no es un
+     esquema de versionado que haya que mantener — la próxima vez que estos
+     archivos cambien de contenido, el nuevo Cache-Control ya revalida solo.
+
+     El selector de moneda depende de dos módulos (demo.v2.js → mesura-
+     datos.v2.js): sin este adelanto, el HTML queda pintado e interactivo un
+     instante antes de que cualquiera de los dos termine de llegar, y en ese
+     instante el <select> nativo ya responde al picker del teléfono sin que
+     haya ningún listener escuchando. Es la ventana donde apareció el bug de
+     móvil del 21 de agosto (ver el comentario en assets/js/demo.v2.js,
+     sección "Arranque"): no lo cierra del todo, pero lo acorta en la
+     conexión donde más importa. -->
+<link rel="modulepreload" href="/assets/js/mesura-datos.v2.js">
+<link rel="modulepreload" href="/assets/js/demo.v2.js">
 
 <script type="application/ld+json">
 {
@@ -526,6 +538,89 @@
               </p>
             </div>
           </details>
+
+          <!-- "Una herramienta suelta": vivía en su propia sección entre el FAQ
+               y el CTA de invitación. Un estudio rápido con lectores nuevos
+               (VALIDAR.md, sección de la calculadora) mostró que ponerla justo
+               antes del formulario cortaba el ritmo justo en el momento de
+               mayor intención de conversión, en vez de ayudarlo — dos lectores
+               distintos, sin verla el uno al otro, pidieron lo mismo:
+               agruparla con la pregunta de gastos fijos, no como paso previo
+               al CTA. Por eso queda aquí, como el último ítem del FAQ, con un
+               resumen que la distingue de una pregunta real (termina en
+               flecha, no en signo de interrogación). No es una pregunta: es
+               la herramienta suelta que ya era, sólo que ahora vive donde a
+               los lectores les hizo sentido encontrarla. -->
+          <details id="calculadora">
+            <summary>Calcula cuánto ya está comprometido →</summary>
+            <div class="qa__body" style="max-width:none;">
+              <div class="calc">
+                <div>
+                  <p class="lead">
+                    La parte de tu ingreso que se va en cuotas y créditos está
+                    decidida antes de que empiece el mes. Saber cuánto es
+                    cambia lo que de verdad puedes prometerte: lo que queda es
+                    lo que administras mes a mes.
+                  </p>
+                  <p class="callout">
+                    <b>Nada de lo que escribas aquí se guarda.</b> La división
+                    pasa dentro de tu navegador, no se envía a ninguna parte y no
+                    queda registrada.
+                  </p>
+                </div>
+
+                <div>
+                  <form class="statement" id="calc-form" novalidate>
+                    <div class="statement__row">
+                      <label class="statement__label" for="calc-income">
+                        Lo que te llega al mes
+                        <small>Después de descuentos, lo que efectivamente entra a tu cuenta o a tu bolsillo.</small>
+                      </label>
+                      <div>
+                        <span class="money-input">
+                          <span aria-hidden="true" data-tok="simbolo">$</span>
+                          <input id="calc-income" name="income" type="text" inputmode="numeric"
+                                 autocomplete="off" placeholder="800.000"
+                                 aria-describedby="calc-income-error">
+                        </span>
+                        <p class="field-error" id="calc-income-error" role="alert"></p>
+                      </div>
+                    </div>
+
+                    <div class="statement__row">
+                      <label class="statement__label" for="calc-debt">
+                        Lo que pagas al mes en deudas
+                        <small>Cuotas de créditos, tarjetas y avances en efectivo. No
+                        incluyas la vivienda ni las cuentas del mes: eso es gasto, no deuda.</small>
+                      </label>
+                      <div>
+                        <span class="money-input">
+                          <span aria-hidden="true" data-tok="simbolo">$</span>
+                          <input id="calc-debt" name="debt" type="text" inputmode="numeric"
+                                 autocomplete="off" placeholder="95.000">
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="statement__actions">
+                      <button type="submit" class="btn btn--primary">Ver el resultado</button>
+                      <button type="button" class="link-quiet" id="calc-reset" hidden>Limpiar</button>
+                    </div>
+                  </form>
+
+                  <div class="result" id="calc-result" role="status" aria-live="polite" hidden>
+                    <p class="result__pct" id="calc-pct">—</p>
+                    <p class="result__caption">de lo que te llega ya está comprometido antes de empezar el mes</p>
+                    <p class="result__text" id="calc-text"></p>
+                    <p class="fineprint">
+                      Este número no dice si tu situación es buena o mala: una
+                      hipoteca y una tarjeta se ven igual aquí.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </div>
@@ -578,93 +673,6 @@
     </div>
   </section>
 
-  <!-- ═══════════ 09 · UNA HERRAMIENTA SUELTA ═══════════
-       Restaurada el 21 de agosto: se había borrado en la pasada de
-       minimalismo real; Matías pidió que volviera ("algo aportaba ese
-       apartado"). Colapsada detrás de su propio acordeón para que no
-       compita con la demo principal ni con el CTA de invitación. -->
-  <section class="section section--band" id="calculadora">
-    <div class="wrap">
-      <div class="section__head">
-        <p class="tag">Una herramienta suelta</p>
-        <h2 class="t-h2">Cuánto de lo que entra ya está comprometido.</h2>
-      </div>
-
-      <div class="qa">
-        <details>
-          <summary>Calcula cuánto ya está comprometido →</summary>
-          <div class="qa__body" style="max-width:none;">
-            <div class="calc">
-              <div>
-                <p class="lead">
-                  La parte de tu ingreso que se va en cuotas y créditos está
-                  decidida antes de que empiece el mes. Saber cuánto es sirve
-                  para lo de arriba: lo que queda es lo que realmente
-                  administras.
-                </p>
-                <p class="callout">
-                  <b>Nada de lo que escribas aquí se guarda.</b> La división
-                  pasa dentro de tu navegador, no se envía a ninguna parte y no
-                  queda registrada.
-                </p>
-              </div>
-
-              <div>
-                <form class="statement" id="calc-form" novalidate>
-                  <div class="statement__row">
-                    <label class="statement__label" for="calc-income">
-                      Lo que te llega al mes
-                      <small>Después de descuentos, lo que efectivamente entra a tu cuenta o a tu bolsillo.</small>
-                    </label>
-                    <div>
-                      <span class="money-input">
-                        <span aria-hidden="true" data-tok="simbolo">$</span>
-                        <input id="calc-income" name="income" type="text" inputmode="numeric"
-                               autocomplete="off" placeholder="800.000"
-                               aria-describedby="calc-income-error">
-                      </span>
-                      <p class="field-error" id="calc-income-error" role="alert"></p>
-                    </div>
-                  </div>
-
-                  <div class="statement__row">
-                    <label class="statement__label" for="calc-debt">
-                      Lo que pagas al mes en deudas
-                      <small>Cuotas de créditos, tarjetas y avances en efectivo. No
-                      incluyas la vivienda ni las cuentas del mes: eso es gasto, no deuda.</small>
-                    </label>
-                    <div>
-                      <span class="money-input">
-                        <span aria-hidden="true" data-tok="simbolo">$</span>
-                        <input id="calc-debt" name="debt" type="text" inputmode="numeric"
-                               autocomplete="off" placeholder="95.000">
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="statement__actions">
-                    <button type="submit" class="btn btn--primary">Ver el resultado</button>
-                    <button type="button" class="link-quiet" id="calc-reset" hidden>Limpiar</button>
-                  </div>
-                </form>
-
-                <div class="result" id="calc-result" role="status" aria-live="polite" hidden>
-                  <p class="result__pct" id="calc-pct">—</p>
-                  <p class="result__caption">de lo que te llega ya está comprometido antes de empezar el mes</p>
-                  <p class="result__text" id="calc-text"></p>
-                  <p class="fineprint">
-                    Este número no dice si tu situación es buena o mala: una
-                    hipoteca y una tarjeta se ven igual aquí.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer class="foot">
@@ -687,12 +695,20 @@
       Los montos y las funciones de los ejemplos de esta página son inventados
       y sirven para mostrar cómo se ve la app.
     </p>
+    <!-- La reescribe functions/_middleware.js con el commit real del deploy
+         (Cloudflare Pages expone CF_PAGES_COMMIT_SHA solo). Sirve para
+         distinguir "está roto" de "estás viendo una versión vieja" sin abrir
+         una investigación cada vez — nació de un reporte del 21 de agosto
+         que resultó ser caché del navegador. El texto de abajo es lo que se
+         ve si esto se abre sin pasar por la Function (un servidor estático
+         cualquiera, o wrangler pages dev en local). -->
+    <p class="foot__build" id="foot-build">Compilación local</p>
   </div>
 </footer>
 
-<script type="module" src="/assets/js/demo.js"></script>
-<script type="module" src="/assets/js/calculator.js"></script>
-<script src="/assets/js/landing.js" defer></script>
+<script type="module" src="/assets/js/demo.v2.js"></script>
+<script type="module" src="/assets/js/calculator.v2.js"></script>
+<script src="/assets/js/landing.v2.js" defer></script>
 
 </body>
 </html>

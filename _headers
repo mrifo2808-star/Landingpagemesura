@@ -61,3 +61,13 @@
 
 /assets/css/*
   Cache-Control: public, max-age=0, must-revalidate
+
+# Este cambio de Cache-Control, por sí solo, no arregla nada para quien ya
+# tenía el JS/CSS viejo cacheado como "immutable" antes de este deploy: un
+# navegador con esa promesa dada no vuelve a preguntarle al servidor pase lo
+# que pase en este archivo. Por eso demo.js, mesura-datos.js, calculator.js y
+# landing.css se renombraron a *.v2.* el mismo día (ver el comentario grande
+# en el <head> de index.html) — es lo único que fuerza a esos navegadores a
+# pedir contenido de una URL que nunca cachearon. No hace falta repetir el
+# truco del nombre en futuras pasadas: con este Cache-Control ya puesto, el
+# ETag revalida solo.

@@ -31,7 +31,13 @@ export async function medirAnclas({ url, browser, vp, tema }) {
 
       // El titulo que la persona espera ver: el primer encabezado dentro del
       // destino, o el del contenedor si el destino no trae uno propio.
-      const titulo = destino.querySelector("h1, h2, h3") ||
+      // "summary" cuenta como encabezado cuando el destino ES un <details>
+      // (ej. #calculadora desde el 21 de agosto): es la etiqueta visible de
+      // un desplegable colapsado, cumple el mismo papel que un h1-h3 aunque
+      // no lo sea semanticamente. Sin esto, el destino cae al fallback del
+      // contenedor y compara contra el titulo de una seccion entera de FAQ
+      // que puede estar lejos en la pantalla.
+      const titulo = destino.querySelector("h1, h2, h3, summary") ||
                      destino.closest("section, main")?.querySelector("h1, h2, h3");
       const cajaTitulo = titulo ? titulo.getBoundingClientRect() : null;
 

@@ -92,10 +92,10 @@ s.servidor.close();
 
 // La otra mitad de la hipótesis: si no hay listeners de scroll ni animaciones
 // de reveal, no hay nada en el código que pueda congelar el scroll.
-const fuentes = ["demo.js", "calculator.js", "landing.js"].map((f) =>
+const fuentes = ["demo.v2.js", "calculator.v2.js", "landing.v2.js"].map((f) =>
   readFileSync(path.join(RAIZ, "assets/js", f), "utf8"));
 const conScroll = fuentes.filter((t) => t.includes('addEventListener("scroll') || t.includes("addEventListener('scroll")).length;
-const css = readFileSync(path.join(RAIZ, "assets/css/landing.css"), "utf8");
+const css = readFileSync(path.join(RAIZ, "assets/css/landing.v2.css"), "utf8");
 salida.listenersDeScroll = conScroll;
 salida.animacionesCss = (css.match(/@keyframes/g) || []).length;
 console.log(`\nlisteners de scroll en el JS: ${conScroll} · @keyframes en el CSS: ${salida.animacionesCss}`);

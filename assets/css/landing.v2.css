@@ -1283,6 +1283,18 @@ main > .section--band:last-child { padding-bottom: var(--space-band); }
   color: var(--muted);
   max-width: 64ch;
 }
+/* Diagnóstico, no contenido: por eso va más chico y sin el borde/espaciado
+   de los .foot__note reales — pero SIN opacity, que es lo que hizo caer el
+   contraste de --muted por debajo de AA (axe lo detectó: 21 de agosto). El
+   tamaño ya lo distingue de una nota real, no hace falta bajarle contraste. */
+.foot__build {
+  width: 100%;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .03em;
+  color: var(--muted);
+}
 
 /* ---------- 10b. Selector de moneda -------------------------------------
    Pegado al ejemplo, siempre visible: la detección por país puede
